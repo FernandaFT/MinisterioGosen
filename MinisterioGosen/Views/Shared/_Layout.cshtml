@@ -1,319 +1,170 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-
+    <meta charset="utf-8">
     <title>@ViewData["Title"] - Ministerio Gosén</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
 
-    <!-- CSS FILES -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap"
-          rel="stylesheet" />
+    <!-- Libraries Stylesheet -->
+    <link href="~/css/animate.min.css" rel="stylesheet">
+    <link href="~/css/owl.carousel.min.css" rel="stylesheet">
 
-    <link href="~/css/bootstrap.min.css" rel="stylesheet" asp-append-version="true" />
 
-    <link href="~/css/bootstrap-icons.css" rel="stylesheet" asp-append-version="true" />
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="~/css/website.css" rel="stylesheet" asp-append-version="true" />
+    <!-- Template Stylesheet -->
+    <link href="~/css/style.css" rel="stylesheet">
 </head>
 
 <body>
-
-    <main>
-
-        <nav class="navbar navbar-expand-lg">
-            <div class="container">
-
-                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
-                    <img src="@Url.Content("~/css/images/logo.png")"
-                         class="navbar-brand-image img-fluid"
-                         alt="Ministerio Gosén" />
-
-                    <span class="navbar-brand-text">
-                        Ministerio
-                        <small>Gosén</small>
-                    </span>
-                </a>
-
-                <div class="d-lg-none ms-auto me-3">
-                    <a class="btn custom-btn custom-border-btn"
-                           data-bs-toggle="offcanvas"
-                           href="#offcanvasExample"
-                           role="button"
-                           aria-controls="offcanvasExample">
-                        Member Login
-                    </a>
-                </div>
-
-                <button class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav"
-                        aria-controls="navbarNav"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
-
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-lg-auto">
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_1">Home</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_2">About</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_3">Membership</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_4">Events</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link click-scroll" href="#section_5">Contact Us</a>
-                        </li>
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle"
-                                   href="#"
-                                   id="navbarLightDropdownMenuLink"
-                                   role="button"
-                                   data-bs-toggle="dropdown"
-                                   aria-expanded="false">
-                                Pages
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-light"
-                                aria-labelledby="navbarLightDropdownMenuLink">
-
-                                <li>
-                                    <a class="dropdown-item" href="#">Event Listing</a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item" href="#">Event Detail</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                    <div class="d-none d-lg-block ms-lg-3">
-                        <a class="btn custom-btn custom-border-btn"
-                               data-bs-toggle="offcanvas"
-                               href="#offcanvasExample"
-                               role="button"
-                               aria-controls="offcanvasExample">
-                            Member Login
-                        </a>
-                    </div>
+    <!-- Navbar & Hero Start -->
+    <div class="container-fluid position-relative p-0">
+        <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+            <a href="" class="navbar-brand p-0">
+                <img src="~/img/logo-gosen.png" alt="Logo Gosén">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0">
+                    <a asp-action="Principal" asp-controller="Home" class="nav-item nav-link active">Inicio</a>
+                    <a asp-action="Principal" asp-controller="Home" class="nav-item nav-link">Sobre Nosotros</a>
+                    <a asp-action="Principal" asp-controller="Home" class="nav-item nav-link">Lo que creemos</a>
+                    <a asp-action="Principal" asp-controller="Home" class="nav-item nav-link">Horarios</a>
+                    <a asp-action="Principal" asp-controller="Home" class="nav-item nav-link">Ministerios</a>
+                    <a asp-action="Principal" asp-controller="Home" class="nav-item nav-link">Contacto</a>
+@*                     <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <div class="dropdown-menu m-0">
+                            <a href="feature.html" class="dropdown-item">Our Feature</a>
+                            <a href="product.html" class="dropdown-item">Our Product</a>
+                            <a href="team.html" class="dropdown-item">Our Team</a>
+                            <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                            <a href="404.html" class="dropdown-item">404 Page</a>
+                        </div>
+                    </div> *@
                 </div>
             </div>
         </nav>
 
-        <!-- OFFCANVAS LOGIN -->
-        <div class="offcanvas offcanvas-end"
-             data-bs-scroll="true"
-             tabindex="-1"
-             id="offcanvasExample"
-             aria-labelledby="offcanvasExampleLabel">
-
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Member Login</h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="offcanvas"
-                        aria-label="Close">
-                </button>
-            </div>
-
-            <div class="offcanvas-body d-flex flex-column">
-
-                <form class="custom-form member-login-form"
-                      action="#"
-                      method="post"
-                      role="form">
-
-                    <div class="member-login-form-body">
-
-                        <div class="mb-4">
-                            <label class="form-label mb-2" for="member-login-number">
-                                Membership No.
-                            </label>
-
-                            <input type="text"
-                                   name="member-login-number"
-                                   id="member-login-number"
-                                   class="form-control"
-                                   placeholder="11002560"
-                                   required />
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label mb-2" for="member-login-password">
-                                Password
-                            </label>
-
-                            <input type="password"
-                                   name="member-login-password"
-                                   id="member-login-password"
-                                   pattern="[0-9a-zA-Z]{4,10}"
-                                   class="form-control"
-                                   placeholder="Password"
-                                   required />
-                        </div>
-
-                        <div class="form-check mb-4">
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   value=""
-                                   id="flexCheckDefault" />
-
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Remember me
-                            </label>
-                        </div>
-
-                        <div class="col-lg-5 col-md-7 col-8 mx-auto">
-                            <button type="submit" class="form-control">
-                                Login
-                            </button>
-                        </div>
-
-                        <div class="text-center my-4">
-                            <a href="#">Forgotten password?</a>
+        <!-- Carousel Start -->
+        <div class="carousel-header">
+            <div id="carouselId" class="carousel slide" data-bs-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-bs-target="#carouselId" data-bs-slide-to="0" class="active"></li>
+                </ol>
+                <div class="carousel-inner" role="listbox">
+                    <div class="carousel-item active">
+                        <img src="~/img/carousel-2.jpg" class="img-fluid w-100" alt="Image">
+                        <div class="carousel-caption-2">
+                            <div class="carousel-caption-2-content" style="max-width: 900px;">
+                                <h4 class="text-white text-uppercase fw-bold mb-4 fadeInRight animated" data-animation="fadeInRight" data-delay="1s" style="animation-delay: 1s;" style="letter-spacing: 3px;">Información</h4>
+                                <h1 class="display-2 text-capitalize text-white mb-4 fadeInRight animated" data-animation="fadeInRight" data-delay="1.3s" style="animation-delay: 1.3s;">Un encuentro real con Jesús</h1>
+                                <p class="mb-5 fs-5 text-white fadeInRight animated" data-animation="fadeInRight" data-delay="1.5s" style="animation-delay: 1.5s;">
+                                    Creemos en el poder transformador de la Palabra de Dios y en una vida guiada pro el Espíritu, en familia, amor y propósito
+                                </p>
+                                <div class="carousel-caption-2-content-btn fadeInRight animated" data-animation="fadeInRight" data-delay="1.7s" style="animation-delay: 1.7s;">
+                                    <a class="btn btn-primary rounded-pill flex-shrink-0 py-3 px-5 me-2" href="#">Conocénos</a>
+                                    <a class="btn btn-secondary rounded-pill flex-shrink-0 py-3 px-5 ms-2" href="#">Horarios de Servicio</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </form>
+                </div>
+            </div>
+        </div>
+        <!-- Carousel End -->
+    </div>
+    <!-- Navbar & Hero End -->
+    
+    @RenderBody()
 
-                <div class="mt-auto mb-5">
-                    <p>
-                        <strong class="text-white me-3">Any Questions?</strong>
-
-                        <a href="tel:0100200340" class="contact-link">
-                            010-020-0340
-                        </a>
-                    </p>
+    <!-- Footer Start -->
+    <div class="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.2s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-md-6 col-lg-6 col-xl-3">
+                    <div class="footer-item d-flex flex-column">
+                        <div class="footer-item">
+                            <a href="" class="navbar-brand p-0">
+                                <img src="~/img/logo-gosen.png" alt="Logo Gosén" style="max-width: 120px; height: auto;">
+                            </a>
+                            <p class="mt-4">
+                                Somos mas que una iglesia, somos una familia unida por el amor de Cristo. 
+                                Comprometida con la transformación de nuestra comunidad
+                            </p>
+                        </div>   
+                    </div>
+                </div>
+              
+                <div class="col-md-6 col-lg-6 col-xl-3">
+                    <div class="footer-item d-flex flex-column">
+                        <h4 class="text-white mb-4">Visítanos</h4>
+                        <p class="mb-1"><i class="fa fa-map-marker-alt me-2"></i> Av. Principal de la Ciudad, Edicificio Gosén, Nivel 1</p>
+                        <p class="mb-1"><i class="fas fa-envelope me-2"></i> ministeriogosen@gmail.com</p>
+                        <p class="mb-1"><i class="fas fa-phone me-2"></i> (+506) 0000 0000</p>
+                    </div>
                 </div>
             </div>
 
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-                <path fill="#3D405B"
-                      fill-opacity="1"
-                      d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z">
-                </path>
-            </svg>
+            <div class="row g-5 mb-5 align-items-center mt-2">
+                <div class="col-lg-12">
+                    <div class="d-flex align-items-center justify-content-start">
+                        <a class="btn btn-secondary btn-md-square rounded-circle me-3" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-secondary btn-md-square rounded-circle me-3" href=""><i class="fab fa-whatsapp"></i></a>
+                        <a class="btn btn-secondary btn-md-square rounded-circle me-3" href=""><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        @RenderBody()
-
-    </main>
-
-    <footer class="site-footer">
+    </div>
+    <!-- Footer End -->
+    <!-- Copyright Start -->
+    <div class="container-fluid copyright py-4">
         <div class="container">
-            <div class="row">
-
-                <div class="col-lg-6 col-12 me-auto mb-5 mb-lg-0">
-                    <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
-
-                        <img src="@Url.Content("~/css/images/logo.png")"
-                             class="navbar-brand-image img-fluid"
-                             alt="Ministerio Gosén" />
-
-                        <span class="navbar-brand-text">
-                            Ministerio
-                            <small>Gosén</small>
-                        </span>
-                    </a>
+            <div class="row g-4 align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-md-0">
+                    <span class="text-body"><i class="fas fa-copyright text-light me-2"></i>2026 Ministerio Gosén, Todos los derechos reservados.</span>
                 </div>
-
-                <div class="col-lg-3 col-12">
-                    <h5 class="site-footer-title mb-4">Join Us</h5>
-
-                    <p class="d-flex border-bottom pb-3 mb-3 me-lg-3">
-                        <span>Mon-Fri</span>
-                        6:00 AM - 6:00 PM
-                    </p>
-
-                    <p class="d-flex me-lg-3">
-                        <span>Sat-Sun</span>
-                        6:30 AM - 8:30 PM
-                    </p>
-
-                    <br />
-
-                    <p class="copyright-text">
-                        Copyright © 2026 Ministerio Gosén
-                    </p>
+                <div class="col-md-6 text-center text-md-end text-body">
+                    Creado por Grupo 01
                 </div>
-
-                <div class="col-lg-2 col-12 ms-auto">
-                    <ul class="social-icon mt-lg-5 mt-3 mb-4">
-
-                        <li class="social-icon-item">
-                            <a href="#" class="social-icon-link bi-instagram"></a>
-                        </li>
-
-                        <li class="social-icon-item">
-                            <a href="#" class="social-icon-link bi-twitter"></a>
-                        </li>
-
-                        <li class="social-icon-item">
-                            <a href="#" class="social-icon-link bi-whatsapp"></a>
-                        </li>
-                    </ul>
-
-                    <p class="copyright-text">
-                        Design:
-                        <a rel="nofollow"
-                               href="https://templatemo.com"
-                               target="_blank">
-                            TemplateMo
-                        </a>.
-                        Distributed by
-                        <a href="https://themewagon.com"
-                               target="_blank">
-                            ThemeWagon
-                        </a>
-                    </p>
-                </div>
-
             </div>
         </div>
+    </div>
+    <!-- Copyright End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-secondary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <path fill="#81B29A"
-                  fill-opacity="1"
-                  d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z">
-            </path>
-        </svg>
-    </footer>
+        
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- JAVASCRIPT FILES -->
-    <script src="~/js/jquery.min.js" asp-append-version="true"></script>
-    <script src="~/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    <script src="~/js/jquery.sticky.js" asp-append-version="true"></script>
-    <script src="~/js/click-scroll.js" asp-append-version="true"></script>
-    <script src="~/js/animated-headline.js" asp-append-version="true"></script>
-    <script src="~/js/modernizr.js" asp-append-version="true"></script>
-    <script src="~/js/custom.js" asp-append-version="true"></script>
+    <script src="~/js/wow.min.js"></script>
+    <script src="~/js/easing.min.js"></script>
+    <script src="~/js/waypoints.min.js"></script>
+    <script src="~/js/counterup.min.js"></script>
+    <script src="~/js/owl.carousel.min.js"></script>
+    
+    <!-- Template Javascript -->
+    <script src="~/js/main.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 
 </html>

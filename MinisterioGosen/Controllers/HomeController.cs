@@ -11,15 +11,24 @@ namespace MinisterioGosen.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Principal()
         {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        #region Registro Usuario
+        [HttpGet]
+        public IActionResult Registrar()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
+        #endregion
+
+        #region Recuperar Acceso
+        public IActionResult RecuperarAcceso()
+        {
+            return View();
+        }
+        #endregion
     }
 }

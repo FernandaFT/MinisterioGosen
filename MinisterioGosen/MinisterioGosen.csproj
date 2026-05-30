@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\css\fonts\" />
+    <Folder Include="wwwroot\css\images\" />
+  </ItemGroup>
+
 </Project>
