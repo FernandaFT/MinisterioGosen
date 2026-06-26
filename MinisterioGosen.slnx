@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="MinisterioGosen/MinisterioGosen.csproj" />
+  <Project Path="MinisterioGosenAPI/MinisterioGosenAPI.csproj" Id="e19538da-d49e-44c4-b6a0-7faea2e89b10" />
 </Solution>
