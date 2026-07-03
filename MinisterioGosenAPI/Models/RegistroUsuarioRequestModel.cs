@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MinisterioGosenAPI.Models
 {
-    public class UsuarioModel
+    public class RegistroUsuarioRequestModel
     {
         [Required]
         public string Identificacion { get; set; } = string.Empty;
