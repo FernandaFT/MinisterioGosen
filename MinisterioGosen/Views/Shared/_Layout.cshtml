@@ -1,6 +1,10 @@
 ﻿@{
     var nombre = Context.Session.GetString("Nombre");
+    var idRol = Context.Session.GetInt32("Id_Rol");
+    var esAdmin = idRol == 1;
+    var estaLogueado = !string.IsNullOrEmpty(nombre);
 }
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +15,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
-
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="~/ico/logo-gosen.ico" asp-append-version="true" />
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -32,7 +37,15 @@
 
 <body>
     <!-- Navbar & Hero Start -->
-
+    @if (esAdmin)
+    {
+        <div class="w-100">
+            <div class="alert alert-warning text-center mb-0 py-2 rounded-0">
+                <i class="bi bi-shield-lock-fill me-1"></i>
+                Sesión iniciada como Administrador
+            </div>
+        </div>
+    }
 
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm px-4 px-lg-5 py-2 sticky-top"
          style="background-color: #0d2422;">
@@ -58,30 +71,46 @@
                     <i class="bi bi-house-door me-1"></i> Inicio
                 </a>
 
-                <a asp-action="Principal" asp-controller="Home" class="nav-link fw-semibold">
-                    <i class="bi bi-calendar-event me-1"></i> Actividades
-                </a>
-
-                <a asp-action="Principal" asp-controller="Home" class="nav-link fw-semibold">
-                    <i class="bi bi-clock me-1"></i> Horarios
-                </a>
-
-                <a asp-action="Principal" asp-controller="Home" class="nav-link fw-semibold">
-                    <i class="bi bi-people me-1"></i> Ministerios
-                </a>
-
-                @if (!string.IsNullOrEmpty(nombre))
+                @if (estaLogueado)
                 {
-                    <a asp-action="Principal" asp-controller="Home" class="nav-link fw-semibold">
+                    @if (esAdmin)
+                    {
+                        <a asp-action="Index" asp-controller="Actividad" class="nav-link fw-semibold">
+                            <i class="bi bi-calendar-event me-1"></i> Actividades
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Consultar" asp-controller="Actividad" class="nav-link fw-semibold">
+                            <i class="bi bi-calendar-event me-1"></i> Actividades
+                        </a>
+                    }
+
+                    <a asp-action="Crear" asp-controller="Citas" class="nav-link fw-semibold">
                         <i class="bi bi-calendar-plus me-1"></i> Agendar Cita
                     </a>
+                }
 
-                    <a asp-action="Principal" asp-controller="Home" class="nav-link fw-semibold">
+                @if (esAdmin)
+                {
+                    <a asp-action="Index" asp-controller="Usuario" class="nav-link fw-semibold">
+                        <i class="bi bi-person-lines-fill me-1"></i> Usuario
+                    </a>
+
+                    <a asp-action="Index" asp-controller="Ministerio" class="nav-link fw-semibold">
+                        <i class="bi bi-people me-1"></i> Ministerios
+                    </a>
+
+                    <a asp-action="Index" asp-controller="TipoActividad" class="nav-link fw-semibold">
+                        <i class="bi bi-tags me-1"></i> Tipos de actividad
+                    </a>
+
+                    <a asp-action="Index" asp-controller="Reportes" class="nav-link fw-semibold">
                         <i class="bi bi-bar-chart me-1"></i> Reportes
                     </a>
                 }
 
-                @if (!string.IsNullOrEmpty(nombre))
+                @if (estaLogueado)
                 {
                     <div class="dropdown ms-lg-3 mt-3 mt-lg-0">
                         <a href="#"
@@ -136,8 +165,6 @@
             </div>
         </div>
     </nav>
-
-
     @RenderBody()
 
     <!-- Footer Start -->

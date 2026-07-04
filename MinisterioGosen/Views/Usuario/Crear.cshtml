@@ -1,0 +1,161 @@
+﻿@model MinisterioGosen.Models.UsuarioModel
+
+@{
+    ViewData["Title"] = "Nueva persona";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-person-plus-fill me-2 text-primary"></i>
+                Nueva persona
+            </h2>
+            <p class="text-muted mb-0">
+                Registre una nueva persona usuaria del sistema.
+            </p>
+        </div>
+
+        <a asp-controller="Usuario"
+           asp-action="Index"
+           class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i>
+            Volver
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            @if (ViewBag.Mensaje != null)
+            {
+                <div class="alert alert-warning d-flex align-items-center gap-2 rounded-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>@ViewBag.Mensaje</span>
+                </div>
+            }
+
+            <div id="mensajeValidacion" class="alert alert-danger d-none">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                <span id="textoValidacion"></span>
+            </div>
+
+            <form asp-action="Crear"
+                  asp-controller="Usuario"
+                  method="post"
+                  id="formCrearUsuario"
+                  novalidate>
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-card-text me-1 text-muted"></i>
+                            Identificación
+                        </label>
+                        <input asp-for="Identificacion"
+                               class="form-control rounded-3"
+                               placeholder="Ingrese la identificación" />
+                        <div class="invalid-feedback">
+                            Debe ingresar la identificación.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-person-fill me-1 text-muted"></i>
+                            Nombre completo
+                        </label>
+                        <input asp-for="Nombre"
+                               class="form-control rounded-3"
+                               placeholder="Ingrese el nombre completo" />
+                        <div class="invalid-feedback">
+                            Debe ingresar el nombre completo.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-envelope-fill me-1 text-muted"></i>
+                            Correo electrónico
+                        </label>
+                        <input asp-for="Correo"
+                               type="email"
+                               class="form-control rounded-3"
+                               placeholder="correo@ejemplo.com" />
+                        <div class="invalid-feedback">
+                            Debe ingresar un correo electrónico válido.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-shield-lock-fill me-1 text-muted"></i>
+                            Rol
+                        </label>
+                        <select asp-for="Id_Rol"
+                                asp-items="ViewBag.Roles"
+                                class="form-select rounded-3">
+                            <option value="">Seleccione un rol</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Debe seleccionar un rol.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-key-fill me-1 text-muted"></i>
+                            Contraseña
+                        </label>
+                        <input asp-for="Contrasena"
+                               type="password"
+                               class="form-control rounded-3"
+                               placeholder="Ingrese una contraseña" />
+                        <div class="invalid-feedback">
+                            Debe ingresar una contraseña.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-key me-1 text-muted"></i>
+                            Confirmar contraseña
+                        </label>
+                        <input asp-for="ConfirmarContrasena"
+                               type="password"
+                               class="form-control rounded-3"
+                               placeholder="Confirme la contraseña" />
+                        <div class="invalid-feedback">
+                            Debe confirmar la contraseña.
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-controller="Usuario"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary rounded-pill px-4">
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-save-fill me-1"></i>
+                        Guardar persona
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/usuario-crear.js" asp-append-version="true"></script>
+}

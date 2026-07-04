@@ -9,5 +9,7 @@
         public string Estado { get; set; } = string.Empty;
         public bool UsaContrasenaTemp { get; set; }
 
+        public int Id_Rol { get; set; }
+        public string Rol { get; set; } = string.Empty;
     }
 }

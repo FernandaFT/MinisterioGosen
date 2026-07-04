@@ -1,7 +1,5 @@
-﻿
-namespace MinisterioGosen.Models
+﻿namespace MinisterioGosen.Models
 {
-
     public class UsuarioModel
     {
         public int Id_Usuario { get; set; }
@@ -11,5 +9,10 @@ namespace MinisterioGosen.Models
         public string Contrasena { get; set; } = string.Empty;
         public bool UsaContrasenaTemp { get; set; }
         public string ConfirmarContrasena { get; set; } = string.Empty;
+
+        public string Estado { get; set; } = string.Empty;
+
+        public int Id_Rol { get; set; }
+        public string Rol { get; set; } = string.Empty;
     }
 }

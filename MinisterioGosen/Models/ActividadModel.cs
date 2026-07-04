@@ -32,6 +32,12 @@ namespace MinisterioGosen.Models
         [Required(ErrorMessage = "Debe seleccionar un tipo de actividad")]
         public int Id_Tipo_Actividad { get; set; }
 
+        public string Nombre_Tipo { get; set; } = string.Empty;
 
+        public int? Id_Ministerio { get; set; }
+
+        public string? Descripcion_Ministerio { get; set; }
+
+        public string? Observacion_Ministerio_Actividad { get; set; }
     }
 }

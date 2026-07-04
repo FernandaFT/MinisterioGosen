@@ -1,0 +1,178 @@
+﻿@model List<MinisterioGosen.Models.ActividadModel>
+
+@{
+    ViewData["Title"] = "Actividades";
+
+    var actividades = Model ?? new List<MinisterioGosen.Models.ActividadModel>();
+    var hoy = DateTime.Today;
+}
+
+<div class="container py-4">
+
+    <div class="card-body py-4">
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 text-center text-md-start">
+            <div>
+                <i class="bi bi-calendar-event-fill text-success display-5"></i>
+            </div>
+
+            <div>
+                <h2 class="fw-bold mb-1">
+                    Actividades disponibles
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Consulte las actividades registradas por el Ministerio Gosén.
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    @if (actividades.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in actividades)
+            {
+                var fechaFinReal = item.Fecha_Fin ?? item.Fecha_Ini;
+                var esProxima = hoy < item.Fecha_Ini.Date;
+                var enCurso = hoy >= item.Fecha_Ini.Date && hoy <= fechaFinReal.Date;
+
+                var estadoTexto = esProxima ? "Próxima" : enCurso ? "En curso" : "Finalizada";
+                var estadoClase = esProxima ? "text-success border border-success" : enCurso ? "text-success border border-success" : "text-muted border border-secondary";
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                        <div class="card-header bg-light border-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                <span class="badge rounded-pill text-success border border-success px-3 py-2">
+                                    <i class="bi bi-tag-fill me-1"></i>
+                                    @item.Nombre_Tipo
+                                </span>
+
+                                <span class="badge rounded-pill bg-white @estadoClase px-3 py-2">
+                                    @estadoTexto
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4">
+
+                            <div class="d-flex align-items-start gap-3 mb-4">
+                                <div class="bg-success bg-opacity-10 text-success rounded-circle p-3">
+                                    <i class="bi bi-calendar-heart-fill fs-4"></i>
+                                </div>
+
+                                <div>
+                                    <h5 class="fw-bold mb-1">
+                                        @item.Nombre_Actividad
+                                    </h5>
+
+                                    <p class="text-muted small mb-0">
+                                        Actividad #@item.Id_Actividad
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="list-group list-group-flush">
+
+                                @if (!string.IsNullOrEmpty(item.Descripcion_Ministerio))
+                                {
+                                    <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                        <i class="bi bi-people-fill text-success fs-5"></i>
+                                        <div>
+                                            <div class="small text-muted">Ministerio responsable</div>
+                                            <div class="fw-semibold">@item.Descripcion_Ministerio</div>
+
+                                            @if (!string.IsNullOrEmpty(item.Observacion_Ministerio_Actividad))
+                                            {
+                                                <div class="small text-muted">
+                                                    @item.Observacion_Ministerio_Actividad
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                    <i class="bi bi-calendar-date text-success fs-5"></i>
+                                    <div>
+                                        <div class="small text-muted">Fecha de inicio</div>
+                                        <div class="fw-semibold">@item.Fecha_Ini.ToString("dd/MM/yyyy")</div>
+                                    </div>
+                                </div>
+
+                                @if (item.Fecha_Fin != null)
+                                {
+                                    <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                        <i class="bi bi-calendar-check text-success fs-5"></i>
+                                        <div>
+                                            <div class="small text-muted">Fecha de finalización</div>
+                                            <div class="fw-semibold">@item.Fecha_Fin.Value.ToString("dd/MM/yyyy")</div>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(item.Hora_Ini))
+                                {
+                                    <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                        <i class="bi bi-clock-fill text-success fs-5"></i>
+                                        <div>
+                                            <div class="small text-muted">Horario</div>
+                                            <div class="fw-semibold">
+                                                @item.Hora_Ini
+
+                                                @if (!string.IsNullOrEmpty(item.Hora_Fin))
+                                                {
+                                                    <span> - @item.Hora_Fin</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(item.Lugar))
+                                {
+                                    <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                        <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                                        <div>
+                                            <div class="small text-muted">Lugar</div>
+                                            <div class="fw-semibold">@item.Lugar</div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer bg-light border-0 text-end py-3">
+                            <span class="text-muted small">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Información de la actividad
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-calendar-x text-muted display-3"></i>
+
+                <h4 class="fw-bold text-muted mt-3 mb-2">
+                    No hay actividades registradas
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Cuando se registren actividades, aparecerán en esta sección.
+                </p>
+            </div>
+        </div>
+    }
+
+</div>

@@ -1,0 +1,232 @@
+﻿@model List<MinisterioGosen.Models.UsuarioModel>
+
+@{
+    ViewData["Title"] = "Personas";
+
+    var usuarios = Model ?? new List<MinisterioGosen.Models.UsuarioModel>();
+    var totalUsuarios = usuarios.Count;
+    var usuariosActivos = usuarios.Count(x => x.Estado == "A");
+    var usuariosInactivos = usuarios.Count(x => x.Estado != "A");
+}
+
+<div class="container py-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-person-lines-fill me-2 text-primary"></i>
+                Personas
+            </h2>
+            <p class="text-muted mb-0">
+                Administración de usuarios registrados en el sistema.
+            </p>
+        </div>
+
+        <a asp-controller="Usuario"
+           asp-action="Crear"
+           class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-person-plus-fill me-1"></i>
+            Nueva persona
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                         style="width:48px;height:48px;">
+                        <i class="bi bi-people-fill text-primary fs-4"></i>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-0 small">Total personas</p>
+                        <h4 class="fw-bold mb-0">@totalUsuarios</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center"
+                         style="width:48px;height:48px;">
+                        <i class="bi bi-person-check-fill text-success fs-4"></i>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-0 small">Activos</p>
+                        <h4 class="fw-bold mb-0">@usuariosActivos</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                         style="width:48px;height:48px;">
+                        <i class="bi bi-person-dash-fill text-secondary fs-4"></i>
+                    </div>
+
+                    <div>
+                        <p class="text-muted mb-0 small">Inactivos</p>
+                        <h4 class="fw-bold mb-0">@usuariosInactivos</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 px-4 pt-4 pb-2">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-list-ul me-2 text-primary"></i>
+                    Listado de personas
+                </h5>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Identificación</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th class="text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (usuarios.Any())
+                        {
+                            foreach (var item in usuarios)
+                            {
+                                var esActivo = item.Estado == "A";
+
+                                <tr class="@(esActivo ? "" : "table-secondary text-muted")">
+                                    <td class="ps-4 fw-semibold">
+                                        <i class="bi bi-card-text me-1 text-muted"></i>
+                                        @item.Identificacion
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                                 style="width:34px;height:34px;min-width:34px;">
+                                                <i class="bi bi-person-fill text-primary"></i>
+                                            </div>
+
+                                            <span class="fw-semibold">@item.Nombre</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <i class="bi bi-envelope me-1 text-muted"></i>
+                                        @item.Correo
+                                    </td>
+
+                                    <td>
+                                        @if (item.Rol == "Admin")
+                                        {
+                                            <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                                                <i class="bi bi-shield-lock-fill me-1"></i>
+                                                @item.Rol
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-info text-dark px-3 py-2">
+                                                <i class="bi bi-person-fill me-1"></i>
+                                                @item.Rol
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (esActivo)
+                                        {
+                                            <span class="badge rounded-pill bg-success px-3 py-2">
+                                                <i class="bi bi-check-circle-fill me-1"></i>
+                                                Activo
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                                <i class="bi bi-dash-circle-fill me-1"></i>
+                                                Inactivo
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group" role="group">
+                                            <a asp-controller="Usuario"
+                                               asp-action="Editar"
+                                               asp-route-id="@item.Id_Usuario"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Editar">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+
+                                            @if (esActivo)
+                                            {
+                                                <a asp-controller="Usuario"
+                                                   asp-action="Desactivar"
+                                                   asp-route-id="@item.Id_Usuario"
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   title="Desactivar">
+                                                    <i class="bi bi-person-x-fill"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="Usuario"
+                                                   asp-action="Activar"
+                                                   asp-route-id="@item.Id_Usuario"
+                                                   class="btn btn-sm btn-outline-success"
+                                                   title="Activar">
+                                                    <i class="bi bi-person-check-fill"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                                    <h5 class="fw-bold text-muted mt-3 mb-1">
+                                        No hay personas registradas
+                                    </h5>
+                                    <p class="text-muted mb-3">
+                                        Cuando se registren usuarios, aparecerán en este listado.
+                                    </p>
+
+                                    <a asp-controller="Usuario"
+                                       asp-action="Crear"
+                                       class="btn btn-primary rounded-pill px-4">
+                                        <i class="bi bi-person-plus-fill me-1"></i>
+                                        Crear persona
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

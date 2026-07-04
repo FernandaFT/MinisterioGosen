@@ -1,23 +1,38 @@
 ﻿@{
     var autenticado = Context.Session.GetString("Autenticado");
-}
 
-@if (autenticado == "1")
-    Layout = "_Layout";
-else
-    Layout = "_LayoutExterno";
+    Layout = autenticado == "1" ? "_Layout" : "_LayoutExterno";
+
+    var statusCode = ViewBag.StatusCode == null ? 0 : (int)ViewBag.StatusCode;
+
+    var titulo = ViewBag.Titulo as string ?? "Se presentó un inconveniente técnico";
+    var mensaje = ViewBag.Mensaje as string ?? "Por favor, comuníquese con el administrador del sistema.";
+
+    var icono = statusCode == 404 ? "bi-search" : "bi-exclamation-triangle-fill";
+    var colorIcono = statusCode == 404 ? "text-warning" : "text-danger";
+}
 
 <div class="row justify-content-center">
     <div class="col-12">
         <div class="card border-0 rounded-4">
             <div class="card-body text-center" style="padding: 5rem 4rem;">
 
-                <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 5rem;"></i>
+                <i class="bi @icono @colorIcono" style="font-size: 5rem;"></i>
 
-                <h3 class="fw-bold text-muted mb-2">Se presentó un inconveniente técnico</h3>
+                <h3 class="fw-bold text-muted mb-2">
+                    @titulo
+                </h3>
+
                 <p class="text-muted mb-4">
-                    Por favor, comuníquese con el administrador del sistema.
+                    @mensaje
                 </p>
+
+                @if (statusCode != 0)
+                {
+                    <p class="small text-muted mb-4">
+                        Código de error: @statusCode
+                    </p>
+                }
 
                 @if (autenticado == "1")
                 {

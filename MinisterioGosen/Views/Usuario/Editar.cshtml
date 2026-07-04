@@ -1,0 +1,126 @@
+﻿@model MinisterioGosen.Models.UsuarioModel
+
+@{
+    ViewData["Title"] = "Editar persona";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-pencil-square me-2 text-primary"></i>
+                Editar persona
+            </h2>
+            <p class="text-muted mb-0">
+                Actualice la información general del usuario seleccionado.
+            </p>
+        </div>
+
+        <a asp-controller="Usuario"
+           asp-action="Index"
+           class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i>
+            Volver
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            @if (ViewBag.Mensaje != null)
+            {
+                <div class="alert alert-warning d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>@ViewBag.Mensaje</span>
+                </div>
+            }
+
+            <form asp-action="Editar" asp-controller="Usuario" method="post">
+
+                <input asp-for="Id_Usuario" type="hidden" />
+                <input asp-for="Identificacion" type="hidden" />
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-card-text me-1 text-muted"></i>
+                            Identificación
+                        </label>
+                        <input asp-for="Identificacion"
+                               class="form-control rounded-3"
+                               readonly />
+                        <small class="text-muted">
+                            La identificación no se modifica desde esta pantalla.
+                        </small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-person-fill me-1 text-muted"></i>
+                            Nombre
+                        </label>
+                        <input asp-for="Nombre"
+                               class="form-control rounded-3"
+                               placeholder="Nombre completo" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-envelope-fill me-1 text-muted"></i>
+                            Correo electrónico
+                        </label>
+                        <input asp-for="Correo"
+                               type="email"
+                               class="form-control rounded-3"
+                               placeholder="correo@ejemplo.com" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-shield-lock-fill me-1 text-muted"></i>
+                            Rol
+                        </label>
+                        <select asp-for="Id_Rol"
+                                asp-items="ViewBag.Roles"
+                                class="form-select rounded-3">
+                            <option value="">Seleccione un rol</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-toggle-on me-1 text-muted"></i>
+                            Estado
+                        </label>
+                        <select asp-for="Estado" class="form-select rounded-3">
+                            <option value="A">Activo</option>
+                            <option value="I">Inactivo</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-controller="Usuario"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary rounded-pill px-4">
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-save-fill me-1"></i>
+                        Guardar cambios
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

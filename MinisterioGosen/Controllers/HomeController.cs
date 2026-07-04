@@ -17,6 +17,25 @@ namespace MinisterioGosen.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Error(int statusCode = 0)
+        {
+            ViewBag.StatusCode = statusCode;
+
+            if (statusCode == 404)
+            {
+                ViewBag.Titulo = "Página no encontrada";
+                ViewBag.Mensaje = "La sección solicitada todavía no se encuentra disponible.";
+            }
+            else
+            {
+                ViewBag.Titulo = "Se presentó un inconveniente técnico";
+                ViewBag.Mensaje = "Por favor, comuníquese con el administrador del sistema.";
+            }
+
+            return View("Error");
+        }
+
         [HttpPost]
         public IActionResult Index(UsuarioModel model)
         {
@@ -32,6 +51,7 @@ namespace MinisterioGosen.Controllers
                 HttpContext.Session.SetString("Autenticado", "1");
                 HttpContext.Session.SetString("Nombre", datos!.Nombre);
                 HttpContext.Session.SetInt32("Id_Usuario", datos!.Id_Usuario);
+                HttpContext.Session.SetInt32("Id_Rol", datos!.Id_Rol);
 
                 if (datos!.UsaContrasenaTemp)
                     return RedirectToAction("Configuracion", "Usuario");
