@@ -1,4 +1,5 @@
-﻿@{
+﻿@model UsuarioModel
+@{
     ViewData["Title"] = "Recuperar Acceso";
     Layout = "_LayoutExterno";
 }
@@ -12,11 +13,19 @@
                     <h4 class="text-uppercase text-primary">Ministerio Gosén</h4>
                     <h1 class="display-3 text-capitalize mb-3">Recuperar Acceso</h1>
                 </div>
-                <form method="post">
+
+                @if (ViewBag.Mensaje != null)
+                {
+                    <div class="alert alert-danger">
+                        @ViewBag.Mensaje
+                    </div>
+                }
+
+                <form id="RecuperarAcceso" asp-for="RecuperarAcceso" asp-controller="Home" method="post">
                     <div class="row g-4">
                         <div class="col-lg-12 ">
                             <div class="form-floating">
-                                <input type="text" class="form-control border-0" placeholder="Correo Electrónico">
+                                <input asp-for="Correo" type="text" class="form-control border-0" placeholder="Correo Electrónico">
                                 <label for="email">Correo Electrónico</label>
                             </div>
                         </div>
@@ -77,4 +86,4 @@
 </div>
 </div>
 <!-- Contact End -->
-
+<script src="~/js/recuperaracceso.js"></script>

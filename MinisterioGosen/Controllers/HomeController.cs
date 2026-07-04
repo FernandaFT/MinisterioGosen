@@ -31,6 +31,10 @@ namespace MinisterioGosen.Controllers
 
                 HttpContext.Session.SetString("Autenticado", "1");
                 HttpContext.Session.SetString("Nombre", datos!.Nombre);
+                HttpContext.Session.SetInt32("Id_Usuario", datos!.Id_Usuario);
+
+                if (datos!.UsaContrasenaTemp)
+                    return RedirectToAction("Configuracion", "Usuario");
 
                 return RedirectToAction("Principal", "Home");
 
@@ -79,9 +83,33 @@ namespace MinisterioGosen.Controllers
 
         #region Recuperar Acceso
 
+        [HttpGet]
         public IActionResult RecuperarAcceso()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult RecuperarAcceso(UsuarioModel model)
+        {
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "Home/RecuperarAccesoAPI";
+            var response = client.PostAsJsonAsync(url, model).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                return RedirectToAction("Index", "Home");
+
+            }
+            else if (response.StatusCode == HttpStatusCode.BadRequest 
+                    || response.StatusCode == HttpStatusCode.NotFound)
+            {
+                ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
+                return View();
+            }
+
+            throw new Exception("Error al recuperar el acceso");
         }
 
         #endregion

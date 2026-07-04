@@ -1,0 +1,66 @@
+﻿@model UsuarioModel
+
+@{
+    var nombre = Context.Session.GetString("Nombre");
+}
+
+@{
+    ViewData["Title"] = "Configuración";
+    Layout = "_Layout";
+}
+
+<!-- Contact Start -->
+<div class="container-fluid contact bg-light py-5">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-6 h-100 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="text-center mx-auto pb-5" style="max-width: 800px;">
+                    <h4 class="text-uppercase text-primary">Cambio de Contraseña</h4>
+                </div>
+                @if (ViewBag.Mensaje != null)
+                {
+                    <div class="alert alert-danger">
+                        @ViewBag.Mensaje
+                    </div>
+                }
+                <form id="ConfirmarContrasena" asp-action="CambiarContrasena" asp-controller="Usuario" method="post">
+                    <div class="row g-4">
+                        <div class="col-lg-12 ">
+                            <div class="form-floating">
+                                <input asp-for="Contrasena" type="password" class="form-control border-0" placeholder="Correo Electrónico">
+                                <label>Contraseña Nueva</label>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 ">
+                            <div class="form-floating">
+                                <input asp-for="ConfirmarContrasena" type="password" class="form-control border-0" placeholder="Contraseña">
+                                <label for="password">Confirmar Contraseña</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100 py-3">
+                                Cambiar Contraseña
+                            </button>
+                        </div>
+                    </div>
+                </form>
+        </div>
+        <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.4s">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="d-inline-flex rounded bg-white w-100 p-4">
+                        <i class="fas fa-user fa-2x text-success me-4"></i>
+                        <div>
+                            <h4>@nombre</h4>
+                            <p class="mb-0">Rol</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Contact End -->
+<script src="~/js/configuracion.js"></script>

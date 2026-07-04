@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MinisterioGosenAPI.Models
+﻿namespace MinisterioGosenAPI.Models
 {
     public class UsuarioResponseModel
     {
@@ -10,6 +7,7 @@ namespace MinisterioGosenAPI.Models
         public string Nombre { get; set; } = string.Empty;
         public string Correo { get; set; } = string.Empty;
         public string Estado { get; set; } = string.Empty;
+        public bool UsaContrasenaTemp { get; set; }
 
     }
 }
