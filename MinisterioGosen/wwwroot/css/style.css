@@ -885,3 +885,307 @@ h1, h2, h3, h4, h5, h6,
 .gosen-hero .gosen-hero-text {
     color: #ffffff !important;
 }
+
+/* Dashboard Administrativo */
+
+.dashboard-wrapper {
+    min-height: 100vh;
+    background: radial-gradient(circle at top left, rgba(6, 68, 66, 0.12), transparent 35%), linear-gradient(135deg, #f5f8f7 0%, #eaf1ef 100%);
+}
+
+.dashboard-hero {
+    background: linear-gradient(135deg, #0d2422 0%, #064442 55%, #0b5d58 100%);
+    border-radius: 28px;
+    padding: 38px;
+    color: #ffffff;
+    box-shadow: 0 18px 40px rgba(13, 36, 34, 0.22);
+    position: relative;
+    overflow: hidden;
+}
+
+    .dashboard-hero::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -80px;
+        top: -90px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+    }
+
+.dashboard-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+.dashboard-title {
+    color: #ffffff;
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.dashboard-subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 720px;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.dashboard-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 22px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 0.92rem;
+    font-weight: 500;
+}
+
+.dashboard-hero-card {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    backdrop-filter: blur(8px);
+}
+
+.hero-card-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .hero-card-icon i {
+        font-size: 2rem;
+        color: #ffffff;
+    }
+
+.hero-card-text {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.hero-card-number {
+    color: #ffffff;
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 0;
+}
+
+.dashboard-stat-card {
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 26px;
+    height: 100%;
+    box-shadow: 0 8px 24px rgba(13, 36, 34, 0.08);
+    border: 1px solid rgba(13, 36, 34, 0.06);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+    .dashboard-stat-card:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 18px 38px rgba(13, 36, 34, 0.14);
+    }
+
+    .dashboard-stat-card::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 6px;
+        top: 0;
+        left: 0;
+    }
+
+.stat-personas::before {
+    background-color: #064442;
+}
+
+.stat-actividades::before {
+    background-color: #198754;
+}
+
+.stat-ministerios::before {
+    background-color: #0d6efd;
+}
+
+.stat-citas::before {
+    background-color: #ffc107;
+}
+
+.stat-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.stat-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .stat-icon i {
+        font-size: 1.8rem;
+    }
+
+.stat-personas .stat-icon {
+    background-color: rgba(6, 68, 66, 0.12);
+    color: #064442;
+}
+
+.stat-actividades .stat-icon {
+    background-color: rgba(25, 135, 84, 0.12);
+    color: #198754;
+}
+
+.stat-ministerios .stat-icon {
+    background-color: rgba(13, 110, 253, 0.12);
+    color: #0d6efd;
+}
+
+.stat-citas .stat-icon {
+    background-color: rgba(255, 193, 7, 0.18);
+    color: #b98900;
+}
+
+.stat-badge {
+    background-color: #f4f7f6;
+    color: #5d6865;
+    padding: 7px 12px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.stat-title {
+    color: #6c757d;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.stat-number {
+    color: #172624;
+    font-size: 2.7rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.stat-footer {
+    color: #8a8f94;
+    font-size: 0.86rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+    .stat-footer i {
+        font-size: 0.9rem;
+    }
+
+.stat-personas .stat-footer i {
+    color: #064442;
+}
+
+.stat-actividades .stat-footer i {
+    color: #198754;
+}
+
+.stat-ministerios .stat-footer i {
+    color: #0d6efd;
+}
+
+.stat-citas .stat-footer i {
+    color: #b98900;
+}
+
+.dashboard-summary {
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(13, 36, 34, 0.08);
+    border: 1px solid rgba(13, 36, 34, 0.06);
+}
+
+.summary-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background-color: rgba(6, 68, 66, 0.12);
+    color: #064442;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+    .summary-icon i {
+        font-size: 1.5rem;
+    }
+
+.system-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    background-color: rgba(25, 135, 84, 0.12);
+    color: #198754;
+    padding: 11px 18px;
+    border-radius: 50px;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #198754;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero {
+        padding: 28px;
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+    }
+
+    .dashboard-hero-card {
+        padding: 22px;
+    }
+
+    .stat-number {
+        font-size: 2.3rem;
+    }
+}

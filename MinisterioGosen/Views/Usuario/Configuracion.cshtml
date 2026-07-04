@@ -2,13 +2,23 @@
 
 @{
     var nombre = Context.Session.GetString("Nombre");
-}
+    var idRol = Context.Session.GetInt32("Id_Rol");
 
-@{
+    var rol = "";
+
+    if (idRol == 1)
+    {
+        rol = "Administrador";
+    }
+    else
+    {
+        rol = "Usuario";
+    }
+
     ViewData["Title"] = "Configuración";
     Layout = "_Layout";
 }
-
+ 
 <!-- Contact Start -->
 <div class="container-fluid contact bg-light py-5">
     <div class="container py-5">
@@ -53,7 +63,7 @@
                         <i class="fas fa-user fa-2x text-success me-4"></i>
                         <div>
                             <h4>@nombre</h4>
-                            <p class="mb-0">Rol</p>
+                            <p class="mb-0">Rol @rol</p>
                         </div>
                     </div>
                 </div>

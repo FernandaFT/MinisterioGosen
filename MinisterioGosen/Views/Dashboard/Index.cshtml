@@ -1,0 +1,175 @@
+﻿@model MinisterioGosen.Models.DashboardModel
+
+@{
+    ViewData["Title"] = "Dashboard Administrativo";
+
+    var totalGeneral = Model.TotalPersonas
+                    + Model.TotalActividades
+                    + Model.TotalMinisterios
+                    + Model.TotalCitasPendientes;
+}
+
+<div class="container-fluid dashboard-wrapper py-5">
+    <div class="container py-4">
+
+        <div class="dashboard-hero mb-5">
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-8">
+                    <span class="dashboard-label">
+                        <i class="bi bi-speedometer2"></i>
+                        Panel administrativo
+                    </span>
+
+                    <h1 class="dashboard-title">
+                        Dashboard Administrativo
+                    </h1>
+
+                    <p class="dashboard-subtitle">
+                        Visualización general de personas, actividades, ministerios y citas pendientes registradas en el sistema.
+                    </p>
+
+                    <div class="dashboard-date">
+                        <i class="bi bi-clock-history"></i>
+                        Última actualización: @DateTime.Now.ToString("dd/MM/yyyy hh:mm tt")
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="dashboard-hero-card">
+                        <div class="hero-card-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+
+                        <div>
+                            <p class="hero-card-text mb-1">Total general</p>
+                            <h2 class="hero-card-number">@totalGeneral</h2>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        @if (ViewBag.Mensaje != null)
+        {
+            <div class="alert alert-danger text-center rounded-4 shadow-sm mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                @ViewBag.Mensaje
+            </div>
+        }
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-6 col-xl-3">
+                <div class="dashboard-stat-card stat-personas">
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+
+                        <span class="stat-badge">Registradas</span>
+                    </div>
+
+                    <p class="stat-title">Personas</p>
+                    <h2 class="stat-number">@Model.TotalPersonas</h2>
+
+                    <div class="stat-footer">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Personas agregadas al sistema.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="dashboard-stat-card stat-actividades">
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="bi bi-calendar-event-fill"></i>
+                        </div>
+
+                        <span class="stat-badge">Activas</span>
+                    </div>
+
+                    <p class="stat-title">Actividades</p>
+                    <h2 class="stat-number">@Model.TotalActividades</h2>
+
+                    <div class="stat-footer">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Actividades disponibles.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="dashboard-stat-card stat-ministerios">
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="bi bi-diagram-3-fill"></i>
+                        </div>
+
+                        <span class="stat-badge">Disponibles</span>
+                    </div>
+
+                    <p class="stat-title">Ministerios</p>
+                    <h2 class="stat-number">@Model.TotalMinisterios</h2>
+
+                    <div class="stat-footer">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Ministerios registrados.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="dashboard-stat-card stat-citas">
+                    <div class="stat-card-top">
+                        <div class="stat-icon">
+                            <i class="bi bi-calendar-check-fill"></i>
+                        </div>
+
+                        <span class="stat-badge">Pendientes</span>
+                    </div>
+
+                    <p class="stat-title">Citas</p>
+                    <h2 class="stat-number">@Model.TotalCitasPendientes</h2>
+
+                    <div class="stat-footer">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        Citas por atender.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="dashboard-summary mt-4">
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="summary-icon">
+                            <i class="bi bi-info-circle-fill"></i>
+                        </div>
+
+                        <div>
+                            <h5 class="fw-bold mb-2">Resumen del sistema</h5>
+                            <p class="text-muted mb-0">
+                                Este panel permite consultar rápidamente los indicadores principales del sistema Ministerio Gosén para apoyar la gestión administrativa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 text-lg-end">
+                    <span class="system-status">
+                        <span class="status-dot"></span>
+                        Sistema activo
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
