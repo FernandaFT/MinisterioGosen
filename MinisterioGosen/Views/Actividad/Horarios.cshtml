@@ -1,0 +1,131 @@
+﻿@model List<MinisterioGosen.Models.ActividadModel>
+
+@{
+    ViewData["Title"] = "Horarios de actividades";
+
+    var proximasActividades = Model ?? new List<MinisterioGosen.Models.ActividadModel>();
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h4 class="text-uppercase text-primary">Vista interna de horarios</h4>
+        <h1 class="display-5 fw-bold mb-3">Próximas actividades</h1>
+        <p class="text-muted mb-0">
+            Consulte las próximas actividades registradas en el sistema.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-dark text-white rounded-top-4 py-3">
+            <h4 class="mb-0">
+                <i class="bi bi-calendar-event me-2"></i>
+                Actividades próximas
+            </h4>
+        </div>
+
+        <div class="card-body p-4">
+
+            @if (proximasActividades.Any())
+            {
+                <div class="row g-4">
+                    @foreach (var item in proximasActividades)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 border-0 shadow-sm rounded-4">
+
+                                <div class="card-header bg-light border-0 py-3">
+                                    <span class="badge rounded-pill text-success border border-success px-3 py-2">
+                                        @item.Nombre_Tipo
+                                    </span>
+                                </div>
+
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold mb-3">
+                                        @item.Nombre_Actividad
+                                    </h5>
+
+                                    <div class="mb-3">
+                                        <div class="small text-muted">Fecha</div>
+
+                                        @if (item.Fecha_Fin != null && item.Fecha_Fin.Value.Date != item.Fecha_Ini.Date)
+                                        {
+                                            <div class="fw-semibold">
+                                                @item.Fecha_Ini.ToString("dd/MM/yyyy")
+                                                -
+                                                @item.Fecha_Fin.Value.ToString("dd/MM/yyyy")
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="fw-semibold">
+                                                @item.Fecha_Ini.ToString("dd/MM/yyyy")
+                                            </div>
+                                        }
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(item.Hora_Ini))
+                                    {
+                                        <div class="mb-3">
+                                            <div class="small text-muted">Horario</div>
+
+                                            <div class="fw-semibold">
+                                                @item.Hora_Ini
+
+                                                @if (!string.IsNullOrEmpty(item.Hora_Fin))
+                                                {
+                                                    <span> - @item.Hora_Fin</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(item.Lugar))
+                                    {
+                                        <div class="mb-3">
+                                            <div class="small text-muted">Lugar</div>
+                                            <div class="fw-semibold">@item.Lugar</div>
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(item.Descripcion_Ministerio))
+                                    {
+                                        <div class="mb-0">
+                                            <div class="small text-muted">Ministerio responsable</div>
+                                            <div class="fw-semibold">@item.Descripcion_Ministerio</div>
+                                        </div>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x text-muted display-3"></i>
+
+                    <h4 class="fw-bold text-muted mt-3 mb-2">
+                        No hay próximas actividades
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Cuando se registren actividades futuras, aparecerán en esta sección.
+                    </p>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-controller="Home"
+           asp-action="Principal"
+           class="btn btn-secondary rounded-pill px-4">
+            Volver
+        </a>
+    </div>
+
+</div>

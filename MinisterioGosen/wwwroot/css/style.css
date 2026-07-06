@@ -1189,3 +1189,17 @@ h1, h2, h3, h4, h5, h6,
         font-size: 2.3rem;
     }
 }
+
+
+.card-header.bg-dark,
+.card-header.bg-dark h1,
+.card-header.bg-dark h2,
+.card-header.bg-dark h3,
+.card-header.bg-dark h4,
+.card-header.bg-dark h5,
+.card-header.bg-dark h6,
+.card-header.bg-dark p,
+.card-header.bg-dark i,
+.card-header.bg-dark span {
+    color: #ffffff !important;
+}

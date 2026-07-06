@@ -102,6 +102,13 @@
 
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
+                                            <a asp-controller="UsuariosMinisterio"
+                                               asp-action="AsignarPersona"
+                                               asp-route-idMinisterio="@item.Id_Ministerio"
+                                               class="btn btn-info btn-sm">
+                                                Asignar persona
+                                            </a>
+                                            
                                             <a asp-controller="Ministerio"
                                                asp-action="Editar"
                                                asp-route-id="@item.Id_Ministerio"
