@@ -106,9 +106,10 @@
                         </label>
                         <input asp-for="Fecha_Ini"
                                type="date"
-                               class="form-control rounded-3" />
+                               class="form-control rounded-3"
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")" />
                         <div class="invalid-feedback">
-                            Debe ingresar la fecha de inicio.
+                            Debe ingresar una fecha de inicio válida. No puede ser anterior a la fecha actual.
                         </div>
                     </div>
 

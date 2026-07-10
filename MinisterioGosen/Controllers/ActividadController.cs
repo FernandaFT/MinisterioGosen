@@ -142,6 +142,16 @@ namespace MinisterioGosen.Controllers
             if (!EsAdmin())
                 return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
+            if (model.Fecha_Ini.Date < DateTime.Today)
+            {
+                ViewBag.Mensaje = "La fecha de inicio no puede ser anterior a la fecha actual.";
+
+                CargarTiposActividad(model.Id_Tipo_Actividad);
+                CargarMinisterios(model.Id_Ministerio);
+
+                return View(model);
+            }
+
             using var client = _http.CreateClient();
 
             var url = _config["Valores:UrlApi"] + "Actividad/CrearActividadAPI";
@@ -187,6 +197,16 @@ namespace MinisterioGosen.Controllers
         {
             if (!EsAdmin())
                 return RedirectToAction("Error", "Home", new { statusCode = 403 });
+            
+            if (model.Fecha_Ini.Date < DateTime.Today)
+            {
+                ViewBag.Mensaje = "La fecha de inicio no puede ser anterior a la fecha actual.";
+
+                CargarTiposActividad(model.Id_Tipo_Actividad);
+                CargarMinisterios(model.Id_Ministerio);
+
+                return View(model);
+            }
 
             using var client = _http.CreateClient();
 
