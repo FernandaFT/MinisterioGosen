@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MinisterioGosen.Models
 {
-    [Table("Actividad_Persona")]
     public class ActividadPersonaModel
     {
         [Key]
