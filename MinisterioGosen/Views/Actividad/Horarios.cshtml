@@ -64,17 +64,17 @@
                                         }
                                     </div>
 
-                                    @if (!string.IsNullOrEmpty(item.Hora_Ini))
+                                    @if (item.Hora_Ini.HasValue)
                                     {
                                         <div class="mb-3">
                                             <div class="small text-muted">Horario</div>
 
                                             <div class="fw-semibold">
-                                                @item.Hora_Ini
+                                                @item.Hora_Ini.Value.ToString("HH:mm")
 
-                                                @if (!string.IsNullOrEmpty(item.Hora_Fin))
+                                                @if (item.Hora_Fin.HasValue)
                                                 {
-                                                    <span> - @item.Hora_Fin</span>
+                                                    <span> - @item.Hora_Fin.Value.ToString("HH:mm")</span>
                                                 }
                                             </div>
                                         </div>

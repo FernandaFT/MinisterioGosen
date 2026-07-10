@@ -94,16 +94,24 @@ namespace MinisterioGosen.Controllers
 
             using var client = _http.CreateClient();
 
-            var url = _config["Valores:UrlApi"] +
-                $"UsuariosMinisterio/ReportePersonasMinisterioAPI?buscar={buscar}&idMinisterio={idMinisterio}&estado={estado}&fechaInicio={fechaInicio:yyyy-MM-dd}&fechaFin={fechaFin:yyyy-MM-dd}";
+            var url = _config["Valores:UrlApi"] + "UsuariosMinisterio/ReportePersonasMinisterioAPI";
 
-            var response = client.GetAsync(url).Result;
+            var filtros = new ReportePersonasMinisterioFiltroModel
+            {
+                Buscar = buscar,
+                IdMinisterio = idMinisterio,
+                Estado = estado,
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin
+            };
+
+            var response = client.PostAsJsonAsync(url, filtros).Result;
 
             if (response.StatusCode != HttpStatusCode.OK)
                 throw new Exception("Error al consultar el reporte de personas por ministerio");
 
             var datos = response.Content.ReadFromJsonAsync<List<UsuariosMinisterioModel>>().Result
-                ?? new List<UsuariosMinisterioModel>();
+            ?? new List<UsuariosMinisterioModel>();
 
             CargarMinisterios(idMinisterio);
 
@@ -129,8 +137,18 @@ namespace MinisterioGosen.Controllers
 
             using var client = _http.CreateClient();
 
-            var url = _config["Valores:UrlApi"] + "Actividad/ListarActividadesAPI";
-            var response = client.GetAsync(url).Result;
+            var url = _config["Valores:UrlApi"] + "Actividad/ReporteActividadesAPI";
+
+            var filtros = new ReporteActividadesFiltroModel
+            {
+                Buscar = buscar,
+                IdMinisterio = idMinisterio,
+                IdTipoActividad = idTipoActividad,
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin
+            };
+
+            var response = client.PostAsJsonAsync(url, filtros).Result;
 
             if (response.StatusCode != HttpStatusCode.OK)
                 throw new Exception("Error al consultar el reporte de actividades");
@@ -138,33 +156,12 @@ namespace MinisterioGosen.Controllers
             var datos = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result
                 ?? new List<ActividadModel>();
 
-            if (!string.IsNullOrWhiteSpace(buscar))
-            {
-                var texto = buscar.ToLower();
-
-                datos = datos.Where(x =>
-                    (x.Nombre_Actividad != null && x.Nombre_Actividad.ToLower().Contains(texto)) ||
-                    (x.Lugar != null && x.Lugar.ToLower().Contains(texto)) ||
-                    (x.Descripcion_Ministerio != null && x.Descripcion_Ministerio.ToLower().Contains(texto))
-                ).ToList();
-            }
-
-            if (idMinisterio != null)
-                datos = datos.Where(x => x.Id_Ministerio == idMinisterio).ToList();
-
-            if (idTipoActividad != null)
-                datos = datos.Where(x => x.Id_Tipo_Actividad == idTipoActividad).ToList();
-
-            if (fechaInicio != null)
-                datos = datos.Where(x => x.Fecha_Ini.Date >= fechaInicio.Value.Date).ToList();
-
-            if (fechaFin != null)
-                datos = datos.Where(x => x.Fecha_Ini.Date <= fechaFin.Value.Date).ToList();
-
             CargarMinisterios(idMinisterio);
             CargarTiposActividad(idTipoActividad);
 
             ViewBag.Buscar = buscar;
+            ViewBag.IdMinisterio = idMinisterio;
+            ViewBag.IdTipoActividad = idTipoActividad;
             ViewBag.FechaInicio = fechaInicio?.ToString("yyyy-MM-dd");
             ViewBag.FechaFin = fechaFin?.ToString("yyyy-MM-dd");
 
@@ -183,8 +180,17 @@ namespace MinisterioGosen.Controllers
 
             using var client = _http.CreateClient();
 
-            var url = _config["Valores:UrlApi"] + "Actividad/ListarActividadesAPI";
-            var response = client.GetAsync(url).Result;
+            var url = _config["Valores:UrlApi"] + "Actividad/ReporteHorariosAPI";
+
+            var filtros = new ReporteHorariosFiltroModel
+            {
+                Buscar = buscar,
+                IdMinisterio = idMinisterio,
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin
+            };
+
+            var response = client.PostAsJsonAsync(url, filtros).Result;
 
             if (response.StatusCode != HttpStatusCode.OK)
                 throw new Exception("Error al consultar el reporte de horarios");
@@ -192,29 +198,10 @@ namespace MinisterioGosen.Controllers
             var datos = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result
                 ?? new List<ActividadModel>();
 
-            if (!string.IsNullOrWhiteSpace(buscar))
-            {
-                var texto = buscar.ToLower();
-
-                datos = datos.Where(x =>
-                    (x.Nombre_Actividad != null && x.Nombre_Actividad.ToLower().Contains(texto)) ||
-                    (x.Lugar != null && x.Lugar.ToLower().Contains(texto)) ||
-                    (x.Descripcion_Ministerio != null && x.Descripcion_Ministerio.ToLower().Contains(texto))
-                ).ToList();
-            }
-
-            if (idMinisterio != null)
-                datos = datos.Where(x => x.Id_Ministerio == idMinisterio).ToList();
-
-            if (fechaInicio != null)
-                datos = datos.Where(x => x.Fecha_Ini.Date >= fechaInicio.Value.Date).ToList();
-
-            if (fechaFin != null)
-                datos = datos.Where(x => x.Fecha_Ini.Date <= fechaFin.Value.Date).ToList();
-
             CargarMinisterios(idMinisterio);
 
             ViewBag.Buscar = buscar;
+            ViewBag.IdMinisterio = idMinisterio;
             ViewBag.FechaInicio = fechaInicio?.ToString("yyyy-MM-dd");
             ViewBag.FechaFin = fechaFin?.ToString("yyyy-MM-dd");
 

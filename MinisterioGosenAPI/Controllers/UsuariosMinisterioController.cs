@@ -102,22 +102,17 @@ namespace MinisterioGosenAPI.Controllers
             return BadRequest("No se pudo sacar el usuario del ministerio.");
         }
 
-        [HttpGet("ReportePersonasMinisterioAPI")]
-        public IActionResult ReportePersonasMinisterioAPI(
-            string? buscar,
-            int? idMinisterio,
-            string? estado,
-            DateTime? fechaInicio,
-            DateTime? fechaFin)
+        [HttpPost("ReportePersonasMinisterioAPI")]
+        public IActionResult ReportePersonasMinisterioAPI(ReportePersonasMinisterioFiltroModel filtros)
         {
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
             var parameters = new DynamicParameters();
-            parameters.Add("@Buscar", buscar);
-            parameters.Add("@Id_Ministerio", idMinisterio);
-            parameters.Add("@Estado", estado);
-            parameters.Add("@FechaInicio", fechaInicio);
-            parameters.Add("@FechaFin", fechaFin);
+            parameters.Add("@Buscar", filtros.Buscar);
+            parameters.Add("@Id_Ministerio", filtros.IdMinisterio);
+            parameters.Add("@Estado", filtros.Estado);
+            parameters.Add("@FechaInicio", filtros.FechaInicio);
+            parameters.Add("@FechaFin", filtros.FechaFin);
 
             var response = context.Query<UsuariosMinisterioModel>(
                 "spReportePersonasMinisterio",

@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MinisterioGosen.Models
 {
-    [Table("Actividad")]
     public class ActividadModel
     {
         [Key]
@@ -23,11 +21,9 @@ namespace MinisterioGosen.Models
         [StringLength(100, ErrorMessage = "El lugar no puede superar 100 caracteres")]
         public string? Lugar { get; set; }
 
-        [StringLength(10, ErrorMessage = "La hora de inicio no puede superar 10 caracteres")]
-        public string? Hora_Ini { get; set; }
+        public DateTime? Hora_Ini { get; set; }
 
-        [StringLength(10, ErrorMessage = "La hora de fin no puede superar 10 caracteres")]
-        public string? Hora_Fin { get; set; }
+        public DateTime? Hora_Fin { get; set; }
 
         [Required(ErrorMessage = "Debe seleccionar un tipo de actividad")]
         public int Id_Tipo_Actividad { get; set; }

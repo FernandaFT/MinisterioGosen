@@ -106,8 +106,8 @@
                                 <tr>
                                     <td>@item.Nombre_Actividad</td>
                                     <td>@item.Fecha_Ini.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.Hora_Ini</td>
-                                    <td>@item.Hora_Fin</td>
+                                    <td>@(item.Hora_Ini.HasValue ? item.Hora_Ini.Value.ToString("HH:mm") : "-")</td>
+                                    <td>@(item.Hora_Fin.HasValue ? item.Hora_Fin.Value.ToString("HH:mm") : "-")</td>
                                     <td>@item.Lugar</td>
                                     <td>@item.Descripcion_Ministerio</td>
                                 </tr>

@@ -117,9 +117,9 @@
                                     <td>@item.Nombre_Tipo</td>
                                     <td>@item.Descripcion_Ministerio</td>
                                     <td>@item.Fecha_Ini.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.Fecha_Fin?.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.Hora_Ini</td>
-                                    <td>@item.Hora_Fin</td>
+                                    <td>@(item.Fecha_Fin.HasValue ? item.Fecha_Fin.Value.ToString("dd/MM/yyyy") : "-")</td>
+                                    <td>@(item.Hora_Ini.HasValue ? item.Hora_Ini.Value.ToString("HH:mm") : "-")</td>
+                                    <td>@(item.Hora_Fin.HasValue ? item.Hora_Fin.Value.ToString("HH:mm") : "-")</td>
                                     <td>@item.Lugar</td>
                                 </tr>
                             }
