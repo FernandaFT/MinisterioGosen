@@ -10,10 +10,6 @@ namespace MinisterioGosen.Controllers
         IHttpClientFactory _http,
         IConfiguration _config) : Controller
     {
-        public IActionResult Perfil()
-        {
-            return View();
-        }
 
         [HttpGet]
         public IActionResult Index()
@@ -40,7 +36,21 @@ namespace MinisterioGosen.Controllers
         [HttpGet]
         public IActionResult Configuracion()
         {
-            return View();
+            var Id_Usuario = HttpContext.Session.GetInt32("Id_Usuario")!.Value;
+
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "Usuario/ObtenerUsuarioAPI?id=" + Id_Usuario;
+            var response = client.GetAsync(url).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NotFound)
+            {
+                var datos = response.Content.ReadFromJsonAsync<UsuarioModel>().Result;
+
+                return View("Configuracion", datos);
+            }
+
+            throw new Exception("Error al cambiar la contraseña");
         }
 
         [HttpPost]
@@ -59,12 +69,35 @@ namespace MinisterioGosen.Controllers
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
-                return View();
+                ViewBag.MensajeContrasena = response.Content.ReadAsStringAsync().Result;
+                return View("Configuracion", model);
             }
 
             throw new Exception("Error al cambiar la contraseña");
         }
+
+        [HttpPost]
+        public IActionResult CambiarPerfil(UsuarioModel model)
+        {
+            model.Id_Usuario = HttpContext.Session.GetInt32("Id_Usuario")!.Value;
+
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "Usuario/CambiarPerfilAPI";
+            var response = client.PutAsJsonAsync(url, model).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                HttpContext.Session.SetString("Nombre", model!.Nombre);
+
+                ViewBag.MensajePerfil = response.Content.ReadAsStringAsync().Result;
+                return View("Configuracion", model);
+            }
+
+            throw new Exception("Error al cambiar la información del perfil");
+        }
+
+        #endregion
 
         private void CargarRoles(int? idRolSeleccionado = null)
         {
@@ -221,6 +254,5 @@ namespace MinisterioGosen.Controllers
 
             return View(model);
         }
-        #endregion
     }
 }

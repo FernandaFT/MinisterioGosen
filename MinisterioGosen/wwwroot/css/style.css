@@ -1189,3 +1189,214 @@ h1, h2, h3, h4, h5, h6,
         font-size: 2.3rem;
     }
 }
+
+/*Perfil*/
+.configuracion-section {
+    background-color: #f1f8f7;
+    min-height: calc(100vh - 90px);
+}
+
+.configuracion-encabezado {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.configuracion-subtitulo {
+    color: #cb8848;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.configuracion-titulo {
+    color: #0d2422;
+    font-size: 38px;
+}
+
+.configuracion-descripcion {
+    color: #75817f;
+    font-size: 15px;
+}
+
+.perfil-card {
+    background: linear-gradient(135deg, #0d2422, #075b56);
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(13, 36, 34, 0.18);
+    overflow: hidden;
+}
+
+.perfil-contenido {
+    min-height: 100px;
+}
+
+.perfil-icono {
+    display: flex;
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #cb8848;
+    color: #ffffff;
+    font-size: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.18);
+}
+
+.perfil-etiqueta {
+    color: #d8a36e;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.perfil-nombre {
+    margin-bottom: 5px;
+    color: #ffffff;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.perfil-rol {
+    margin-bottom: 0;
+    color: #d7e6e4;
+    font-size: 15px;
+}
+
+.alert-configuracion {
+    border: none;
+    border-left: 4px solid #dc3545;
+    border-radius: 10px;
+    background-color: #fff2f3;
+    color: #842029;
+}
+
+.config-card {
+    height: 100%;
+    overflow: hidden;
+    border: none;
+    border-radius: 18px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 28px rgba(13, 36, 34, 0.1);
+}
+
+.config-card-header {
+    padding: 25px 28px 18px;
+    border-bottom: 1px solid #e3eceb;
+}
+
+.config-card-icon {
+    display: flex;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background-color: #fff3e7;
+    color: #cb8848;
+    font-size: 20px;
+}
+
+.config-card-title {
+    margin-bottom: 3px;
+    color: #0d2422;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.config-card-description {
+    margin-bottom: 0;
+    color: #75817f;
+    font-size: 13px;
+}
+
+.config-card-body {
+    padding: 28px;
+}
+
+.config-form .form-floating > .form-control {
+    height: 60px;
+    border: 1px solid #dce7e5;
+    border-radius: 12px;
+    background-color: #f9fcfb;
+    color: #263c3a;
+    box-shadow: none;
+}
+
+    .config-form .form-floating > .form-control:focus {
+        border-color: #075b56;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 0.2rem rgba(7, 91, 86, 0.1);
+    }
+
+.config-form .form-floating > label {
+    padding-left: 17px;
+    color: #73817f;
+}
+
+.config-form .form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: none;
+}
+
+.config-form .form-control.is-valid {
+    border-color: #198754;
+    background-image: none;
+}
+
+.btn-configuracion {
+    min-height: 54px;
+    border: none;
+    border-radius: 12px;
+    background-color: #075b56;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+    .btn-configuracion:hover,
+    .btn-configuracion:focus {
+        background-color: #0d2422;
+        color: #ffffff;
+        box-shadow: 0 7px 16px rgba(13, 36, 34, 0.18);
+
+    }
+
+.contrasena-recomendacion {
+    border-left: 4px solid #cb8848;
+    background-color: #fff8f1;
+}
+
+.contrasena-recomendacion-texto {
+    color: #705035;
+}
+
+@media (max-width: 767.98px) {
+    .configuracion-titulo {
+        font-size: 29px;
+    }
+
+    .perfil-card .card-body {
+        text-align: center;
+    }
+
+    .perfil-contenido {
+        flex-direction: column;
+    }
+
+    .perfil-icono {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .perfil-nombre {
+        font-size: 21px;
+    }
+
+    .config-card-body,
+    .config-card-header {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
