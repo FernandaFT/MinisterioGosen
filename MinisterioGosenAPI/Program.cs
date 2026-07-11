@@ -1,9 +1,11 @@
+using MinisterioGosenAPI.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+builder.Services.AddScoped<IUtilesService, UtilesService>();
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

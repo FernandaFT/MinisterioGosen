@@ -26,12 +26,32 @@ namespace MinisterioGosenAPI.Controllers
 
             if (response > 0)
             {
-                //3. Enviar un correo electrónico al usuario
-
                 return Ok(response);
             }
 
             return BadRequest("No se ha actualizado su contraseña, intente nuevamente más tarde");
+        }
+
+        [HttpPut("CambiarPerfilAPI")]
+        public IActionResult CambiarPerfilAPI(ActualizarPerfilRequestModel model)
+        {
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+
+            parameters = new DynamicParameters();
+            parameters.Add("@Id_Usuario", model.Id_Usuario);
+            parameters.Add("@Identificacion", model.Identificacion);
+            parameters.Add("@Nombre", model.Nombre);
+            parameters.Add("@Correo", model.Correo);
+            var response = context.Execute("spActualizarPerfil", parameters);
+
+            if (response > 0)
+            {
+                return Ok("La información se ha actualizado correctamente");
+            }
+
+            return BadRequest("No se ha actualizado su información, intente nuevamente más tarde");
         }
 
         [HttpGet("ListarRolesAPI")]
