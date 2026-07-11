@@ -1,0 +1,164 @@
+﻿@model MinisterioGosen.Models.UsuariosMinisterioModel
+
+@{
+    ViewData["Title"] = "Asignar persona al ministerio";
+
+    var ministerio = ViewBag.Ministerio as MinisterioGosen.Models.MinisterioModel;
+    var usuariosActuales = ViewBag.UsuariosActuales as List<MinisterioGosen.Models.UsuariosMinisterioModel>;
+    var usuariosDisponibles = ViewBag.UsuariosDisponibles as List<MinisterioGosen.Models.UsuarioModel>;
+}
+
+<div class="container mt-4">
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-dark text-white">
+            <h4>Asignar personas a: @ministerio?.Descripcion_Ministerio</h4>
+        </div>
+
+        <div class="card-body">
+
+            <h5>Personas registradas en este ministerio</h5>
+
+            <table class="table table-bordered table-striped mb-4">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Fecha ingreso</th>
+                        <th>Observación</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (usuariosActuales != null && usuariosActuales.Any())
+                    {
+                        foreach (var item in usuariosActuales)
+                        {
+                            <tr>
+                                <td>@item.Nombre</td>
+                                <td>@item.Correo</td>
+                                <td>@item.Rol</td>
+                                <td>@item.Fecha_Ingreso?.ToString("dd/MM/yyyy")</td>
+                                <td>@item.Observacion</td>
+                                <td>
+                                    <form asp-controller="UsuariosMinisterio"
+                                          asp-action="Salir"
+                                          method="post">
+                                        <input type="hidden" name="Id_Usuario_Ministerio" value="@item.Id_Usuario_Ministerio" />
+                                        <input type="hidden" name="Id_Ministerio" value="@item.Id_Ministerio" />
+                                        <input type="hidden" name="Id_Usuario" value="@item.Id_Usuario" />
+                                        <input type="hidden" name="origen" value="ministerio" />
+
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            Sacar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                No hay personas registradas.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <h5>Buscar usuario disponible</h5>
+
+            <input type="text"
+                   id="buscarUsuario"
+                   class="form-control mb-3"
+                   placeholder="Buscar por nombre, correo o rol">
+
+            <table class="table table-bordered table-striped" id="tablaUsuarios">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Fecha ingreso</th>
+                        <th>Observación</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (usuariosDisponibles != null && usuariosDisponibles.Any())
+                    {
+                        foreach (var item in usuariosDisponibles)
+                        {
+                            <tr>
+                                <form asp-controller="UsuariosMinisterio"
+                                      asp-action="RegistrarDesdeMinisterio"
+                                      method="post">
+
+                                    <input type="hidden" name="Id_Ministerio" value="@Model.Id_Ministerio" />
+                                    <input type="hidden" name="Id_Usuario" value="@item.Id_Usuario" />
+
+                                    <td>@item.Nombre</td>
+                                    <td>@item.Correo</td>
+                                    <td>@item.Rol</td>
+                                    <td>
+                                        <input type="date"
+                                               name="Fecha_Ingreso"
+                                               class="form-control"
+                                               value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    </td>
+                                    <td>
+                                        <input type="text"
+                                               name="Observacion"
+                                               class="form-control"
+                                               placeholder="Observación" />
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Registrar
+                                        </button>
+                                    </td>
+                                </form>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                No hay usuarios disponibles.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <a asp-controller="Ministerio"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Volver
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("buscarUsuario").addEventListener("keyup", function () {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll("#tablaUsuarios tbody tr");
+
+        filas.forEach(function (fila) {
+            let texto = fila.innerText.toLowerCase();
+            fila.style.display = texto.includes(filtro) ? "" : "none";
+        });
+    });
+</script>

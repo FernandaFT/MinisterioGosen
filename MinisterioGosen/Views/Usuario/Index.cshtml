@@ -169,6 +169,16 @@
 
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
+                                            @if (item.Id_Rol != 1)
+                                            {
+                                                <a asp-controller="UsuariosMinisterio"
+                                                   asp-action="RegistrarMinisterio"
+                                                   asp-route-idUsuario="@item.Id_Usuario"
+                                                   class="btn btn-info btn-sm">
+                                                    Registrarse a ministerio
+                                                </a>
+                                            }
+                                            
                                             <a asp-controller="Usuario"
                                                asp-action="Editar"
                                                asp-route-id="@item.Id_Usuario"

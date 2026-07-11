@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Reportes internos";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h4 class="text-uppercase text-primary">Reportes internos</h4>
+        <h1 class="display-5 fw-bold mb-3">Consulta interna del sistema</h1>
+        <p class="text-muted">
+            Consulte información del sistema mediante filtros y tablas. Este módulo no incluye exportaciones.
+        </p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body text-center p-4 d-flex flex-column">
+
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+
+                    <h5 class="fw-bold">Personas por ministerio</h5>
+
+                    <p class="text-muted mb-4">
+                        Consulte qué personas pertenecen a cada ministerio, fechas de ingreso, estado y observaciones.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a asp-controller="Reporte"
+                           asp-action="PersonasMinisterio"
+                           class="btn btn-primary rounded-pill px-4">
+                            Ver reporte
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body text-center p-4 d-flex flex-column">
+
+                    <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
+
+                    <h5 class="fw-bold">Actividades</h5>
+
+                    <p class="text-muted mb-4">
+                        Consulte actividades registradas por fecha, tipo, ministerio responsable y lugar.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a asp-controller="Reporte"
+                           asp-action="Actividades"
+                           class="btn btn-primary rounded-pill px-4">
+                            Ver reporte
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-body text-center p-4 d-flex flex-column">
+
+                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+
+                    <h5 class="fw-bold">Horarios</h5>
+
+                    <p class="text-muted mb-4">
+                        Consulte fechas, horas y lugares de las actividades registradas.
+                    </p>
+
+                    <div class="mt-auto">
+                        <a asp-controller="Reporte"
+                           asp-action="Horarios"
+                           class="btn btn-primary rounded-pill px-4">
+                            Ver reporte
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

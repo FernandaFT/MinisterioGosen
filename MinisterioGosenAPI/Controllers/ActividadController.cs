@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using MinisterioGosenAPI.Models;
+using System.Data;
 
 namespace MinisterioGosenAPI.Controllers
 {
@@ -138,5 +139,50 @@ namespace MinisterioGosenAPI.Controllers
                 return BadRequest("No se puede eliminar esta actividad porque tiene información relacionada.");
             }
         }
+
+        [HttpPost("ReporteActividadesAPI")]
+        public IActionResult ReporteActividadesAPI(ReporteActividadesFiltroModel filtros)
+        {
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Buscar", filtros.Buscar);
+            parameters.Add("@Id_Ministerio", filtros.IdMinisterio);
+            parameters.Add("@Id_Tipo_Actividad", filtros.IdTipoActividad);
+            parameters.Add("@FechaInicio", filtros.FechaInicio);
+            parameters.Add("@FechaFin", filtros.FechaFin);
+
+            var response = context.Query<ActividadModel>(
+                "spReporteActividades",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            ).ToList();
+
+            return Ok(response);
+        }
+
+        [HttpPost("ReporteHorariosAPI")]
+        public IActionResult ReporteHorariosAPI(ReporteHorariosFiltroModel filtros)
+        {
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Buscar", filtros.Buscar);
+            parameters.Add("@Id_Ministerio", filtros.IdMinisterio);
+            parameters.Add("@Id_Tipo_Actividad", filtros.IdTipoActividad);
+            parameters.Add("@FechaInicio", filtros.FechaInicio);
+            parameters.Add("@FechaFin", filtros.FechaFin);
+
+            var response = context.Query<ActividadModel>(
+                "spReporteHorarios",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            ).ToList();
+
+            return Ok(response);
+        }
+
+
+
     }
 }

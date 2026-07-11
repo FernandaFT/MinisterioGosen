@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MinisterioGosenAPI.Models
 {
-    [Table("Actividades_Ministerio")]
     public class ActividadMinisterioModel
     {
         [Key]

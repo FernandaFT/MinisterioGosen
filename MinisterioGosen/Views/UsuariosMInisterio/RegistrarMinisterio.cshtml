@@ -1,0 +1,158 @@
+﻿@model MinisterioGosen.Models.UsuariosMinisterioModel
+
+@{
+    ViewData["Title"] = "Registrar usuario a ministerio";
+
+    var usuario = ViewBag.Usuario as MinisterioGosen.Models.UsuarioModel;
+    var ministeriosActuales = ViewBag.MinisteriosActuales as List<MinisterioGosen.Models.UsuariosMinisterioModel>;
+    var ministeriosDisponibles = ViewBag.MinisteriosDisponibles as List<MinisterioGosen.Models.MinisterioModel>;
+}
+
+<div class="container mt-4">
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-dark text-white">
+            <h4>Registrar ministerios a: @usuario?.Nombre</h4>
+        </div>
+
+        <div class="card-body">
+
+            <h5>Ministerios actuales</h5>
+
+            <table class="table table-bordered table-striped mb-4">
+                <thead>
+                    <tr>
+                        <th>Ministerio</th>
+                        <th>Fecha ingreso</th>
+                        <th>Observación</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ministeriosActuales != null && ministeriosActuales.Any())
+                    {
+                        foreach (var item in ministeriosActuales)
+                        {
+                            <tr>
+                                <td>@item.Descripcion_Ministerio</td>
+                                <td>@item.Fecha_Ingreso?.ToString("dd/MM/yyyy")</td>
+                                <td>@item.Observacion</td>
+                                <td>
+                                    <form asp-controller="UsuariosMinisterio"
+                                          asp-action="Salir"
+                                          method="post">
+                                        <input type="hidden" name="Id_Usuario_Ministerio" value="@item.Id_Usuario_Ministerio" />
+                                        <input type="hidden" name="Id_Ministerio" value="@item.Id_Ministerio" />
+                                        <input type="hidden" name="Id_Usuario" value="@item.Id_Usuario" />
+                                        <input type="hidden" name="origen" value="usuario" />
+
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            Sacar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center">
+                                Este usuario no está registrado en ministerios.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <h5>Buscar ministerio disponible</h5>
+
+            <input type="text"
+                   id="buscarMinisterio"
+                   class="form-control mb-3"
+                   placeholder="Buscar ministerio">
+
+            <table class="table table-bordered table-striped" id="tablaMinisterios">
+                <thead>
+                    <tr>
+                        <th>Ministerio</th>
+                        <th>Observaciones</th>
+                        <th>Fecha ingreso</th>
+                        <th>Observación registro</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ministeriosDisponibles != null && ministeriosDisponibles.Any())
+                    {
+                        foreach (var item in ministeriosDisponibles)
+                        {
+                            <tr>
+                                <form asp-controller="UsuariosMinisterio"
+                                      asp-action="RegistrarDesdeUsuario"
+                                      method="post">
+
+                                    <input type="hidden" name="Id_Usuario" value="@Model.Id_Usuario" />
+                                    <input type="hidden" name="Id_Ministerio" value="@item.Id_Ministerio" />
+
+                                    <td>@item.Descripcion_Ministerio</td>
+                                    <td>@item.Observaciones_Ministerio</td>
+                                    <td>
+                                        <input type="date"
+                                               name="Fecha_Ingreso"
+                                               class="form-control"
+                                               value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    </td>
+                                    <td>
+                                        <input type="text"
+                                               name="Observacion"
+                                               class="form-control"
+                                               placeholder="Observación" />
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Registrar
+                                        </button>
+                                    </td>
+                                </form>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                No hay ministerios disponibles.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <a asp-controller="Usuario"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Volver
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("buscarMinisterio").addEventListener("keyup", function () {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll("#tablaMinisterios tbody tr");
+
+        filas.forEach(function (fila) {
+            let texto = fila.innerText.toLowerCase();
+            fila.style.display = texto.includes(filtro) ? "" : "none";
+        });
+    });
+</script>

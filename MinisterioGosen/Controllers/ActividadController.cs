@@ -76,6 +76,35 @@ namespace MinisterioGosen.Controllers
         }
 
         [HttpGet]
+        public IActionResult Horarios()
+        {
+            if (!EstaLogueado())
+                return RedirectToAction("Index", "Home");
+
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "Actividad/ListarActividadesAPI";
+            var response = client.GetAsync(url).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var actividades = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result
+                    ?? new List<ActividadModel>();
+
+                var hoy = DateTime.Today;
+
+                var proximasActividades = actividades
+                    .Where(x => (x.Fecha_Fin ?? x.Fecha_Ini).Date >= hoy)
+                    .OrderBy(x => x.Fecha_Ini)
+                    .ToList();
+
+                return View(proximasActividades);
+            }
+
+            throw new Exception("Error al consultar los horarios de actividades");
+        }
+
+        [HttpGet]
         public IActionResult Index()
         {
             if (!EsAdmin())
@@ -112,6 +141,16 @@ namespace MinisterioGosen.Controllers
         {
             if (!EsAdmin())
                 return RedirectToAction("Error", "Home", new { statusCode = 403 });
+
+            if (model.Fecha_Ini.Date < DateTime.Today)
+            {
+                ViewBag.Mensaje = "La fecha de inicio no puede ser anterior a la fecha actual.";
+
+                CargarTiposActividad(model.Id_Tipo_Actividad);
+                CargarMinisterios(model.Id_Ministerio);
+
+                return View(model);
+            }
 
             using var client = _http.CreateClient();
 
@@ -158,6 +197,16 @@ namespace MinisterioGosen.Controllers
         {
             if (!EsAdmin())
                 return RedirectToAction("Error", "Home", new { statusCode = 403 });
+            
+            if (model.Fecha_Ini.Date < DateTime.Today)
+            {
+                ViewBag.Mensaje = "La fecha de inicio no puede ser anterior a la fecha actual.";
+
+                CargarTiposActividad(model.Id_Tipo_Actividad);
+                CargarMinisterios(model.Id_Ministerio);
+
+                return View(model);
+            }
 
             using var client = _http.CreateClient();
 

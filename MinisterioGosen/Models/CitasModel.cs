@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MinisterioGosen.Models
 {
-    [Table("Citas")]
     public class CitasModel
     {
         [Key]
