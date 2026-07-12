@@ -1,4 +1,3 @@
-
 USE [master]
 GO
 
@@ -57,6 +56,7 @@ CREATE TABLE [dbo].[Citas](
 	[Id_Usuario_Encargado] [int] NOT NULL,
 	[Observacion_Inicial] [varchar](200) NULL,
 	[Detalle_Cita] [varchar](500) NULL,
+	[Estado] [varchar](20) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id_Cita] ASC
@@ -156,7 +156,6 @@ SET IDENTITY_INSERT [dbo].[Usuario] OFF
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [UQ__Rol__92C53B6C454C744C]    Script Date: 4/7/2026 01:22:56 ******/
 ALTER TABLE [dbo].[Rol] ADD UNIQUE NONCLUSTERED 
 (
 	[Descripcion] ASC
@@ -164,7 +163,6 @@ ALTER TABLE [dbo].[Rol] ADD UNIQUE NONCLUSTERED
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [UQ__Usuario__60695A199EE1832C]    Script Date: 4/7/2026 01:22:56 ******/
 ALTER TABLE [dbo].[Usuario] ADD UNIQUE NONCLUSTERED 
 (
 	[Correo] ASC
@@ -172,7 +170,6 @@ ALTER TABLE [dbo].[Usuario] ADD UNIQUE NONCLUSTERED
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [UQ__Usuario__D6F931E506B104FC]    Script Date: 4/7/2026 01:22:56 ******/
 ALTER TABLE [dbo].[Usuario] ADD UNIQUE NONCLUSTERED 
 (
 	[Identificacion] ASC
@@ -214,6 +211,12 @@ ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [fk_cita_usuario] FOREIGN 
 REFERENCES [dbo].[Usuario] ([Id_Usuario])
 GO
 ALTER TABLE [dbo].[Citas] CHECK CONSTRAINT [fk_cita_usuario]
+GO
+ALTER TABLE [dbo].[Citas] ADD  CONSTRAINT [DF_Citas_Estado]  DEFAULT ('Pendiente') FOR [Estado]
+GO
+ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [chk_estado_cita] CHECK  (([Estado]='Pendiente' OR [Estado]='Atendida'))
+GO
+ALTER TABLE [dbo].[Citas] CHECK CONSTRAINT [chk_estado_cita]
 GO
 ALTER TABLE [dbo].[Usuario]  WITH CHECK ADD  CONSTRAINT [fk_usuario_rol] FOREIGN KEY([Id_Rol])
 REFERENCES [dbo].[Rol] ([Id_Rol])
@@ -530,6 +533,20 @@ AS
 BEGIN
     INSERT INTO Citas (Fecha_Cita, Id_Usuario_Cita, Id_Usuario_Encargado, Observacion_Inicial, Detalle_Cita)
     VALUES (@Fecha_Cita, @Id_Usuario_Cita, @Id_Usuario_Encargado, @Observacion_Inicial, @Detalle_Cita);
+END;
+
+GO
+
+/* Marcar una cita como atendida */
+CREATE   PROCEDURE [dbo].[spAtenderCita]
+    @Id_Cita INT,
+    @Detalle_Cita VARCHAR(500)
+AS
+BEGIN
+    UPDATE Citas
+    SET Estado = 'Atendida',
+        Detalle_Cita = @Detalle_Cita
+    WHERE Id_Cita = @Id_Cita;
 END;
 
 GO
@@ -1411,7 +1428,7 @@ INSERT INTO Tipo_Actividad (Nombre_Tipo)
 VALUES ('Culto');
 
 INSERT INTO Tipo_Actividad (Nombre_Tipo)
-VALUES ('Reunión');
+VALUES ('Reuni�n');
 
 /* =========================
    MINISTERIOS
@@ -1424,7 +1441,7 @@ INSERT INTO Ministerio
 )
 VALUES
 (
-    'Ministerio de Jóvenes',
+    'Ministerio de J�venes',
     'Ministerio encargado de actividades juveniles'
 );
 
@@ -1435,8 +1452,8 @@ INSERT INTO Ministerio
 )
 VALUES
 (
-    'Ministerio de Música',
-    'Ministerio encargado de la alabanza y música'
+    'Ministerio de M�sica',
+    'Ministerio encargado de la alabanza y m�sica'
 );
 
 
@@ -1459,7 +1476,7 @@ VALUES
     'Culto Juvenil',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Salón principal',
+    'Sal�n principal',
     '18:00',
     '20:00',
     (SELECT Id_Tipo_Actividad
@@ -1479,7 +1496,7 @@ INSERT INTO Actividad
 )
 VALUES
 (
-    'Reunión de Jóvenes',
+    'Reuni�n de J�venes',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
     'Aula 1',
@@ -1487,7 +1504,7 @@ VALUES
     '18:00',
     (SELECT Id_Tipo_Actividad
      FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reunión')
+     WHERE Nombre_Tipo = 'Reuni�n')
 );
 
 INSERT INTO Actividad
@@ -1528,12 +1545,12 @@ VALUES
     'Ensayo Musical',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Salón de música',
+    'Sal�n de m�sica',
     '19:00',
     '21:00',
     (SELECT Id_Tipo_Actividad
      FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reunión')
+     WHERE Nombre_Tipo = 'Reuni�n')
 );
 
 
@@ -1557,10 +1574,10 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de Jóvenes'),
+     WHERE Descripcion_Ministerio = 'Ministerio de J�venes'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de Jóvenes'
+    'Actividad del Ministerio de J�venes'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1574,14 +1591,14 @@ VALUES
 (
     (SELECT Id_Actividad
      FROM Actividad
-     WHERE Nombre_Actividad = 'Reunión de Jóvenes'),
+     WHERE Nombre_Actividad = 'Reuni�n de J�venes'),
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de Jóvenes'),
+     WHERE Descripcion_Ministerio = 'Ministerio de J�venes'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Reunión de planificación juvenil'
+    'Reuni�n de planificaci�n juvenil'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1599,10 +1616,10 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de Música'),
+     WHERE Descripcion_Ministerio = 'Ministerio de M�sica'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de Música'
+    'Actividad del Ministerio de M�sica'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1620,10 +1637,32 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de Música'),
+     WHERE Descripcion_Ministerio = 'Ministerio de M�sica'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Ensayo general del equipo de música'
+    'Ensayo general del equipo de m�sica'
 );
 
+GO
+
+
+/*SP PARA LISTAR CITAS*/
+CREATE OR ALTER PROCEDURE [dbo].[spListarCitas]
+AS
+BEGIN
+    SELECT 
+        C.Id_Cita,
+        C.Fecha_Cita,
+        C.Id_Usuario_Cita,
+        UC.Nombre AS Nombre_Usuario_Cita,
+        C.Id_Usuario_Encargado,
+        UE.Nombre AS Nombre_Usuario_Encargado,
+        C.Observacion_Inicial,
+        C.Detalle_Cita,
+        C.Estado
+    FROM Citas C
+    INNER JOIN Usuario UC ON C.Id_Usuario_Cita = UC.Id_Usuario
+    INNER JOIN Usuario UE ON C.Id_Usuario_Encargado = UE.Id_Usuario
+    ORDER BY C.Fecha_Cita DESC;
+END;
 GO
