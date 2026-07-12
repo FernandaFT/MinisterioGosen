@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MinisterioGosen.Models
 {
@@ -12,11 +11,11 @@ namespace MinisterioGosen.Models
         [DataType(DataType.Date)]
         public DateTime Fecha_Cita { get; set; } = DateTime.Today;
 
-        [Required(ErrorMessage = "Debe seleccionar la persona de la cita")]
-        public int Id_Persona_Cita { get; set; }
+        [Required(ErrorMessage = "Debe seleccionar la persona que solicita la cita")]
+        public int Id_Usuario_Cita { get; set; }
 
         [Required(ErrorMessage = "Debe seleccionar el encargado")]
-        public int Id_Persona_Encargado { get; set; }
+        public int Id_Usuario_Encargado { get; set; }
 
         [StringLength(200, ErrorMessage = "La observación inicial no puede superar 200 caracteres")]
         public string? Observacion_Inicial { get; set; }
@@ -24,6 +23,12 @@ namespace MinisterioGosen.Models
         [StringLength(500, ErrorMessage = "El detalle no puede superar 500 caracteres")]
         public string? Detalle_Cita { get; set; }
 
+        public string Estado { get; set; } = "Pendiente";
 
+        // Campos de solo lectura que llegan del SP spListarCitas (join con Usuario)
+        // No se usan para Crear/Editar, solo para mostrar nombres en el listado.
+        public string? Nombre_Usuario_Cita { get; set; }
+
+        public string? Nombre_Usuario_Encargado { get; set; }
     }
 }

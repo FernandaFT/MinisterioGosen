@@ -1,0 +1,171 @@
+﻿@model MinisterioGosen.Models.CitasModel
+
+@{
+    ViewData["Title"] = "Atender cita";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                Atender cita
+            </h2>
+            <p class="text-muted mb-0">
+                Registre el detalle de la cita y márquela como atendida.
+            </p>
+        </div>
+
+        <a asp-controller="Citas"
+           asp-action="Index"
+           class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i>
+            Volver
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            @if (ViewBag.Mensaje != null)
+            {
+                <div class="alert alert-warning d-flex align-items-center gap-2 rounded-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>@ViewBag.Mensaje</span>
+                </div>
+            }
+
+            @if (Model.Estado == "Atendida")
+            {
+                <div class="alert alert-success d-flex align-items-center gap-2 rounded-3">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Esta cita ya fue marcada como atendida anteriormente.</span>
+                </div>
+            }
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-4">
+                        <p class="text-muted small mb-1">Solicitante</p>
+                        <h6 class="fw-bold mb-0">
+                            @(string.IsNullOrEmpty(Model.Nombre_Usuario_Cita) ? $"Usuario #{Model.Id_Usuario_Cita}" : Model.Nombre_Usuario_Cita)
+                        </h6>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-4">
+                        <p class="text-muted small mb-1">Fecha de la cita</p>
+                        <h6 class="fw-bold mb-0">@Model.Fecha_Cita.ToString("dd/MM/yyyy")</h6>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-4">
+                        <p class="text-muted small mb-1">Encargado</p>
+                        <h6 class="fw-bold mb-0">
+                            @(string.IsNullOrEmpty(Model.Nombre_Usuario_Encargado) ? $"Usuario #{Model.Id_Usuario_Encargado}" : Model.Nombre_Usuario_Encargado)
+                        </h6>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-4">
+                        <p class="text-muted small mb-1">Estado actual</p>
+                        <h6 class="fw-bold mb-0">
+                            @if (Model.Estado == "Atendida")
+                            {
+                                <span class="badge rounded-pill bg-success px-3 py-2">Atendida</span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill bg-warning text-dark px-3 py-2">Pendiente</span>
+                            }
+                        </h6>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Observacion_Inicial))
+                {
+                    <div class="col-md-12">
+                        <div class="p-3 bg-light rounded-4">
+                            <p class="text-muted small mb-1">Observación inicial (del solicitante)</p>
+                            <h6 class="fw-bold mb-0">@Model.Observacion_Inicial</h6>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <form asp-controller="Citas"
+                  asp-action="ConfirmarAtender"
+                  method="post"
+                  id="formAtenderCita"
+                  novalidate>
+
+                <input asp-for="Id_Cita" type="hidden" />
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-file-text-fill me-1 text-muted"></i>
+                        Detalle de la cita
+                    </label>
+                    <textarea asp-for="Detalle_Cita"
+                              class="form-control rounded-3"
+                              rows="5"
+                              maxlength="500"
+                              placeholder="Escriba las notas o el resultado de la cita antes de marcarla como atendida"></textarea>
+                    <div class="invalid-feedback">
+                        Debe ingresar el detalle de la cita.
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-controller="Citas"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary rounded-pill px-4">
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-success rounded-pill px-4">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        Marcar como atendida
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("formAtenderCita");
+            const detalle = document.getElementById("Detalle_Cita");
+
+            if (!form || !detalle) return;
+
+            form.addEventListener("submit", function (event) {
+                detalle.classList.remove("is-invalid");
+
+                if (detalle.value.trim() === "") {
+                    event.preventDefault();
+                    detalle.classList.add("is-invalid");
+                    detalle.focus();
+                    return;
+                }
+
+                if (detalle.value.trim().length > 500) {
+                    event.preventDefault();
+                    detalle.classList.add("is-invalid");
+                    detalle.focus();
+                }
+            });
+        });
+    </script>
+}

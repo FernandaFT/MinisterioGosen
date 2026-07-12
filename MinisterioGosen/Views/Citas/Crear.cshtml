@@ -1,0 +1,183 @@
+﻿@model MinisterioGosen.Models.CitasModel
+
+@{
+    ViewData["Title"] = "Agendar cita";
+    var nombreUsuario = Context.Session.GetString("Nombre");
+}
+
+<div class="container py-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-calendar-plus-fill me-2 text-primary"></i>
+                Agendar cita
+            </h2>
+            <p class="text-muted mb-0">
+                Solicite una cita con uno de nuestros encargados.
+            </p>
+        </div>
+
+        <a asp-controller="Home"
+           asp-action="Principal"
+           class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-1"></i>
+            Volver
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            @if (ViewBag.Mensaje != null)
+            {
+                <div class="alert alert-warning d-flex align-items-center gap-2 rounded-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>@ViewBag.Mensaje</span>
+                </div>
+            }
+
+            <div id="mensajeValidacion" class="alert alert-danger d-none">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                <span id="textoValidacion"></span>
+            </div>
+
+            <form asp-action="Crear"
+                  asp-controller="Citas"
+                  method="post"
+                  id="formCita"
+                  novalidate>
+
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-person-fill me-1 text-muted"></i>
+                            Solicitante
+                        </label>
+                        <input value="@nombreUsuario"
+                               class="form-control rounded-3"
+                               readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-calendar-date me-1 text-muted"></i>
+                            Fecha de la cita
+                        </label>
+                        <input asp-for="Fecha_Cita"
+                               type="date"
+                               class="form-control rounded-3"
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <div class="invalid-feedback">
+                            Debe ingresar una fecha válida. No puede ser anterior a la fecha actual.
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-person-badge-fill me-1 text-muted"></i>
+                            Encargado
+                        </label>
+                        <select asp-for="Id_Usuario_Encargado"
+                                asp-items="ViewBag.Encargados"
+                                class="form-select rounded-3">
+                            <option value="">Seleccione un encargado</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Debe seleccionar un encargado.
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-chat-left-text-fill me-1 text-muted"></i>
+                            Observación inicial
+                        </label>
+                        <textarea asp-for="Observacion_Inicial"
+                                  class="form-control rounded-3"
+                                  rows="2"
+                                  maxlength="200"
+                                  placeholder="Motivo breve de la cita (opcional)"></textarea>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-file-text-fill me-1 text-muted"></i>
+                            Detalle
+                        </label>
+                        <textarea asp-for="Detalle_Cita"
+                                  class="form-control rounded-3"
+                                  rows="4"
+                                  maxlength="500"
+                                  placeholder="Detalle adicional (opcional)"></textarea>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-controller="Home"
+                       asp-action="Principal"
+                       class="btn btn-outline-secondary rounded-pill px-4">
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-save-fill me-1"></i>
+                        Agendar cita
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@if (TempData["CitaExitosa"] != null)
+{
+    <div class="modal fade" id="modalCitaExitosa" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-body text-center p-4">
+                    <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 72px; height: 72px;">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 2.5rem;"></i>
+                    </div>
+
+                    <h5 class="fw-bold mb-2">¡Cita registrada!</h5>
+                    <p class="text-muted mb-4">
+                        Su cita fue registrada correctamente en el sistema. Pronto será contactado por el encargado.
+                    </p>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                            Agendar otra
+                        </button>
+
+                        <a asp-controller="Home" asp-action="Principal" class="btn btn-primary rounded-pill px-4">
+                            Ir al inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/js/citas.js" asp-append-version="true"></script>
+
+    @if (TempData["CitaExitosa"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            var modal = new bootstrap.Modal(document.getElementById("modalCitaExitosa"));
+            modal.show();
+            });
+        </script>
+    }
+}
