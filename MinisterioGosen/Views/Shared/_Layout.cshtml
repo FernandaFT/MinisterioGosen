@@ -54,6 +54,9 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="~/css/bootstrap.min.css" rel="stylesheet">
 
+    <!--Paginado de tablas-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.bootstrap5.min.css" />
+
     <!-- Template Stylesheet -->
     <link href="~/css/style.css" rel="stylesheet" asp-append-version="true">
 
@@ -322,8 +325,12 @@
 
     <!-- Template Javascript -->
     <script src="~/js/main.js"></script>
-
+    <script src="https://cdn.datatables.net/2.3.7/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/js/datatablehelper.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
 </body>
 
 </html>
