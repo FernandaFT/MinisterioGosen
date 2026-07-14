@@ -2,7 +2,7 @@
 ===============================================================================
 DATOS SINTÉTICOS - MINISTERIO GOSÉN
 Base esperada: ministerio_gosen
-Motor: SQL Server
+Motor: SQL Serversss
 
 Carga generada:
 - Rol: conserva/crea únicamente Admin y Usuario.
