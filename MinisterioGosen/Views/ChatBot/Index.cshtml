@@ -1,0 +1,583 @@
+﻿@using System.Text.Json
+@model MinisterioGosen.Models.ChatbotResultadoModel
+
+@{
+    ViewData["Title"] = "Asistente virtual";
+
+    var opcionesJson = new JsonSerializerOptions(
+            JsonSerializerDefaults.Web
+        );
+
+    var datosInicialesJson = JsonSerializer.Serialize(
+            Model ?? new MinisterioGosen.Models.ChatbotResultadoModel(),
+            opcionesJson
+        );
+
+    var mensajeInicialJson = JsonSerializer.Serialize(
+            ViewBag.Mensaje as string ?? string.Empty,
+            opcionesJson
+        );
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+                <div class="card-header text-white border-0 p-3"
+                     style="background-color: #0d2422;">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="d-flex align-items-center justify-content-center
+                            rounded-circle bg-white bg-opacity-10"
+                             style="width: 45px; height: 45px;">
+
+                            <i class="bi bi-chat-dots-fill fs-5"></i>
+                        </div>
+
+                        <div>
+                            <h5 class="mb-0">
+                                Asistente virtual
+                            </h5>
+
+                            <small class="text-white-50">
+                                Ministerio Gosén
+                            </small>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="contenedorMensajes"
+                     class="card-body bg-light chatbot-mensajes p-4">
+
+                    <div class="d-flex justify-content-start mb-3">
+                        <div class="bg-white border shadow-sm rounded-4
+                            rounded-bottom-start-1 px-3 py-2 mensaje-chat">
+                            Hola. Seleccione una opción para continuar.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-footer bg-white border-0 p-3">
+
+                    <div id="mensajeError"
+                         class="alert alert-danger d-none"
+                         role="alert">
+                    </div>
+
+                    <div id="contenedorOpciones"
+                         class="d-grid gap-2">
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .chatbot-mensajes {
+        height: 430px;
+        overflow-y: auto;
+    }
+
+    .mensaje-chat {
+        max-width: 80%;
+        overflow-wrap: anywhere;
+        white-space: pre-line;
+    }
+</style>
+
+@section Scripts {
+    <script>
+                const datosIniciales = @Html.Raw(datosInicialesJson);
+                const mensajeInicial = @Html.Raw(mensajeInicialJson);
+
+                const urlConsultarChatbot =
+                    '@Url.Action("ConsultarChatbot", "Chatbot")';
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    console.group("[Chatbot] Inicio");
+                    console.log("URL del controlador MVC:", urlConsultarChatbot);
+                    console.log("Datos iniciales:", datosIniciales);
+                    console.log("Mensaje inicial:", mensajeInicial);
+                    console.groupEnd();
+
+                    if (mensajeInicial) {
+                        mostrarError(mensajeInicial);
+                        return;
+                    }
+
+                    mostrarOpciones(datosIniciales);
+                });
+
+                function obtenerPropiedad(objeto, ...nombres) {
+                    if (!objeto) {
+                        return null;
+                    }
+
+                    for (const nombre of nombres) {
+                        if (
+                            Object.prototype.hasOwnProperty.call(objeto, nombre) &&
+                            objeto[nombre] !== undefined
+                        ) {
+                            return objeto[nombre];
+                        }
+                    }
+
+                    return null;
+                }
+
+                function obtenerSeleccion(datos) {
+                    return obtenerPropiedad(
+                        datos,
+                        "seleccion",
+                        "Seleccion"
+                    );
+                }
+
+                function obtenerOpciones(datos) {
+                    const opciones = obtenerPropiedad(
+                        datos,
+                        "opciones",
+                        "Opciones"
+                    );
+
+                    return Array.isArray(opciones)
+                        ? opciones
+                        : [];
+                }
+
+                function obtenerOpcionPadre(datos) {
+                    return obtenerPropiedad(
+                        datos,
+                        "opcionPadre",
+                        "OpcionPadre"
+                    );
+                }
+
+                function obtenerIdOpcion(opcion) {
+                    return obtenerPropiedad(
+                        opcion,
+                        "id_Opcion",
+                        "idOpcion",
+                        "Id_Opcion",
+                        "IdOpcion"
+                    );
+                }
+
+                function obtenerTextoOpcion(opcion) {
+                    return obtenerPropiedad(
+                        opcion,
+                        "texto_Opcion",
+                        "textoOpcion",
+                        "Texto_Opcion",
+                        "TextoOpcion"
+                    );
+                }
+
+                function obtenerRespuesta(opcion) {
+                    return obtenerPropiedad(
+                        opcion,
+                        "respuesta",
+                        "Respuesta"
+                    );
+                }
+
+                async function consultarChatbot(idOpcion = null) {
+                    let url = urlConsultarChatbot;
+
+                    if (idOpcion !== null) {
+                        url += `?idOpcion=${encodeURIComponent(idOpcion)}`;
+                    }
+
+                    console.group("[Chatbot] Consulta");
+                    console.log("URL:", url);
+                    console.log("IdOpcion:", idOpcion);
+
+                    try {
+                        const response = await fetch(url, {
+                            method: "GET",
+                            headers: {
+                                "Accept": "application/json"
+                            },
+                            cache: "no-store"
+                        });
+
+                        console.log("Estado HTTP:", response.status);
+                        console.log("Respuesta correcta:", response.ok);
+
+                        const contenido = await response.text();
+
+                        console.log("Contenido recibido:", contenido);
+
+                        let datos = null;
+
+                        if (contenido.trim()) {
+                            datos = JSON.parse(contenido);
+                        }
+
+                        console.log("JSON recibido:", datos);
+
+                        if (!response.ok) {
+                            const mensaje = obtenerPropiedad(
+                                datos,
+                                "mensaje",
+                                "Mensaje"
+                            );
+
+                            throw new Error(
+                                mensaje ||
+                                contenido ||
+                                "No se pudo consultar el chatbot."
+                            );
+                        }
+
+                        return datos;
+                    } catch (error) {
+                        console.error("[Chatbot] Error:", error);
+                        throw error;
+                    } finally {
+                        console.groupEnd();
+                    }
+                }
+
+                async function seleccionarOpcion(idOpcion, textoOpcion) {
+                    console.log("[Chatbot] Opción seleccionada:", {
+                        idOpcion,
+                        textoOpcion
+                    });
+
+                    if (idOpcion === null || idOpcion === undefined) {
+                        mostrarError(
+                            "La opción seleccionada no contiene un identificador."
+                        );
+
+                        return;
+                    }
+
+                    ocultarError();
+                    agregarMensajeUsuario(textoOpcion);
+                    mostrarCargando();
+
+                    try {
+                        const datos = await consultarChatbot(idOpcion);
+
+                        const seleccion = obtenerSeleccion(datos);
+                        const respuesta = obtenerRespuesta(seleccion);
+
+                        console.log("[Chatbot] Selección recibida:", seleccion);
+                        console.log("[Chatbot] Respuesta recibida:", respuesta);
+
+                        if (respuesta) {
+                            agregarMensajeBot(respuesta);
+                        }
+
+                        mostrarOpciones(datos);
+                    } catch (error) {
+                        agregarMensajeBot(
+                            "No fue posible procesar la opción seleccionada."
+                        );
+
+                        mostrarError(error.message);
+                    }
+                }
+
+                async function cargarMenuPrincipal() {
+                    console.log("[Chatbot] Cargando menú principal");
+
+                    ocultarError();
+                    mostrarCargando();
+
+                    try {
+                        const datos = await consultarChatbot();
+
+                        mostrarOpciones(datos);
+                    } catch (error) {
+                        mostrarError(error.message);
+                    }
+                }
+
+                async function cargarNivel(idOpcion) {
+                    console.log("[Chatbot] Cargando nivel:", idOpcion);
+
+                    ocultarError();
+                    mostrarCargando();
+
+                    try {
+                        const datos = await consultarChatbot(idOpcion);
+
+                        mostrarOpciones(datos);
+                    } catch (error) {
+                        mostrarError(error.message);
+                    }
+                }
+
+                function mostrarOpciones(datos) {
+                    const contenedor =
+                        document.getElementById("contenedorOpciones");
+
+                    contenedor.replaceChildren();
+
+                    const opciones = obtenerOpciones(datos);
+
+                    console.group("[Chatbot] Opciones");
+                    console.log("Datos recibidos:", datos);
+                    console.log("Opciones encontradas:", opciones);
+
+                    console.table(
+                        opciones.map(function (opcion) {
+                            return {
+                                id: obtenerIdOpcion(opcion),
+                                texto: obtenerTextoOpcion(opcion),
+                                respuesta: obtenerRespuesta(opcion)
+                            };
+                        })
+                    );
+
+                    console.groupEnd();
+
+                    opciones.forEach(function (opcion, indice) {
+                        const idOpcion = obtenerIdOpcion(opcion);
+                        const textoOpcion = obtenerTextoOpcion(opcion);
+
+                        const boton = document.createElement("button");
+
+                        boton.type = "button";
+                        boton.className =
+                            "btn btn-outline-success text-start rounded-3";
+
+                        const icono = document.createElement("i");
+                        icono.className =
+                            "bi bi-chevron-right me-2";
+
+                        const texto = document.createTextNode(
+                            textoOpcion || `Opción ${indice + 1}`
+                        );
+
+                        boton.appendChild(icono);
+                        boton.appendChild(texto);
+
+                        if (idOpcion === null || idOpcion === undefined) {
+                            boton.disabled = true;
+
+                            console.error(
+                                "[Chatbot] Opción sin ID:",
+                                opcion
+                            );
+                        } else {
+                            boton.addEventListener("click", function () {
+                                seleccionarOpcion(
+                                    idOpcion,
+                                    textoOpcion
+                                );
+                            });
+                        }
+
+                        contenedor.appendChild(boton);
+                    });
+
+                    if (opciones.length === 0) {
+                        const mensaje = document.createElement("div");
+
+                        mensaje.className =
+                            "text-center text-secondary small py-2";
+
+                        mensaje.innerHTML = `
+        <i class="bi bi-check-circle me-1"></i>
+                            No hay más opciones disponibles.
+                        `;
+
+                        contenedor.appendChild(mensaje);
+                    }
+
+                    agregarNavegacion(datos);
+                }
+
+                function agregarNavegacion(datos) {
+                    const contenedor =
+                        document.getElementById("contenedorOpciones");
+
+                    const seleccion = obtenerSeleccion(datos);
+                    const opcionPadre = obtenerOpcionPadre(datos);
+
+                    if (opcionPadre) {
+                        const idPadre =
+                            obtenerIdOpcion(opcionPadre);
+
+                        const botonVolver =
+                            document.createElement("button");
+
+                        botonVolver.type = "button";
+                        botonVolver.className =
+                            "btn btn-outline-secondary rounded-3";
+
+                        botonVolver.innerHTML = `
+        <i class="bi bi-arrow-left me-1"></i>
+                            Volver
+                        `;
+
+                        botonVolver.addEventListener("click", function () {
+                            cargarNivel(idPadre);
+                        });
+
+                        contenedor.appendChild(botonVolver);
+                    } else if (seleccion) {
+                        const botonVolver =
+                            document.createElement("button");
+
+                        botonVolver.type = "button";
+                        botonVolver.className =
+                            "btn btn-outline-secondary rounded-3";
+
+                        botonVolver.innerHTML = `
+        <i class="bi bi-arrow-left me-1"></i>
+                            Volver
+                        `;
+
+                        botonVolver.addEventListener(
+                            "click",
+                            cargarMenuPrincipal
+                        );
+
+                        contenedor.appendChild(botonVolver);
+                    }
+
+                    if (seleccion) {
+                        const botonPrincipal =
+                            document.createElement("button");
+
+                        botonPrincipal.type = "button";
+                        botonPrincipal.className =
+                            "btn btn-secondary rounded-3";
+
+                        botonPrincipal.innerHTML = `
+        <i class="bi bi-house-door me-1"></i>
+                            Menú principal
+                        `;
+
+                        botonPrincipal.addEventListener(
+                            "click",
+                            cargarMenuPrincipal
+                        );
+
+                        contenedor.appendChild(botonPrincipal);
+                    }
+                }
+
+                function agregarMensajeUsuario(texto) {
+                    agregarMensaje(texto, true);
+                }
+
+                function agregarMensajeBot(texto) {
+                    agregarMensaje(texto, false);
+                }
+
+                function agregarMensaje(texto, esUsuario) {
+                    if (!texto) {
+                        return;
+                    }
+
+                    const contenedor =
+                        document.getElementById("contenedorMensajes");
+
+                    const fila = document.createElement("div");
+
+                    fila.className = esUsuario
+                        ? "d-flex justify-content-end mb-3"
+                        : "d-flex justify-content-start mb-3";
+
+                    const burbuja = document.createElement("div");
+
+                    burbuja.className = esUsuario
+                        ? "text-white shadow-sm rounded-4 px-3 py-2 mensaje-chat"
+                        : "bg-white border shadow-sm rounded-4 px-3 py-2 mensaje-chat";
+
+                    if (esUsuario) {
+                        burbuja.style.backgroundColor = "#0d2422";
+                    }
+
+                    const icono = document.createElement("i");
+
+                    icono.className = esUsuario
+                        ? "bi bi-person-fill me-2"
+                        : "bi bi-robot me-2";
+
+                    const contenido = document.createElement("span");
+                    contenido.textContent = texto;
+
+                    burbuja.appendChild(icono);
+                    burbuja.appendChild(contenido);
+                    fila.appendChild(burbuja);
+                    contenedor.appendChild(fila);
+
+                    contenedor.scrollTop =
+                        contenedor.scrollHeight;
+                }
+
+                function mostrarCargando() {
+                    const contenedor =
+                        document.getElementById("contenedorOpciones");
+
+                    contenedor.innerHTML = `
+        <div class="d-flex align-items-center
+                                    justify-content-center
+                                    text-secondary py-2">
+        <div class="spinner-border spinner-border-sm me-2"
+                                 role="status">
+        <span class="visually-hidden">
+                                    Cargando...
+        </span>
+        </div>
+
+                            Cargando opciones...
+        </div>
+                    `;
+                }
+
+                function mostrarError(mensaje) {
+                    console.error("[Chatbot] Error mostrado:", mensaje);
+
+                    const alerta =
+                        document.getElementById("mensajeError");
+
+                    alerta.textContent =
+                        mensaje ||
+                        "Ocurrió un error al cargar el chatbot.";
+
+                    alerta.classList.remove("d-none");
+
+                    const contenedor =
+                        document.getElementById("contenedorOpciones");
+
+                    contenedor.innerHTML = `
+        <button type="button"
+                                id="btnReintentar"
+                                class="btn btn-danger rounded-3">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+                            Reintentar
+        </button>
+                    `;
+
+                    document
+                        .getElementById("btnReintentar")
+                        .addEventListener(
+                            "click",
+                            cargarMenuPrincipal
+                        );
+                }
+
+                function ocultarError() {
+                    const alerta =
+                        document.getElementById("mensajeError");
+
+                    alerta.textContent = "";
+                    alerta.classList.add("d-none");
+                }
+    </script>
+}

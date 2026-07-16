@@ -1,0 +1,12 @@
+﻿namespace MinisterioGosenAPI.Models
+{
+    public class ChatbotResultadoModel
+    {
+        public ChatBotOpcionesModel? Seleccion { get; set; }
+
+        public List<ChatBotOpcionesModel> Opciones { get; set; } = [];
+
+        public ChatBotOpcionesModel? OpcionPadre { get; set; }
+    }
+}
+    
