@@ -1449,3 +1449,14 @@ h1, h2, h3, h4, h5, h6,
         .navbar .dropdown-item.active i {
             color: #ffffff !important;
         }
+
+    .chatbot-mensajes {
+        min-height: 350px;
+        max-height: calc(100vh - 220px);
+    }
+
+    .chatbot-burbuja {
+        max-width: 85%;
+        overflow-wrap: anywhere;
+        white-space: pre-line;
+    }

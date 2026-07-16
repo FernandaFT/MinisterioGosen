@@ -1681,14 +1681,13 @@ CREATE TABLE Chat_Bot_Opciones
 );
 GO
 
+
 CREATE OR ALTER PROCEDURE SP_ConsultarChatbot
     @Id_Opcion INT = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
-        Padre.Id_Opcion,
- 
-    /* 1. Opción seleccionada */
+
     SELECT
         Id_Opcion,
         Texto_Opcion,
@@ -1699,9 +1698,7 @@ BEGIN
     FROM Chat_Bot_Opciones
     WHERE Id_Opcion = @Id_Opcion
       AND Activo = 1;
- 
- 
-    /* 2. Opciones del siguiente nivel */
+
     SELECT
         Id_Opcion,
         Texto_Opcion,
@@ -1720,10 +1717,9 @@ BEGIN
     ORDER BY
         Orden,
         Texto_Opcion;
- 
- 
-    /* 3. Opción padre para regresar al nivel anterior */
+
     SELECT
+        Padre.Id_Opcion,
         Padre.Texto_Opcion,
         Padre.Respuesta,
         Padre.Id_Opcion_Padre,
