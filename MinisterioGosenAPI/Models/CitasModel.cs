@@ -11,6 +11,10 @@ namespace MinisterioGosenAPI.Models
         [DataType(DataType.Date)]
         public DateTime Fecha_Cita { get; set; } = DateTime.Today;
 
+        [Required(ErrorMessage = "La hora de la cita es obligatoria")]
+        [DataType(DataType.Time)]
+        public TimeSpan Hora_Cita { get; set; }
+
         [Required(ErrorMessage = "Debe seleccionar la persona que registra la cita")]
         public int Id_Usuario_Cita { get; set; }
 

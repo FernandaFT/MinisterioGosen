@@ -88,6 +88,7 @@
                         <tr>
                             <th class="ps-4">Código</th>
                             <th>Fecha</th>
+                            <th>Hora</th>
                             <th>Solicitante</th>
                             <th>Encargado</th>
                             <th>Observación inicial</th>
@@ -112,6 +113,13 @@
                                         <div class="small">
                                             <i class="bi bi-calendar-date me-1 text-primary"></i>
                                             @item.Fecha_Cita.ToString("dd/MM/yyyy")
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="small">
+                                            <i class="bi bi-clock me-1 text-info"></i>
+                                            @item.Hora_Cita.ToString(@"hh\:mm")
                                         </div>
                                     </td>
 

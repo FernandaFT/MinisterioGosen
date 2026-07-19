@@ -64,6 +64,13 @@
 
                 <div class="col-md-6">
                     <div class="p-3 bg-light rounded-4">
+                        <p class="text-muted small mb-1">Hora de la cita</p>
+                        <h6 class="fw-bold mb-0">@Model.Hora_Cita.ToString(@"hh\:mm")</h6>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-4">
                         <p class="text-muted small mb-1">Encargado</p>
                         <h6 class="fw-bold mb-0">
                             @(string.IsNullOrEmpty(Model.Nombre_Usuario_Encargado) ? $"Usuario #{Model.Id_Usuario_Encargado}" : Model.Nombre_Usuario_Encargado)
