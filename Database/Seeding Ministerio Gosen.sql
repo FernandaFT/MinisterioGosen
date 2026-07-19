@@ -444,64 +444,107 @@ BEGIN TRY
         OR U.RN = ((A.RN * 2 + 7) % @TotalUsuarios) + 1
         OR U.RN = ((A.RN * 2 + 15) % @TotalUsuarios) + 1;
 
-    /* ============================================================
-       10. CITAS
-       Estado solo permite: Pendiente / Atendida
-       ============================================================ */
+/* ============================================================
+   10. CITAS
+   Estado permitido: Pendiente / Atendida
+   Horario permitido: 08:00 a 17:00
+   ============================================================ */
 
-    ;WITH Usuarios AS
-    (
-        SELECT
-            Id_Usuario,
-            ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
-        FROM dbo.Usuario
-        WHERE Id_Rol = 2
-          AND Estado = 'A'
-    ),
-    Encargados AS
-    (
-        SELECT
-            Id_Usuario,
-            ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
-        FROM dbo.Usuario
-        WHERE Id_Rol = 2
-          AND Estado = 'A'
-    )
-    INSERT INTO dbo.Citas
-    (
-        Fecha_Cita,
-        Id_Usuario_Cita,
-        Id_Usuario_Encargado,
-        Observacion_Inicial,
-        Detalle_Cita,
-        Estado
-    )
+;WITH Usuarios AS
+(
     SELECT
-        DATEADD(DAY, U.RN + 1, CAST(GETDATE() AS DATE)),
-        U.Id_Usuario,
+        Id_Usuario,
+        ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
+    FROM dbo.Usuario
+    WHERE Id_Rol = 2
+      AND Estado = 'A'
+),
+Encargados AS
+(
+    SELECT
+        Id_Usuario,
+        ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
+    FROM dbo.Usuario
+    WHERE Id_Rol = 2
+      AND Estado = 'A'
+),
+DatosCitas AS
+(
+    SELECT
+        U.RN,
+        U.Id_Usuario AS Id_Usuario_Cita,
+
         CASE
-            WHEN U.RN % 4 = 0 THEN @IdAdmin
+            WHEN U.RN % 4 = 0
+                THEN @IdAdmin
             ELSE E.Id_Usuario
-        END,
-        CASE
-            WHEN U.RN % 5 = 0 THEN 'Solicitud de apoyo familiar.'
-            WHEN U.RN % 5 = 1 THEN 'Consulta sobre participacion en ministerio.'
-            WHEN U.RN % 5 = 2 THEN 'Solicitud de acompañamiento espiritual.'
-            WHEN U.RN % 5 = 3 THEN 'Consulta sobre actividades disponibles.'
-            ELSE 'Solicitud de orientacion general.'
-        END,
-        CASE
-            WHEN U.RN % 3 = 0 THEN 'Cita atendida y registrada con seguimiento.'
-            ELSE 'Cita pendiente de revision por administracion.'
-        END,
-        CASE
-            WHEN U.RN % 3 = 0 THEN 'Atendida'
-            ELSE 'Pendiente'
-        END
+        END AS Id_Usuario_Encargado,
+
+        -- Distribuye las citas entre diferentes fechas
+        DATEADD(
+            DAY,
+            ((U.RN - 1) / 10) + 1,
+            CAST(GETDATE() AS DATE)
+        ) AS Fecha_Cita,
+
+        -- Genera horas desde las 08:00 hasta las 17:00
+        CAST(
+            DATEADD(
+                HOUR,
+                (U.RN - 1) % 10,
+                CAST('08:00:00' AS DATETIME)
+            ) AS TIME(0)
+        ) AS Hora_Cita
+
     FROM Usuarios U
     INNER JOIN Encargados E
         ON E.RN = ((U.RN + 6) % @TotalUsuarios) + 1
-    WHERE U.RN <= 25;
+    WHERE U.RN <= 25
+)
+INSERT INTO dbo.Citas
+(
+    Fecha_Cita,
+    Hora_Cita,
+    Id_Usuario_Cita,
+    Id_Usuario_Encargado,
+    Observacion_Inicial,
+    Detalle_Cita,
+    Estado
+)
+SELECT
+    Fecha_Cita,
+    Hora_Cita,
+    Id_Usuario_Cita,
+    Id_Usuario_Encargado,
+
+    CASE
+        WHEN RN % 5 = 0
+            THEN 'Solicitud de apoyo familiar.'
+        WHEN RN % 5 = 1
+            THEN 'Consulta sobre participacion en ministerio.'
+        WHEN RN % 5 = 2
+            THEN 'Solicitud de acompañamiento espiritual.'
+        WHEN RN % 5 = 3
+            THEN 'Consulta sobre actividades disponibles.'
+        ELSE
+            'Solicitud de orientacion general.'
+    END,
+
+    CASE
+        WHEN RN % 3 = 0
+            THEN 'Cita atendida y registrada con seguimiento.'
+        ELSE
+            'Cita pendiente de revision por administracion.'
+    END,
+
+    CASE
+        WHEN RN % 3 = 0
+            THEN 'Atendida'
+        ELSE
+            'Pendiente'
+    END
+
+FROM DatosCitas;
 
     /* ============================================================
        11. ERRORES DE EJEMPLO
