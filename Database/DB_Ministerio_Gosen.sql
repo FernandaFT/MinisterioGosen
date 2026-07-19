@@ -1428,7 +1428,7 @@ INSERT INTO Tipo_Actividad (Nombre_Tipo)
 VALUES ('Culto');
 
 INSERT INTO Tipo_Actividad (Nombre_Tipo)
-VALUES ('Reuni�n');
+VALUES ('Reuni n');
 
 /* =========================
    MINISTERIOS
@@ -1441,7 +1441,7 @@ INSERT INTO Ministerio
 )
 VALUES
 (
-    'Ministerio de J�venes',
+    'Ministerio de J venes',
     'Ministerio encargado de actividades juveniles'
 );
 
@@ -1452,8 +1452,8 @@ INSERT INTO Ministerio
 )
 VALUES
 (
-    'Ministerio de M�sica',
-    'Ministerio encargado de la alabanza y m�sica'
+    'Ministerio de M sica',
+    'Ministerio encargado de la alabanza y m sica'
 );
 
 
@@ -1476,7 +1476,7 @@ VALUES
     'Culto Juvenil',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Sal�n principal',
+    'Sal n principal',
     '18:00',
     '20:00',
     (SELECT Id_Tipo_Actividad
@@ -1496,7 +1496,7 @@ INSERT INTO Actividad
 )
 VALUES
 (
-    'Reuni�n de J�venes',
+    'Reuni n de J venes',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
     'Aula 1',
@@ -1504,7 +1504,7 @@ VALUES
     '18:00',
     (SELECT Id_Tipo_Actividad
      FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reuni�n')
+     WHERE Nombre_Tipo = 'Reuni n')
 );
 
 INSERT INTO Actividad
@@ -1545,12 +1545,12 @@ VALUES
     'Ensayo Musical',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Sal�n de m�sica',
+    'Sal n de m sica',
     '19:00',
     '21:00',
     (SELECT Id_Tipo_Actividad
      FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reuni�n')
+     WHERE Nombre_Tipo = 'Reuni n')
 );
 
 
@@ -1574,10 +1574,10 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de J�venes'),
+     WHERE Descripcion_Ministerio = 'Ministerio de J venes'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de J�venes'
+    'Actividad del Ministerio de J venes'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1591,14 +1591,14 @@ VALUES
 (
     (SELECT Id_Actividad
      FROM Actividad
-     WHERE Nombre_Actividad = 'Reuni�n de J�venes'),
+     WHERE Nombre_Actividad = 'Reuni n de J venes'),
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de J�venes'),
+     WHERE Descripcion_Ministerio = 'Ministerio de J venes'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Reuni�n de planificaci�n juvenil'
+    'Reuni n de planificaci n juvenil'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1616,10 +1616,10 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de M�sica'),
+     WHERE Descripcion_Ministerio = 'Ministerio de M sica'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de M�sica'
+    'Actividad del Ministerio de M sica'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1637,10 +1637,10 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de M�sica'),
+     WHERE Descripcion_Ministerio = 'Ministerio de M sica'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Ensayo general del equipo de m�sica'
+    'Ensayo general del equipo de m sica'
 );
 
 GO
@@ -1664,5 +1664,71 @@ BEGIN
     INNER JOIN Usuario UC ON C.Id_Usuario_Cita = UC.Id_Usuario
     INNER JOIN Usuario UE ON C.Id_Usuario_Encargado = UE.Id_Usuario
     ORDER BY C.Fecha_Cita DESC;
+END;
+GO
+
+/*APARTADO CHAT BOT*/
+
+CREATE TABLE Chat_Bot_Opciones
+(
+	Id_Opcion int IDENTITY(1,1) PRIMARY KEY,
+	Texto_Opcion nvarchar (200) NOT NULL,
+	Respuesta varchar (200),
+	Id_Opcion_Padre int,
+	Orden int NOT NULL DEFAULT 1,
+	Activo bit NOT NULL DEFAULT 1,
+	Constraint FK_Opcion_Padre Foreign Key (Id_Opcion_Padre) REFERENCES Chat_Bot_Opciones (Id_Opcion)
+);
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_ConsultarChatbot
+    @Id_Opcion INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id_Opcion,
+        Texto_Opcion,
+        Respuesta,
+        Id_Opcion_Padre,
+        Orden,
+        Activo
+    FROM Chat_Bot_Opciones
+    WHERE Id_Opcion = @Id_Opcion
+      AND Activo = 1;
+
+    SELECT
+        Id_Opcion,
+        Texto_Opcion,
+        Respuesta,
+        Id_Opcion_Padre,
+        Orden,
+        Activo
+    FROM Chat_Bot_Opciones
+    WHERE Activo = 1
+      AND
+      (
+          (@Id_Opcion IS NULL AND Id_Opcion_Padre IS NULL)
+          OR
+          (@Id_Opcion IS NOT NULL AND Id_Opcion_Padre = @Id_Opcion)
+      )
+    ORDER BY
+        Orden,
+        Texto_Opcion;
+
+    SELECT
+        Padre.Id_Opcion,
+        Padre.Texto_Opcion,
+        Padre.Respuesta,
+        Padre.Id_Opcion_Padre,
+        Padre.Orden,
+        Padre.Activo
+    FROM Chat_Bot_Opciones AS Hijo
+    INNER JOIN Chat_Bot_Opciones AS Padre
+        ON Padre.Id_Opcion = Hijo.Id_Opcion_Padre
+    WHERE Hijo.Id_Opcion = @Id_Opcion
+      AND Padre.Activo = 1;
 END;
 GO

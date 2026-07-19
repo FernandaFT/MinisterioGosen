@@ -424,14 +424,77 @@
     <!-- Copyright End -->
 
     <!-- Floating Buttons -->
-    <a asp-action="Principal" asp-controller="Home"
-       class="btn btn-secondary rounded-circle d-flex align-items-center justify-content-center shadow"
-       style="position: fixed; right: 95px; bottom: 30px; width: 50px; height: 50px; z-index: 9999;"
-       title="Chatbot">
-        <i class="bi bi-chat-dots fs-4"></i>
-    </a>
+    @if (estaLogueado)
+    {
+        <button type="button"
+                id="btnAbrirChatbot"
+                class="btn btn-secondary rounded-circle d-flex align-items-center justify-content-center shadow"
+                style="position: fixed; right: 95px; bottom: 30px; width: 50px; height: 50px; z-index: 9999;"
+                title="Asistente virtual"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#chatbotOffcanvas"
+                aria-controls="chatbotOffcanvas">
+            <i class="bi bi-chat-dots fs-4"></i>
+        </button>
+
+        <div class="offcanvas offcanvas-end"
+             tabindex="-1"
+             id="chatbotOffcanvas"
+             data-chatbot-url="@Url.Action("ConsultarChatbot", "Chatbot")"
+             aria-labelledby="chatbotOffcanvasLabel">
+
+            <div class="offcanvas-header text-white"
+                 style="background-color: #0d2422;">
+
+                <div>
+                    <h5 class="offcanvas-title mb-0"
+                        id="chatbotOffcanvasLabel">
+                        <i class="bi bi-chat-dots-fill me-2"></i>
+                        Asistente virtual
+                    </h5>
+
+                    <small class="text-white-50">
+                        Ministerio Gosén
+                    </small>
+                </div>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="offcanvas"
+                        aria-label="Cerrar">
+                </button>
+            </div>
+
+            <div class="offcanvas-body d-flex flex-column p-0">
+
+                <div id="chatbotMensajes"
+                     class="flex-grow-1 bg-light p-3 overflow-auto chatbot-mensajes">
+
+                    <div class="d-flex justify-content-start mb-3">
+                        <div class="bg-white border rounded-4 px-3 py-2 shadow-sm chatbot-burbuja">
+                            Hola. Seleccione una opción para continuar.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="border-top bg-white p-3">
+                    <div id="chatbotError"
+                         class="alert alert-danger d-none mb-3"
+                         role="alert">
+                    </div>
+
+                    <div id="chatbotOpciones"
+                         class="d-grid gap-2">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
 
     <a href="#"
+       id="btnSubirPagina"
        class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center shadow back-to-top"
        style="position: fixed; right: 30px; bottom: 30px; width: 50px; height: 50px; z-index: 9999;"
        title="Subir">
@@ -451,6 +514,8 @@
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/js/datatablehelper.js"></script>
+    <script src="~/js/chatbot-floating.js"></script>
+    <script src="~/js/chatbot.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 
