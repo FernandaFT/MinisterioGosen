@@ -1,14 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MinisterioGosen.Helpers;
 using MinisterioGosen.Models;
 using System.Net;
 
 namespace MinisterioGosen.Controllers
 {
+    [ValidarSesion]
     public class ActividadController(
         IHttpClientFactory _http,
         IConfiguration _config) : Controller
     {
+        
+
+
         private bool EstaLogueado()
         {
             return HttpContext.Session.GetString("Autenticado") == "1";

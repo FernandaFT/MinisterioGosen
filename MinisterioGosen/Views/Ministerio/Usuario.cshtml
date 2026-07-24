@@ -1,0 +1,137 @@
+﻿@model List<MinisterioGosen.Models.MinisterioModel>
+
+@{
+    ViewData["Title"] = "Nuestros Ministerios";
+
+    var ministerios = Model
+        ?? new List<MinisterioGosen.Models.MinisterioModel>();
+}
+
+<div class="container py-5">
+
+    <div class="ministerios-encabezado rounded-4 p-4 p-md-5 mb-5">
+        <div class="row align-items-center g-4">
+
+            <div class="col-lg-8">
+
+                <h1 class="display-5 fw-bold mb-3">
+                    Nuestros ministerios
+                </h1>
+
+                <p class="text-muted fs-5 mb-0">
+                    Conoce los diferentes ministerios y grupos de apoyo
+                    que forman parte de nuestra congregación.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-inline-flex align-items-center gap-3 bg-white shadow-sm rounded-4 p-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10
+                        d-flex align-items-center justify-content-center"
+                         style="width: 55px; height: 55px;">
+                        <i class="bi bi-diagram-3-fill text-primary fs-3"></i>
+                    </div>
+
+                    <div class="text-start">
+                        <p class="text-muted small mb-0">
+                            Ministerios disponibles
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            @ministerios.Count
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @if (ministerios.Any())
+    {
+        <div class="row g-4">
+
+            @foreach (var item in ministerios)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card ministerio-card h-100 border-0 shadow-sm rounded-4">
+
+                        <div class="card-body p-4">
+
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+
+                                <div class="ministerio-icono rounded-circle
+                                    bg-primary bg-opacity-10
+                                    d-flex align-items-center justify-content-center">
+
+                                    <i class="bi bi-people-fill text-primary fs-2"></i>
+                                </div>
+
+                                <span class="badge bg-light text-primary border rounded-pill px-3 py-2">
+                                    Ministerio
+                                </span>
+
+                            </div>
+
+                            <div class="ministerio-linea bg-primary mb-3"></div>
+
+                            <h4 class="fw-bold mb-3">
+                                @item.Descripcion_Ministerio
+                            </h4>
+
+                            @if (!string.IsNullOrWhiteSpace(item.Observaciones_Ministerio))
+                            {
+                                <p class="ministerio-observaciones text-muted mb-0">
+                                    @item.Observaciones_Ministerio
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="ministerio-observaciones text-muted mb-0">
+                                    Un espacio de servicio, crecimiento y
+                                    compañerismo dentro de nuestra congregación.
+                                </p>
+                            }
+
+                        </div>
+
+                        <div class="card-footer bg-white border-0 px-4 pb-4 pt-0">
+                            <div class="d-flex align-items-center text-primary fw-semibold">
+                                <i class="bi bi-heart-fill me-2"></i>
+                                Sirviendo con amor y propósito
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center py-5">
+
+                <div class="rounded-circle bg-primary bg-opacity-10
+                    d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width: 80px; height: 80px;">
+
+                    <i class="bi bi-people text-primary display-5"></i>
+                </div>
+
+                <h4 class="fw-bold mb-2">
+                    No hay ministerios disponibles
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Los ministerios registrados aparecerán en esta sección.
+                </p>
+
+            </div>
+        </div>
+    }
+
+</div>
