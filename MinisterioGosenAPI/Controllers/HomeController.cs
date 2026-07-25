@@ -11,21 +11,32 @@ namespace MinisterioGosenAPI.Controllers
     public class HomeController(IConfiguration _config, IUtilesService _utiles) : ControllerBase
     {
         [HttpPost("RegistrarAPI")]
-        public IActionResult RegistrarAPI(RegistroUsuarioRequestModel model)
+        public async Task<IActionResult> RegistrarAPI(
+            RegistroUsuarioRequestModel model)
         {
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
             var parameters = new DynamicParameters();
-                parameters.Add("@Nombre", model.Nombre);
-                parameters.Add("@Identificacion", model.Identificacion);
-                parameters.Add("@Correo", model.Correo);
-                parameters.Add("@Contrasena", model.Contrasena);
-            var response = context.Execute("spRegistrarUsuario", parameters);
+            parameters.Add("@Nombre", model.Nombre);
+            parameters.Add("@Identificacion", model.Identificacion);
+            parameters.Add("@Correo", model.Correo);
+            parameters.Add("@Contrasena", model.Contrasena);
 
-            if(response > 0)
+            var response = context.Execute("spRegistrarUsuario",parameters);
+
+            if (response > 0)
+            {
+                // Enviar correo de confirmación de registro
+                string ruta = Path.Combine(AppContext.BaseDirectory,"Templates","RegistroUsuario.html");             
+                string plantilla = System.IO.File.ReadAllText(ruta);
+
+                plantilla = plantilla.Replace("{{NOMBRE}}",model.Nombre);
+
+                await _utiles.EnviarCorreoAsync( model.Correo,"Cuenta creada exitosamente",plantilla);
                 return Ok(response);
+            }
 
-            return BadRequest("No se ha registrado su información, valide que no tenga una cuenta ya creada");
+            return BadRequest("No se ha registrado su información, " + "valide que no tenga una cuenta ya creada");
         }
 
         [HttpPost("IniciarSesionAPI")]

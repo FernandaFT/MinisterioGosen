@@ -462,21 +462,145 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        (SELECT COUNT(*) 
-         FROM Usuario 
-         WHERE Estado = 'A') AS TotalPersonas,
+        (
+            SELECT COUNT(*)
+            FROM dbo.Usuario
+            WHERE Estado = 'A'
+        ) AS TotalPersonas,
 
-        (SELECT COUNT(*) 
-         FROM Actividad) AS TotalActividades,
+        (
+            SELECT COUNT(*)
+            FROM dbo.Actividad
+        ) AS TotalActividades,
 
-        (SELECT COUNT(*) 
-         FROM Ministerio) AS TotalMinisterios,
+        (
+            SELECT COUNT(*)
+            FROM dbo.Ministerio
+        ) AS TotalMinisterios,
 
-        (SELECT COUNT(*) 
-         FROM Citas
-         WHERE Fecha_Cita >= CAST(GETDATE() AS DATE)) AS TotalCitasPendientes;
+        (
+            SELECT COUNT(*)
+            FROM dbo.Citas
+            WHERE Estado = 'Pendiente'
+        ) AS TotalCitasPendientes;
+
+    SELECT
+        CASE
+            WHEN Estado IS NULL
+                 OR LTRIM(RTRIM(Estado)) = ''
+                THEN 'Sin estado'
+            ELSE Estado
+        END AS Etiqueta,
+
+        COUNT(*) AS Cantidad
+
+    FROM dbo.Citas
+
+    GROUP BY
+        CASE
+            WHEN Estado IS NULL
+                 OR LTRIM(RTRIM(Estado)) = ''
+                THEN 'Sin estado'
+            ELSE Estado
+        END
+
+    ORDER BY Cantidad DESC;
+
+    SELECT
+        CONCAT(
+            CASE MONTH(Fecha_Ini)
+                WHEN 1 THEN 'Ene'
+                WHEN 2 THEN 'Feb'
+                WHEN 3 THEN 'Mar'
+                WHEN 4 THEN 'Abr'
+                WHEN 5 THEN 'May'
+                WHEN 6 THEN 'Jun'
+                WHEN 7 THEN 'Jul'
+                WHEN 8 THEN 'Ago'
+                WHEN 9 THEN 'Sep'
+                WHEN 10 THEN 'Oct'
+                WHEN 11 THEN 'Nov'
+                WHEN 12 THEN 'Dic'
+            END,
+            ' ',
+            YEAR(Fecha_Ini)
+        ) AS Etiqueta,
+
+        COUNT(*) AS Cantidad
+
+    FROM dbo.Actividad
+
+    WHERE Fecha_Ini >= DATEADD(
+        MONTH,
+        -11,
+        DATEFROMPARTS(
+            YEAR(GETDATE()),
+            MONTH(GETDATE()),
+            1
+        )
+    )
+
+    GROUP BY
+        YEAR(Fecha_Ini),
+        MONTH(Fecha_Ini)
+
+    ORDER BY
+        YEAR(Fecha_Ini),
+        MONTH(Fecha_Ini);
+
+
+    SELECT TOP (10)
+        A.Nombre_Actividad AS Etiqueta,
+
+        COUNT(DISTINCT AU.Id_Usuario) AS Cantidad
+
+    FROM dbo.Actividad AS A
+
+    INNER JOIN dbo.Actividad_Usuario AS AU
+        ON AU.Id_Actividad = A.Id_Actividad
+
+    INNER JOIN dbo.Usuario AS U
+        ON U.Id_Usuario = AU.Id_Usuario
+
+    WHERE U.Estado = 'A'
+
+    GROUP BY
+        A.Id_Actividad,
+        A.Nombre_Actividad
+
+    ORDER BY
+        Cantidad DESC,
+        A.Nombre_Actividad ASC;
+
+
+    SELECT
+        M.Descripcion_Ministerio AS Etiqueta,
+
+        COUNT(DISTINCT UM.Id_Usuario) AS Cantidad
+
+    FROM dbo.Ministerio AS M
+
+    INNER JOIN dbo.Usuarios_Ministerio AS UM
+        ON UM.Id_Ministerio = M.Id_Ministerio
+
+    INNER JOIN dbo.Usuario AS U
+        ON U.Id_Usuario = UM.Id_Usuario
+
+    WHERE U.Estado = 'A'
+      AND UM.Fecha_Salida IS NULL
+      AND (
+            UM.Estado IS NULL
+            OR UM.Estado <> 'Inactivo'
+          )
+
+    GROUP BY
+        M.Id_Ministerio,
+        M.Descripcion_Ministerio
+
+    ORDER BY
+        Cantidad DESC,
+        M.Descripcion_Ministerio ASC;
 END;
-
 GO
 
 /* ===========================

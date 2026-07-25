@@ -11,7 +11,7 @@ namespace MinisterioGosen.Controllers
         IConfiguration _config) : Controller
     {
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var idRol = HttpContext.Session.GetInt32("Id_Rol");
 

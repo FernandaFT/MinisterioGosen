@@ -12,18 +12,74 @@ namespace MinisterioGosen.Controllers
     {
         [HttpGet]
         [Route("ConsultarDashboardAPI")]
-        public IActionResult ConsultarDashboardAPI()
+        public async Task<IActionResult> ConsultarDashboardAPI()
         {
-            using var context = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-
-            var datos = context.QueryFirstOrDefault<DashboardModel>("spConsultarDashboard");
-
-            if (datos == null)
+            try
             {
-                return NotFound();
-            }
+                var connectionString = _configuration.GetConnectionString("DefaultConnection");
 
-            return Ok(datos);
+                await using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+                using var resultados = await connection.QueryMultipleAsync("spConsultarDashboard");
+
+                /*
+                 * Resultado 1:
+                 * Totales principales del dashboard.
+                 */
+                var dashboard = await resultados.ReadFirstOrDefaultAsync<DashboardModel>();
+                if (dashboard == null)
+                {
+                    return NotFound(new
+                    {
+                        mensaje ="No se encontró información para el dashboard."
+                    });
+                }
+
+                /*
+                 * Resultado 2:
+                 * Citas agrupadas por estado.
+                 */
+                dashboard.CitasPorEstado =(await resultados.ReadAsync<DashboardGraficoModel>()).ToList();
+
+                /*
+                 * Resultado 3:
+                 * Actividades agrupadas por mes.
+                 */
+                dashboard.ActividadesPorMes = (await resultados.ReadAsync<DashboardGraficoModel>()).ToList();
+
+                /*
+                 * Resultado 4:
+                 * Asistencia o personas registradas por actividad.
+                 */
+                dashboard.AsistenciaPorActividad = (await resultados.ReadAsync<DashboardGraficoModel>()).ToList();
+
+                /*
+                 * Resultado 5:
+                 * Personas agrupadas por ministerio.
+                 */
+                dashboard.PersonasPorMinisterio = (await resultados.ReadAsync<DashboardGraficoModel>()).ToList();
+                return Ok(dashboard);
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        mensaje = "Ocurrió un error al consultar la base de datos.", detalle = ex.Message
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        mensaje = "Ocurrió un error al cargar el dashboard.", detalle = ex.Message
+                    }
+                );
+            }
         }
     }
 }
