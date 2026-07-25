@@ -1460,3 +1460,33 @@ h1, h2, h3, h4, h5, h6,
         overflow-wrap: anywhere;
         white-space: pre-line;
     }
+
+    .ministerios-encabezado {
+        background: linear-gradient( 135deg, rgba(var(--bs-primary-rgb), 0.12), rgba(var(--bs-primary-rgb), 0.03) );
+    }
+
+    .ministerio-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        overflow: hidden;
+    }
+
+        .ministerio-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.12) !important;
+        }
+
+    .ministerio-icono {
+        width: 70px;
+        height: 70px;
+        flex-shrink: 0;
+    }
+
+    .ministerio-observaciones {
+        line-height: 1.7;
+    }
+
+    .ministerio-linea {
+        width: 50px;
+        height: 4px;
+        border-radius: 10px;
+    }

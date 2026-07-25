@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MinisterioGosen.Helpers;
 using MinisterioGosen.Models;
 using System.Net;
 
 namespace MinisterioGosen.Controllers
 {
+    [ValidarSesion]
     public class MinisterioController(
         IHttpClientFactory _http,
         IConfiguration _config) : Controller
@@ -16,18 +18,23 @@ namespace MinisterioGosen.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            if (!EsAdmin())
-                return RedirectToAction("Error", "Home", new { statusCode = 403 });
-
             using var client = _http.CreateClient();
 
-            var url = _config["Valores:UrlApi"] + "Ministerio/ListarMinisteriosAPI";
+            var url = _config["Valores:UrlApi"] +
+                      "Ministerio/ListarMinisteriosAPI";
+
             var response = client.GetAsync(url).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var datos = response.Content.ReadFromJsonAsync<List<MinisterioModel>>().Result;
-                return View(datos);
+                var datos = response.Content
+                    .ReadFromJsonAsync<List<MinisterioModel>>()
+                    .Result ?? new List<MinisterioModel>();
+
+                if (EsAdmin())
+                    return View(datos);
+
+                return View("Usuario", datos);
             }
 
             throw new Exception("Error al consultar los ministerios");

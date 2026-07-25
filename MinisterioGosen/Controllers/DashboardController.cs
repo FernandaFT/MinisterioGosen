@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MinisterioGosen.Helpers;
 using MinisterioGosen.Models;
 using System.Net;
 
 namespace MinisterioGosen.Controllers
 {
+    [ValidarSesion]
     public class DashboardController(
         IHttpClientFactory _http,
         IConfiguration _config) : Controller

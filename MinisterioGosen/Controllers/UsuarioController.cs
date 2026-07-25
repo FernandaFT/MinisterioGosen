@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MinisterioGosen.Helpers;
 using MinisterioGosen.Models;
 using System.Net;
 using static System.Net.WebRequestMethods;
 
 namespace MinisterioGosen.Controllers
 {
+    [ValidarSesion]
     public class UsuarioController(
         IHttpClientFactory _http,
         IConfiguration _config) : Controller

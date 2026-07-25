@@ -35,13 +35,15 @@
                                  data-animation="fadeInRight"
                                  data-delay="1.7s"
                                  style="animation-delay: 1.7s;">
-                                <a class="btn btn-primary rounded-pill py-3 px-5" href="#">
-                                    Conócenos
+                                <a asp-controller="Citas"
+                                   asp-action="Crear"
+                                   class="btn btn-primary border border-white border-2 rounded-pill py-3 px-5">
+                                    Agendar Cita
                                 </a>
 
                                 <a asp-controller="Actividad"
                                    asp-action="Horarios"
-                                   class="btn btn-secondary rounded-pill py-3 px-5">
+                                   class="btn btn-secondary border border-white rounded-pill py-3 px-5">
                                     Horarios de Servicio
                                 </a>
 
