@@ -6,6 +6,7 @@
         public string Identificacion { get; set; } = string.Empty;
         public string Nombre { get; set; } = string.Empty;
         public string Correo { get; set; } = string.Empty;
+        public string Contrasena { get; set; } = string.Empty;
         public string Estado { get; set; } = string.Empty;
         public bool UsaContrasenaTemp { get; set; }
 

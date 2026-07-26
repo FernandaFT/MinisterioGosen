@@ -47,10 +47,12 @@ namespace MinisterioGosenAPI.Controllers
             var parameters = new DynamicParameters();
             parameters.Add("@Correo", model.Correo);
             parameters.Add("@Contrasena", model.Contrasena);
-            var response = context.QueryFirstOrDefault<UsuarioResponseModel>("spIniciarSesionUsuario",parameters);
+            var response = context.QueryFirstOrDefault<UsuarioResponseModel>("spIniciarSesionUsuario", parameters);
 
-            if (response != null)
+            if (response != null && BCrypt.Net.BCrypt.Verify(model.Contrasena, response.Contrasena))
+            {
                 return Ok(response);
+            }
             else
                 return NotFound("No se ha validado su información correctamente");
         }
@@ -70,10 +72,11 @@ namespace MinisterioGosenAPI.Controllers
 
             //2 Generar una contraseña temporal
             var temporal = _utiles.GenerarContrasena();
+            var temporalCifrada = BCrypt.Net.BCrypt.HashPassword(temporal);
 
             parameters = new DynamicParameters();
             parameters.Add("@Id_Usuario", response.Id_Usuario);
-            parameters.Add("@Contrasena", temporal);
+            parameters.Add("@Contrasena", temporalCifrada);
             parameters.Add("@IndicadorTemp", true);
             var update = context.Execute("spActualizarContrasenna", parameters);
 

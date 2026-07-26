@@ -39,6 +39,7 @@ namespace MinisterioGosen.Controllers
         [HttpPost]
         public IActionResult Index(UsuarioModel model)
         {
+
             using var client = _http.CreateClient();
 
             var url = _config["Valores:UrlApi"] + "Home/IniciarSesionAPI";
@@ -80,6 +81,8 @@ namespace MinisterioGosen.Controllers
         [HttpPost]
         public IActionResult Registrar(UsuarioModel model)
         {
+            model.Contrasena = BCrypt.Net.BCrypt.HashPassword(model.Contrasena);
+
             using var client = _http.CreateClient();
 
             var url = _config["Valores:UrlApi"] + "Home/RegistrarAPI";
