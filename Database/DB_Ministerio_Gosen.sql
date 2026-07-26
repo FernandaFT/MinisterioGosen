@@ -969,12 +969,13 @@ BEGIN
         Identificacion,
         Nombre,
         Correo,
+	Contrasena,
         Estado,
         Id_Rol,
         UsaContrasenaTemp
     FROM dbo.Usuario
     WHERE Correo = @Correo
-      AND Contrasena = @Contrasena
+      /*AND Contrasena = @Contrasena*/
       AND Estado = 'A';
 END
 
