@@ -3,7 +3,6 @@ GO
 
 CREATE DATABASE [ministerio_gosen]
 GO
-
 USE [ministerio_gosen]
 GO
 
@@ -45,6 +44,20 @@ CREATE TABLE [dbo].[Actividades_Ministerio](
 PRIMARY KEY CLUSTERED 
 (
 	[Id_Minis_Actividad] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+CREATE TABLE [dbo].[Chat_Bot_Opciones](
+	[Id_Opcion] [int] IDENTITY(1,1) NOT NULL,
+	[Texto_Opcion] [nvarchar](200) NOT NULL,
+	[Respuesta] [varchar](200) NULL,
+	[Id_Opcion_Padre] [int] NULL,
+	[Orden] [int] NOT NULL,
+	[Activo] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id_Opcion] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -139,6 +152,38 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+SET IDENTITY_INSERT [dbo].[Actividad] ON 
+GO
+INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (1, N'Culto Juvenil', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Sal n principal', CAST(N'18:00:00' AS Time), CAST(N'20:00:00' AS Time), 1)
+GO
+INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (2, N'Reuni n de J venes', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Aula 1', CAST(N'16:00:00' AS Time), CAST(N'18:00:00' AS Time), 2)
+GO
+INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (3, N'Culto de Alabanza', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Templo principal', CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), 1)
+GO
+INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (4, N'Ensayo Musical', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Sal n de m sica', CAST(N'19:00:00' AS Time), CAST(N'21:00:00' AS Time), 2)
+GO
+SET IDENTITY_INSERT [dbo].[Actividad] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Actividades_Ministerio] ON 
+GO
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (1, 1, 1, CAST(N'2026-07-28' AS Date), N'Actividad del Ministerio de J venes')
+GO
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (2, 2, 1, CAST(N'2026-07-28' AS Date), N'Reuni n de planificaci n juvenil')
+GO
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (3, 3, 2, CAST(N'2026-07-28' AS Date), N'Actividad del Ministerio de M sica')
+GO
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (4, 4, 2, CAST(N'2026-07-28' AS Date), N'Ensayo general del equipo de m sica')
+GO
+SET IDENTITY_INSERT [dbo].[Actividades_Ministerio] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Ministerio] ON 
+GO
+INSERT [dbo].[Ministerio] ([Id_Ministerio], [Descripcion_Ministerio], [Observaciones_Ministerio]) VALUES (1, N'Ministerio de J venes', N'Ministerio encargado de actividades juveniles')
+GO
+INSERT [dbo].[Ministerio] ([Id_Ministerio], [Descripcion_Ministerio], [Observaciones_Ministerio]) VALUES (2, N'Ministerio de M sica', N'Ministerio encargado de la alabanza y m sica')
+GO
+SET IDENTITY_INSERT [dbo].[Ministerio] OFF
+GO
 SET IDENTITY_INSERT [dbo].[Rol] ON 
 GO
 INSERT [dbo].[Rol] ([Id_Rol], [Descripcion]) VALUES (1, N'Admin')
@@ -147,16 +192,25 @@ INSERT [dbo].[Rol] ([Id_Rol], [Descripcion]) VALUES (2, N'Usuario')
 GO
 SET IDENTITY_INSERT [dbo].[Rol] OFF
 GO
+SET IDENTITY_INSERT [dbo].[Tipo_Actividad] ON 
+GO
+INSERT [dbo].[Tipo_Actividad] ([Id_Tipo_Actividad], [Nombre_Tipo]) VALUES (1, N'Culto')
+GO
+INSERT [dbo].[Tipo_Actividad] ([Id_Tipo_Actividad], [Nombre_Tipo]) VALUES (2, N'Reuni n')
+GO
+SET IDENTITY_INSERT [dbo].[Tipo_Actividad] OFF
+GO
 SET IDENTITY_INSERT [dbo].[Usuario] ON 
 GO
-INSERT [dbo].[Usuario] ([Id_Usuario], [Identificacion], [Nombre], [Correo], [Contrasena], [Estado], [Id_Rol], [UsaContrasenaTemp]) VALUES (3, N'000000000', N'ADMINISTRADOR', N'ministeriogosen@gmail.com', N'admin!', N'A', 1, 0)
+INSERT [dbo].[Usuario] ([Id_Usuario], [Identificacion], [Nombre], [Correo], [Contrasena], [Estado], [Id_Rol], [UsaContrasenaTemp]) VALUES (1, N'000000000', N'ADMINISTRADOR GOSÉN', N'ministeriogosen@gmail.com', N'$2a$11$5/R6N6tBQwXQaH9lolcgUe2c2uqOB6ri6jzD1cGjABlY37R5JfXzG', N'A', 1, 0)
 GO
-INSERT [dbo].[Usuario] ([Id_Usuario], [Identificacion], [Nombre], [Correo], [Contrasena], [Estado], [Id_Rol], [UsaContrasenaTemp]) VALUES (4, N'116700557', N'FERNANDA FAJARDO TORRES', N'mfajardo00557@ufide.ac.cr', N'00557!', N'A', 2, 0)
+INSERT [dbo].[Usuario] ([Id_Usuario], [Identificacion], [Nombre], [Correo], [Contrasena], [Estado], [Id_Rol], [UsaContrasenaTemp]) VALUES (2, N'116700557', N'FERNANDA FAJARDO TORRES', N'mfajardo00557@ufide.ac.cr', N'$2a$11$LTs1pJBrO6sBEMlnqDSFleNkTdrnah/e6GLsPL4JphVnZpiETHl6K', N'A', 2, 0)
 GO
 SET IDENTITY_INSERT [dbo].[Usuario] OFF
 GO
 SET ANSI_PADDING ON
 GO
+/****** Object:  Index [UQ__Rol__92C53B6C18552E78]    Script Date: 27/7/2026 04:17:38 ******/
 ALTER TABLE [dbo].[Rol] ADD UNIQUE NONCLUSTERED 
 (
 	[Descripcion] ASC
@@ -164,6 +218,7 @@ ALTER TABLE [dbo].[Rol] ADD UNIQUE NONCLUSTERED
 GO
 SET ANSI_PADDING ON
 GO
+/****** Object:  Index [UQ__Usuario__60695A191ABE13A2]    Script Date: 27/7/2026 04:17:38 ******/
 ALTER TABLE [dbo].[Usuario] ADD UNIQUE NONCLUSTERED 
 (
 	[Correo] ASC
@@ -171,10 +226,17 @@ ALTER TABLE [dbo].[Usuario] ADD UNIQUE NONCLUSTERED
 GO
 SET ANSI_PADDING ON
 GO
+/****** Object:  Index [UQ__Usuario__D6F931E51137DE65]    Script Date: 27/7/2026 04:17:38 ******/
 ALTER TABLE [dbo].[Usuario] ADD UNIQUE NONCLUSTERED 
 (
 	[Identificacion] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Chat_Bot_Opciones] ADD  DEFAULT ((1)) FOR [Orden]
+GO
+ALTER TABLE [dbo].[Chat_Bot_Opciones] ADD  DEFAULT ((1)) FOR [Activo]
+GO
+ALTER TABLE [dbo].[Citas] ADD  CONSTRAINT [DF_Citas_Estado]  DEFAULT ('Pendiente') FOR [Estado]
 GO
 ALTER TABLE [dbo].[Usuario] ADD  CONSTRAINT [DF_Usuario_UsaContrasenaTemp]  DEFAULT ((0)) FOR [UsaContrasenaTemp]
 GO
@@ -203,6 +265,11 @@ REFERENCES [dbo].[Ministerio] ([Id_Ministerio])
 GO
 ALTER TABLE [dbo].[Actividades_Ministerio] CHECK CONSTRAINT [fk_activ_min_minist]
 GO
+ALTER TABLE [dbo].[Chat_Bot_Opciones]  WITH CHECK ADD  CONSTRAINT [FK_Opcion_Padre] FOREIGN KEY([Id_Opcion_Padre])
+REFERENCES [dbo].[Chat_Bot_Opciones] ([Id_Opcion])
+GO
+ALTER TABLE [dbo].[Chat_Bot_Opciones] CHECK CONSTRAINT [FK_Opcion_Padre]
+GO
 ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [fk_cita_encargado] FOREIGN KEY([Id_Usuario_Encargado])
 REFERENCES [dbo].[Usuario] ([Id_Usuario])
 GO
@@ -212,16 +279,6 @@ ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [fk_cita_usuario] FOREIGN 
 REFERENCES [dbo].[Usuario] ([Id_Usuario])
 GO
 ALTER TABLE [dbo].[Citas] CHECK CONSTRAINT [fk_cita_usuario]
-GO
-ALTER TABLE [dbo].[Citas] ADD  CONSTRAINT [DF_Citas_Estado]  DEFAULT ('Pendiente') FOR [Estado]
-GO
-ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [chk_estado_cita] CHECK  (([Estado]='Pendiente' OR [Estado]='Atendida'))
-GO
-/*validacion para la hora cita*/
-ALTER TABLE [dbo].[Citas] WITH CHECK ADD CONSTRAINT [chk_horario_cita]
-    CHECK (([Hora_Cita]>='08:00:00' AND [Hora_Cita]<='17:00:00'))
-GO
-ALTER TABLE [dbo].[Citas] CHECK CONSTRAINT [chk_estado_cita]
 GO
 ALTER TABLE [dbo].[Usuario]  WITH CHECK ADD  CONSTRAINT [fk_usuario_rol] FOREIGN KEY([Id_Rol])
 REFERENCES [dbo].[Rol] ([Id_Rol])
@@ -238,6 +295,14 @@ REFERENCES [dbo].[Usuario] ([Id_Usuario])
 GO
 ALTER TABLE [dbo].[Usuarios_Ministerio] CHECK CONSTRAINT [fk_usuario_min_usuario]
 GO
+ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [chk_estado_cita] CHECK  (([Estado]='Pendiente' OR [Estado]='Atendida'))
+GO
+ALTER TABLE [dbo].[Citas] CHECK CONSTRAINT [chk_estado_cita]
+GO
+ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [chk_horario_cita] CHECK  (([Hora_Cita]>='08:00:00' AND [Hora_Cita]<='17:00:00'))
+GO
+ALTER TABLE [dbo].[Citas] CHECK CONSTRAINT [chk_horario_cita]
+GO
 ALTER TABLE [dbo].[Rol]  WITH CHECK ADD  CONSTRAINT [chk_descripcion_rol] CHECK  (([Descripcion]='Usuario' OR [Descripcion]='Admin'))
 GO
 ALTER TABLE [dbo].[Rol] CHECK CONSTRAINT [chk_descripcion_rol]
@@ -245,7 +310,68 @@ GO
 ALTER TABLE [dbo].[Usuario]  WITH CHECK ADD  CONSTRAINT [chk_estado_usuario] CHECK  (([Estado]='I' OR [Estado]='A'))
 GO
 ALTER TABLE [dbo].[Usuario] CHECK CONSTRAINT [chk_estado_usuario]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_ConsultarChatbot]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
+
+CREATE   PROCEDURE [dbo].[SP_ConsultarChatbot]
+    @Id_Opcion INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id_Opcion,
+        Texto_Opcion,
+        Respuesta,
+        Id_Opcion_Padre,
+        Orden,
+        Activo
+    FROM Chat_Bot_Opciones
+    WHERE Id_Opcion = @Id_Opcion
+      AND Activo = 1;
+
+    SELECT
+        Id_Opcion,
+        Texto_Opcion,
+        Respuesta,
+        Id_Opcion_Padre,
+        Orden,
+        Activo
+    FROM Chat_Bot_Opciones
+    WHERE Activo = 1
+      AND
+      (
+          (@Id_Opcion IS NULL AND Id_Opcion_Padre IS NULL)
+          OR
+          (@Id_Opcion IS NOT NULL AND Id_Opcion_Padre = @Id_Opcion)
+      )
+    ORDER BY
+        Orden,
+        Texto_Opcion;
+
+    SELECT
+        Padre.Id_Opcion,
+        Padre.Texto_Opcion,
+        Padre.Respuesta,
+        Padre.Id_Opcion_Padre,
+        Padre.Orden,
+        Padre.Activo
+    FROM Chat_Bot_Opciones AS Hijo
+    INNER JOIN Chat_Bot_Opciones AS Padre
+        ON Padre.Id_Opcion = Hijo.Id_Opcion_Padre
+    WHERE Hijo.Id_Opcion = @Id_Opcion
+      AND Padre.Activo = 1;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[spActivarUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spActivarUsuario]
@@ -257,6 +383,11 @@ BEGIN
     WHERE Id_Usuario = @Id_Usuario;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spActualizarActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spActualizarActividad]
@@ -282,6 +413,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spActualizarActividadesMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spActualizarActividadesMinisterio]
     @Id_Minis_Actividad INT,
@@ -299,6 +435,11 @@ BEGIN
     WHERE Id_Minis_Actividad = @Id_Minis_Actividad;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spActualizarActividadUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spActualizarActividadUsuario]
@@ -318,9 +459,14 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spActualizarCita]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 /* ---- Actualizar cita ---- */
-CREATE OR ALTER PROCEDURE [dbo].[spActualizarCita]
+CREATE   PROCEDURE [dbo].[spActualizarCita]
     @Id_Cita INT,
     @Fecha_Cita DATE,
     @Hora_Cita TIME(0),
@@ -361,7 +507,10 @@ BEGIN
     WHERE Id_Cita = @Id_Cita;
 END;
 GO
-
+/****** Object:  StoredProcedure [dbo].[spActualizarContrasenna]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 CREATE   PROCEDURE [dbo].[spActualizarContrasenna]
     @Id_Usuario     int,
@@ -377,6 +526,11 @@ END
 
 
 GO
+/****** Object:  StoredProcedure [dbo].[spActualizarMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spActualizarMinisterio]
     @Id_Ministerio INT,
@@ -391,6 +545,33 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spActualizarPerfil]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+------------------ ACTUALIZAR PERFIL---------------------------
+
+CREATE PROCEDURE [dbo].[spActualizarPerfil]
+    @Id_Usuario INT,
+    @Identificacion VARCHAR(20),
+    @Nombre VARCHAR(100),
+    @Correo VARCHAR(100)
+AS
+BEGIN
+    UPDATE Usuario
+    SET Nombre = @Nombre,
+        Identificacion = @Identificacion,
+        Correo = @Correo 
+    WHERE Id_Usuario = @Id_Usuario;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[spActualizarRol]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spActualizarRol]
     @Id_Rol INT,
@@ -400,6 +581,11 @@ BEGIN
     UPDATE Rol SET Descripcion = @Descripcion WHERE Id_Rol = @Id_Rol;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spActualizarTipoActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 /* ===========================
@@ -415,6 +601,11 @@ BEGIN
     WHERE Id_Tipo_Actividad = @Id_Tipo_Actividad;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spActualizarUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spActualizarUsuario]
@@ -433,6 +624,11 @@ BEGIN
     WHERE Id_Usuario = @Id_Usuario;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spActualizarUsuarioMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spActualizarUsuarioMinisterio]
@@ -455,6 +651,30 @@ BEGIN
     WHERE Id_Usuario_Ministerio = @Id_Usuario_Ministerio;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spAtenderCita]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/* Marcar una cita como atendida */
+CREATE   PROCEDURE [dbo].[spAtenderCita]
+    @Id_Cita INT,
+    @Detalle_Cita VARCHAR(500)
+AS
+BEGIN
+    UPDATE Citas
+    SET Estado = 'Atendida',
+        Detalle_Cita = @Detalle_Cita
+    WHERE Id_Cita = @Id_Cita;
+END;
+
+GO
+/****** Object:  StoredProcedure [dbo].[spConsultarDashboard]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 CREATE   PROCEDURE [dbo].[spConsultarDashboard]
 AS
@@ -602,6 +822,11 @@ BEGIN
         M.Descripcion_Ministerio ASC;
 END;
 GO
+/****** Object:  StoredProcedure [dbo].[spCrearActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 /* ===========================
    CRUD: Actividad
@@ -641,6 +866,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spCrearActividadesMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 /* ===========================
    CRUD: Actividades_Ministerio
@@ -656,6 +886,11 @@ BEGIN
     VALUES (@Id_Actividad, @Id_Ministerio, @Fecha, @Observacion);
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spCrearActividadUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 /* ===========================
@@ -673,11 +908,16 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spCrearCita]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 /* ===========================
    CRUD: Citas
    =========================== */
-CREATE OR ALTER PROCEDURE [dbo].[spCrearCita]
+CREATE   PROCEDURE [dbo].[spCrearCita]
     @Fecha_Cita DATE,
     @Hora_Cita TIME(0),
     @Id_Usuario_Cita INT,
@@ -727,20 +967,11 @@ BEGIN
  
     SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id_Cita;
 END;
-GO 
-
-/* Marcar una cita como atendida */
-CREATE   PROCEDURE [dbo].[spAtenderCita]
-    @Id_Cita INT,
-    @Detalle_Cita VARCHAR(500)
-AS
-BEGIN
-    UPDATE Citas
-    SET Estado = 'Atendida',
-        Detalle_Cita = @Detalle_Cita
-    WHERE Id_Cita = @Id_Cita;
-END;
-
+GO
+/****** Object:  StoredProcedure [dbo].[spCrearMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 /* ===========================
@@ -756,6 +987,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spCrearRol]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 /* ===========================
    CRUD: Rol
@@ -768,6 +1004,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spCrearTipoActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 /* ===========================
    CRUD: Tipo_Actividad
@@ -779,6 +1020,11 @@ BEGIN
     INSERT INTO Tipo_Actividad (Nombre_Tipo) VALUES (@Nombre_Tipo);
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spCrearUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 /* ===========================
@@ -798,23 +1044,46 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spCrearUsuarioMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
-/* ===========================
-   CRUD: Usuarios_Ministerio
-   =========================== */
+-- alter de crear usuario ministerio----------------
+
 CREATE   PROCEDURE [dbo].[spCrearUsuarioMinisterio]
     @Id_Ministerio INT,
     @Id_Usuario INT,
     @Fecha_Ingreso DATE,
-    @Fecha_Salida DATE,
     @Estado VARCHAR(20),
     @Observacion VARCHAR(200)
 AS
 BEGIN
-    INSERT INTO Usuarios_Ministerio (Id_Ministerio, Id_Usuario, Fecha_Ingreso, Fecha_Salida, Estado, Observacion)
-    VALUES (@Id_Ministerio, @Id_Usuario, @Fecha_Ingreso, @Fecha_Salida, @Estado, @Observacion);
+    INSERT INTO Usuarios_Ministerio 
+    (
+        Id_Ministerio, 
+        Id_Usuario, 
+        Fecha_Ingreso, 
+        Fecha_Salida, 
+        Estado, 
+        Observacion
+    )
+    VALUES 
+    (
+        @Id_Ministerio, 
+        @Id_Usuario, 
+        @Fecha_Ingreso, 
+        NULL, 
+        @Estado, 
+        @Observacion
+    );
 END;
-
+GO
+/****** Object:  StoredProcedure [dbo].[spDesactivarUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spDesactivarUsuario]
@@ -827,6 +1096,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spEliminarActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spEliminarActividad]
     @Id_Actividad INT
@@ -835,6 +1109,11 @@ BEGIN
     DELETE FROM Actividad WHERE Id_Actividad = @Id_Actividad;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spEliminarActividadesMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spEliminarActividadesMinisterio]
@@ -845,6 +1124,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spEliminarActividadUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spEliminarActividadUsuario]
     @Id_Actividad_Usuario INT
@@ -853,6 +1137,11 @@ BEGIN
     DELETE FROM Actividad_Usuario WHERE Id_Actividad_Usuario = @Id_Actividad_Usuario;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spEliminarCita]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spEliminarCita]
@@ -863,6 +1152,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spEliminarMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spEliminarMinisterio]
     @Id_Ministerio INT
@@ -871,6 +1165,11 @@ BEGIN
     DELETE FROM Ministerio WHERE Id_Ministerio = @Id_Ministerio;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spEliminarMinisterioPorActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spEliminarMinisterioPorActividad]
@@ -882,6 +1181,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spEliminarRol]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spEliminarRol]
     @Id_Rol INT
@@ -890,6 +1194,11 @@ BEGIN
     DELETE FROM Rol WHERE Id_Rol = @Id_Rol;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spEliminarTipoActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spEliminarTipoActividad]
@@ -900,6 +1209,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spEliminarUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spEliminarUsuario]
     @Id_Usuario INT
@@ -909,6 +1223,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spEliminarUsuarioMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spEliminarUsuarioMinisterio]
     @Id_Usuario_Ministerio INT
@@ -917,6 +1236,11 @@ BEGIN
     DELETE FROM Usuarios_Ministerio WHERE Id_Usuario_Ministerio = @Id_Usuario_Ministerio;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spGuardarMinisterioActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spGuardarMinisterioActividad]
@@ -957,6 +1281,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spIniciarSesionUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE   PROCEDURE [dbo].[spIniciarSesionUsuario]
     @Correo varchar(100),
     @Contrasena varchar(255)
@@ -969,15 +1298,21 @@ BEGIN
         Identificacion,
         Nombre,
         Correo,
+	Contrasena,
         Estado,
         Id_Rol,
         UsaContrasenaTemp
     FROM dbo.Usuario
     WHERE Correo = @Correo
-      AND Contrasena = @Contrasena
+      /*AND Contrasena = @Contrasena*/
       AND Estado = 'A';
 END
 
+GO
+/****** Object:  StoredProcedure [dbo].[spListarActividades]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spListarActividades]
@@ -1007,6 +1342,43 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spListarCitas]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+/*SP PARA LISTAR CITAS*/
+
+/* ---- Listar citas (incluye la hora, y ordena por fecha + hora) ---- */
+CREATE   PROCEDURE [dbo].[spListarCitas]
+AS
+BEGIN
+    SET NOCOUNT ON;
+ 
+    SELECT
+        C.Id_Cita,
+        C.Fecha_Cita,
+        C.Hora_Cita,
+        C.Id_Usuario_Cita,
+        UC.Nombre AS Nombre_Usuario_Cita,
+        C.Id_Usuario_Encargado,
+        UE.Nombre AS Nombre_Usuario_Encargado,
+        C.Observacion_Inicial,
+        C.Detalle_Cita,
+        C.Estado
+    FROM Citas C
+    INNER JOIN Usuario UC ON C.Id_Usuario_Cita = UC.Id_Usuario
+    INNER JOIN Usuario UE ON C.Id_Usuario_Encargado = UE.Id_Usuario
+    ORDER BY C.Fecha_Cita DESC, C.Hora_Cita ASC;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[spListarMinisterios]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE   PROCEDURE [dbo].[spListarMinisterios]
 AS
 BEGIN
@@ -1018,6 +1390,66 @@ BEGIN
     ORDER BY Descripcion_Ministerio;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spListarMinisteriosDisponiblesUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+----------listar ministerios disponibles para los usuarios-----
+
+CREATE   PROCEDURE [dbo].[spListarMinisteriosDisponiblesUsuario]
+    @Id_Usuario INT
+AS
+BEGIN
+    SELECT 
+        M.Id_Ministerio,
+        M.Descripcion_Ministerio,
+        M.Observaciones_Ministerio
+    FROM Ministerio M
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM Usuarios_Ministerio UM
+        WHERE UM.Id_Ministerio = M.Id_Ministerio
+          AND UM.Id_Usuario = @Id_Usuario
+          AND UM.Fecha_Salida IS NULL
+    )
+    ORDER BY M.Descripcion_Ministerio;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[spListarMinisteriosPorUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+------listar ministerios de un usuario-------------
+
+CREATE   PROCEDURE [dbo].[spListarMinisteriosPorUsuario]
+    @Id_Usuario INT
+AS
+BEGIN
+    SELECT 
+        UM.Id_Usuario_Ministerio,
+        UM.Id_Ministerio,
+        UM.Id_Usuario,
+        UM.Fecha_Ingreso,
+        UM.Fecha_Salida,
+        UM.Estado,
+        UM.Observacion,
+        M.Descripcion_Ministerio
+    FROM Usuarios_Ministerio UM
+    INNER JOIN Ministerio M ON UM.Id_Ministerio = M.Id_Ministerio
+    WHERE UM.Id_Usuario = @Id_Usuario
+      AND UM.Fecha_Salida IS NULL
+    ORDER BY M.Descripcion_Ministerio;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[spListarRoles]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spListarRoles]
@@ -1031,6 +1463,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spListarTiposActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spListarTiposActividad]
 AS
@@ -1042,6 +1479,11 @@ BEGIN
     ORDER BY Nombre_Tipo;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spListarUsuarios]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spListarUsuarios]
@@ -1060,6 +1502,72 @@ BEGIN
     ORDER BY U.Nombre;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spListarUsuariosDisponiblesMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+---------listar usuarios disponibles para un ministerio )que no sean admin---------------------
+
+CREATE   PROCEDURE [dbo].[spListarUsuariosDisponiblesMinisterio]
+    @Id_Ministerio INT
+AS
+BEGIN
+    SELECT 
+        U.Id_Usuario,
+        U.Identificacion,
+        U.Nombre,
+        U.Correo,
+        U.Estado,
+        U.Id_Rol,
+        R.Descripcion AS Rol
+    FROM Usuario U
+    INNER JOIN Rol R ON U.Id_Rol = R.Id_Rol
+    WHERE U.Id_Rol <> 1
+      AND U.Estado = 'A'
+      AND NOT EXISTS (
+          SELECT 1
+          FROM Usuarios_Ministerio UM
+          WHERE UM.Id_Usuario = U.Id_Usuario
+            AND UM.Id_Ministerio = @Id_Ministerio
+            AND UM.Fecha_Salida IS NULL
+      )
+    ORDER BY U.Nombre;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[spListarUsuariosPorMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROCEDURE [dbo].[spListarUsuariosPorMinisterio]
+    @Id_Ministerio INT
+AS
+BEGIN
+    SELECT 
+        UM.Id_Usuario_Ministerio,
+        UM.Id_Ministerio,
+        UM.Id_Usuario,
+        UM.Fecha_Ingreso,
+        UM.Fecha_Salida,
+        UM.Estado,
+        UM.Observacion,
+        U.Nombre,
+        U.Correo,
+        R.Descripcion AS Rol
+    FROM Usuarios_Ministerio UM
+    INNER JOIN Usuario U ON UM.Id_Usuario = U.Id_Usuario
+    INNER JOIN Rol R ON U.Id_Rol = R.Id_Rol
+    WHERE UM.Id_Ministerio = @Id_Ministerio
+      AND UM.Fecha_Salida IS NULL
+    ORDER BY U.Nombre;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[spObtenerActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 CREATE   PROCEDURE [dbo].[spObtenerActividad]
     @Id_Actividad INT
@@ -1086,6 +1594,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spObtenerActividadesMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spObtenerActividadesMinisterio]
     @Id_Minis_Actividad INT
@@ -1094,6 +1607,11 @@ BEGIN
     SELECT * FROM Actividades_Ministerio WHERE Id_Minis_Actividad = @Id_Minis_Actividad;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spObtenerActividadUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spObtenerActividadUsuario]
@@ -1104,9 +1622,14 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spObtenerCita]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 /*sp que obtiene el nombre del usuario y lo muestra al atender una cita*/
-CREATE OR ALTER PROCEDURE [dbo].[spObtenerCita]
+CREATE   PROCEDURE [dbo].[spObtenerCita]
     @Id_Cita INT
 AS
 BEGIN
@@ -1129,6 +1652,11 @@ BEGIN
     WHERE C.Id_Cita = @Id_Cita;
 END;
 GO
+/****** Object:  StoredProcedure [dbo].[spObtenerMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spObtenerMinisterio]
     @Id_Ministerio INT
@@ -1137,6 +1665,11 @@ BEGIN
     SELECT * FROM Ministerio WHERE Id_Ministerio = @Id_Ministerio;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spObtenerRol]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spObtenerRol]
@@ -1147,6 +1680,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spObtenerTipoActividad]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spObtenerTipoActividad]
     @Id_Tipo_Actividad INT
@@ -1155,6 +1693,11 @@ BEGIN
     SELECT * FROM Tipo_Actividad WHERE Id_Tipo_Actividad = @Id_Tipo_Actividad;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spObtenerUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spObtenerUsuario]
@@ -1165,6 +1708,11 @@ BEGIN
 END;
 
 GO
+/****** Object:  StoredProcedure [dbo].[spObtenerUsuarioMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
 CREATE   PROCEDURE [dbo].[spObtenerUsuarioMinisterio]
     @Id_Usuario_Ministerio INT
@@ -1173,6 +1721,11 @@ BEGIN
     SELECT * FROM Usuarios_Ministerio WHERE Id_Usuario_Ministerio = @Id_Usuario_Ministerio;
 END;
 
+GO
+/****** Object:  StoredProcedure [dbo].[spRegistrarError]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spRegistrarError]
@@ -1187,6 +1740,11 @@ BEGIN
 END
 
 
+GO
+/****** Object:  StoredProcedure [dbo].[spRegistrarUsuario]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE   PROCEDURE [dbo].[spRegistrarUsuario]
@@ -1244,171 +1802,166 @@ END
 
 
 GO
+/****** Object:  StoredProcedure [dbo].[spReporteActividades]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
-CREATE   PROCEDURE [dbo].[spValidarCorreo]
-    @Correo varchar(100)
+
+
+
+--------------------------------------------------------
+----reporte de actividades--------------------
+
+CREATE   PROCEDURE [dbo].[spReporteActividades]
+    @Buscar VARCHAR(100) = NULL,
+    @Id_Ministerio INT = NULL,
+    @Id_Tipo_Actividad INT = NULL,
+    @FechaInicio DATE = NULL,
+    @FechaFin DATE = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SELECT
+        A.Id_Actividad,
+        A.Nombre_Actividad,
+        A.Fecha_Ini,
+        A.Fecha_Fin,
+        A.Lugar,
 
-    SELECT Id_Usuario,Identificacion,Nombre,Correo,Estado
-    FROM dbo.Usuario
-    WHERE Correo = @Correo
-      AND Estado = 'A';
-END
-GO
-USE [master]
-GO
-ALTER DATABASE [ministerio_gosen] SET  READ_WRITE 
-GO
+        CASE 
+            WHEN A.Hora_Ini IS NULL THEN NULL
+            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Ini), CAST(CAST(A.Fecha_Ini AS DATE) AS DATETIME))
+        END AS Hora_Ini,
 
+        CASE 
+            WHEN A.Hora_Fin IS NULL THEN NULL
+            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Fin), CAST(CAST(ISNULL(A.Fecha_Fin, A.Fecha_Ini) AS DATE) AS DATETIME))
+        END AS Hora_Fin,
 
+        A.Id_Tipo_Actividad,
+        TA.Nombre_Tipo,
 
----------------usuario de un Ministerio-----------------
-USE ministerio_gosen;
-GO
-CREATE OR ALTER PROCEDURE spListarUsuariosPorMinisterio
-    @Id_Ministerio INT
-AS
-BEGIN
-    SELECT 
-        UM.Id_Usuario_Ministerio,
-        UM.Id_Ministerio,
-        UM.Id_Usuario,
-        UM.Fecha_Ingreso,
-        UM.Fecha_Salida,
-        UM.Estado,
-        UM.Observacion,
-        U.Nombre,
-        U.Correo,
-        R.Descripcion AS Rol
-    FROM Usuarios_Ministerio UM
-    INNER JOIN Usuario U ON UM.Id_Usuario = U.Id_Usuario
-    INNER JOIN Rol R ON U.Id_Rol = R.Id_Rol
-    WHERE UM.Id_Ministerio = @Id_Ministerio
-      AND UM.Fecha_Salida IS NULL
-    ORDER BY U.Nombre;
-END;
-GO
----------listar usuarios disponibles para un ministerio )que no sean admin---------------------
-
-CREATE OR ALTER PROCEDURE spListarUsuariosDisponiblesMinisterio
-    @Id_Ministerio INT
-AS
-BEGIN
-    SELECT 
-        U.Id_Usuario,
-        U.Identificacion,
-        U.Nombre,
-        U.Correo,
-        U.Estado,
-        U.Id_Rol,
-        R.Descripcion AS Rol
-    FROM Usuario U
-    INNER JOIN Rol R ON U.Id_Rol = R.Id_Rol
-    WHERE U.Id_Rol <> 1
-      AND U.Estado = 'A'
-      AND NOT EXISTS (
-          SELECT 1
-          FROM Usuarios_Ministerio UM
-          WHERE UM.Id_Usuario = U.Id_Usuario
-            AND UM.Id_Ministerio = @Id_Ministerio
-            AND UM.Fecha_Salida IS NULL
-      )
-    ORDER BY U.Nombre;
-END;
-GO
-
-------listar ministerios de un usuario-------------
-
-CREATE OR ALTER PROCEDURE spListarMinisteriosPorUsuario
-    @Id_Usuario INT
-AS
-BEGIN
-    SELECT 
-        UM.Id_Usuario_Ministerio,
-        UM.Id_Ministerio,
-        UM.Id_Usuario,
-        UM.Fecha_Ingreso,
-        UM.Fecha_Salida,
-        UM.Estado,
-        UM.Observacion,
-        M.Descripcion_Ministerio
-    FROM Usuarios_Ministerio UM
-    INNER JOIN Ministerio M ON UM.Id_Ministerio = M.Id_Ministerio
-    WHERE UM.Id_Usuario = @Id_Usuario
-      AND UM.Fecha_Salida IS NULL
-    ORDER BY M.Descripcion_Ministerio;
-END;
-GO
-
-----------listar ministerios disponibles para los usuarios-----
-
-CREATE OR ALTER PROCEDURE spListarMinisteriosDisponiblesUsuario
-    @Id_Usuario INT
-AS
-BEGIN
-    SELECT 
-        M.Id_Ministerio,
+        AM.Id_Ministerio,
         M.Descripcion_Ministerio,
-        M.Observaciones_Ministerio
-    FROM Ministerio M
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM Usuarios_Ministerio UM
-        WHERE UM.Id_Ministerio = M.Id_Ministerio
-          AND UM.Id_Usuario = @Id_Usuario
-          AND UM.Fecha_Salida IS NULL
-    )
-    ORDER BY M.Descripcion_Ministerio;
+        AM.Observacion AS Observacion_Ministerio_Actividad
+    FROM Actividad A
+    INNER JOIN Tipo_Actividad TA
+        ON A.Id_Tipo_Actividad = TA.Id_Tipo_Actividad
+    LEFT JOIN Actividades_Ministerio AM
+        ON A.Id_Actividad = AM.Id_Actividad
+    LEFT JOIN Ministerio M
+        ON AM.Id_Ministerio = M.Id_Ministerio
+    WHERE
+        (
+            @Buscar IS NULL
+            OR @Buscar = ''
+            OR A.Nombre_Actividad LIKE '%' + @Buscar + '%'
+            OR A.Lugar LIKE '%' + @Buscar + '%'
+            OR M.Descripcion_Ministerio LIKE '%' + @Buscar + '%'
+            OR TA.Nombre_Tipo LIKE '%' + @Buscar + '%'
+        )
+        AND (
+            @Id_Ministerio IS NULL
+            OR AM.Id_Ministerio = @Id_Ministerio
+        )
+        AND (
+            @Id_Tipo_Actividad IS NULL
+            OR A.Id_Tipo_Actividad = @Id_Tipo_Actividad
+        )
+        AND (
+            @FechaInicio IS NULL
+            OR CAST(A.Fecha_Ini AS DATE) >= @FechaInicio
+        )
+        AND (
+            @FechaFin IS NULL
+            OR CAST(A.Fecha_Ini AS DATE) <= @FechaFin
+        )
+    ORDER BY A.Fecha_Ini, A.Hora_Ini;
 END;
 GO
+/****** Object:  StoredProcedure [dbo].[spReporteHorarios]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
--- alter de crear usuario ministerio----------------
+----reporte de horario-----------------------
 
-CREATE OR ALTER PROCEDURE spCrearUsuarioMinisterio
-    @Id_Ministerio INT,
-    @Id_Usuario INT,
-    @Fecha_Ingreso DATE,
-    @Estado VARCHAR(20),
-    @Observacion VARCHAR(200)
+CREATE   PROCEDURE [dbo].[spReporteHorarios]
+    @Buscar VARCHAR(100) = NULL,
+    @Id_Ministerio INT = NULL,
+    @Id_Tipo_Actividad INT = NULL,
+    @FechaInicio DATE = NULL,
+    @FechaFin DATE = NULL
 AS
 BEGIN
-    INSERT INTO Usuarios_Ministerio 
-    (
-        Id_Ministerio, 
-        Id_Usuario, 
-        Fecha_Ingreso, 
-        Fecha_Salida, 
-        Estado, 
-        Observacion
-    )
-    VALUES 
-    (
-        @Id_Ministerio, 
-        @Id_Usuario, 
-        @Fecha_Ingreso, 
-        NULL, 
-        @Estado, 
-        @Observacion
-    );
+    SELECT
+        A.Id_Actividad,
+        A.Nombre_Actividad,
+        A.Fecha_Ini,
+        A.Fecha_Fin,
+        A.Lugar,
+
+        CASE 
+            WHEN A.Hora_Ini IS NULL THEN NULL
+            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Ini), CAST(CAST(A.Fecha_Ini AS DATE) AS DATETIME))
+        END AS Hora_Ini,
+
+        CASE 
+            WHEN A.Hora_Fin IS NULL THEN NULL
+            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Fin), CAST(CAST(ISNULL(A.Fecha_Fin, A.Fecha_Ini) AS DATE) AS DATETIME))
+        END AS Hora_Fin,
+
+        A.Id_Tipo_Actividad,
+        TA.Nombre_Tipo,
+
+        AM.Id_Ministerio,
+        M.Descripcion_Ministerio,
+        AM.Observacion AS Observacion_Ministerio_Actividad
+    FROM Actividad A
+    INNER JOIN Tipo_Actividad TA
+        ON A.Id_Tipo_Actividad = TA.Id_Tipo_Actividad
+    LEFT JOIN Actividades_Ministerio AM
+        ON A.Id_Actividad = AM.Id_Actividad
+    LEFT JOIN Ministerio M
+        ON AM.Id_Ministerio = M.Id_Ministerio
+    WHERE
+        (
+            @Buscar IS NULL
+            OR @Buscar = ''
+            OR A.Nombre_Actividad LIKE '%' + @Buscar + '%'
+            OR A.Lugar LIKE '%' + @Buscar + '%'
+            OR M.Descripcion_Ministerio LIKE '%' + @Buscar + '%'
+            OR TA.Nombre_Tipo LIKE '%' + @Buscar + '%'
+        )
+        AND (
+            @Id_Ministerio IS NULL
+            OR AM.Id_Ministerio = @Id_Ministerio
+        )
+        AND (
+            @Id_Tipo_Actividad IS NULL
+            OR A.Id_Tipo_Actividad = @Id_Tipo_Actividad
+        )
+        AND (
+            @FechaInicio IS NULL
+            OR CAST(A.Fecha_Ini AS DATE) >= @FechaInicio
+        )
+        AND (
+            @FechaFin IS NULL
+            OR CAST(A.Fecha_Ini AS DATE) <= @FechaFin
+        )
+    ORDER BY A.Fecha_Ini, A.Hora_Ini;
 END;
 GO
-------salida de un usuario de su ministerio fecha de salida---------------
-
-CREATE OR ALTER PROCEDURE spSalirUsuarioMinisterio
-    @Id_Usuario_Ministerio INT
-AS
-BEGIN
-    UPDATE Usuarios_Ministerio
-    SET Fecha_Salida = GETDATE(),
-        Estado = 'Inactivo'
-    WHERE Id_Usuario_Ministerio = @Id_Usuario_Ministerio;
-END;
+/****** Object:  StoredProcedure [dbo].[spReportePersonasMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 -------reportes------------------------------------------
 
-CREATE OR ALTER PROCEDURE spReportePersonasMinisterio
+CREATE   PROCEDURE [dbo].[spReportePersonasMinisterio]
     @Buscar VARCHAR(100) = NULL,
     @Id_Ministerio INT = NULL,
     @Estado VARCHAR(20) = NULL,
@@ -1465,483 +2018,42 @@ BEGIN
     ORDER BY M.Descripcion_Ministerio, U.Nombre;
 END;
 GO
+/****** Object:  StoredProcedure [dbo].[spSalirUsuarioMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+------salida de un usuario de su ministerio fecha de salida---------------
 
-
-
-
---------------------------------------------------------
-----reporte de actividades--------------------
-
-CREATE OR ALTER PROCEDURE spReporteActividades
-    @Buscar VARCHAR(100) = NULL,
-    @Id_Ministerio INT = NULL,
-    @Id_Tipo_Actividad INT = NULL,
-    @FechaInicio DATE = NULL,
-    @FechaFin DATE = NULL
+CREATE   PROCEDURE [dbo].[spSalirUsuarioMinisterio]
+    @Id_Usuario_Ministerio INT
 AS
 BEGIN
-    SELECT
-        A.Id_Actividad,
-        A.Nombre_Actividad,
-        A.Fecha_Ini,
-        A.Fecha_Fin,
-        A.Lugar,
-
-        CASE 
-            WHEN A.Hora_Ini IS NULL THEN NULL
-            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Ini), CAST(CAST(A.Fecha_Ini AS DATE) AS DATETIME))
-        END AS Hora_Ini,
-
-        CASE 
-            WHEN A.Hora_Fin IS NULL THEN NULL
-            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Fin), CAST(CAST(ISNULL(A.Fecha_Fin, A.Fecha_Ini) AS DATE) AS DATETIME))
-        END AS Hora_Fin,
-
-        A.Id_Tipo_Actividad,
-        TA.Nombre_Tipo,
-
-        AM.Id_Ministerio,
-        M.Descripcion_Ministerio,
-        AM.Observacion AS Observacion_Ministerio_Actividad
-    FROM Actividad A
-    INNER JOIN Tipo_Actividad TA
-        ON A.Id_Tipo_Actividad = TA.Id_Tipo_Actividad
-    LEFT JOIN Actividades_Ministerio AM
-        ON A.Id_Actividad = AM.Id_Actividad
-    LEFT JOIN Ministerio M
-        ON AM.Id_Ministerio = M.Id_Ministerio
-    WHERE
-        (
-            @Buscar IS NULL
-            OR @Buscar = ''
-            OR A.Nombre_Actividad LIKE '%' + @Buscar + '%'
-            OR A.Lugar LIKE '%' + @Buscar + '%'
-            OR M.Descripcion_Ministerio LIKE '%' + @Buscar + '%'
-            OR TA.Nombre_Tipo LIKE '%' + @Buscar + '%'
-        )
-        AND (
-            @Id_Ministerio IS NULL
-            OR AM.Id_Ministerio = @Id_Ministerio
-        )
-        AND (
-            @Id_Tipo_Actividad IS NULL
-            OR A.Id_Tipo_Actividad = @Id_Tipo_Actividad
-        )
-        AND (
-            @FechaInicio IS NULL
-            OR CAST(A.Fecha_Ini AS DATE) >= @FechaInicio
-        )
-        AND (
-            @FechaFin IS NULL
-            OR CAST(A.Fecha_Ini AS DATE) <= @FechaFin
-        )
-    ORDER BY A.Fecha_Ini, A.Hora_Ini;
+    UPDATE Usuarios_Ministerio
+    SET Fecha_Salida = GETDATE(),
+        Estado = 'Inactivo'
+    WHERE Id_Usuario_Ministerio = @Id_Usuario_Ministerio;
 END;
 GO
-
-----reporte de horario-----------------------
-
-CREATE OR ALTER PROCEDURE spReporteHorarios
-    @Buscar VARCHAR(100) = NULL,
-    @Id_Ministerio INT = NULL,
-    @Id_Tipo_Actividad INT = NULL,
-    @FechaInicio DATE = NULL,
-    @FechaFin DATE = NULL
-AS
-BEGIN
-    SELECT
-        A.Id_Actividad,
-        A.Nombre_Actividad,
-        A.Fecha_Ini,
-        A.Fecha_Fin,
-        A.Lugar,
-
-        CASE 
-            WHEN A.Hora_Ini IS NULL THEN NULL
-            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Ini), CAST(CAST(A.Fecha_Ini AS DATE) AS DATETIME))
-        END AS Hora_Ini,
-
-        CASE 
-            WHEN A.Hora_Fin IS NULL THEN NULL
-            ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', A.Hora_Fin), CAST(CAST(ISNULL(A.Fecha_Fin, A.Fecha_Ini) AS DATE) AS DATETIME))
-        END AS Hora_Fin,
-
-        A.Id_Tipo_Actividad,
-        TA.Nombre_Tipo,
-
-        AM.Id_Ministerio,
-        M.Descripcion_Ministerio,
-        AM.Observacion AS Observacion_Ministerio_Actividad
-    FROM Actividad A
-    INNER JOIN Tipo_Actividad TA
-        ON A.Id_Tipo_Actividad = TA.Id_Tipo_Actividad
-    LEFT JOIN Actividades_Ministerio AM
-        ON A.Id_Actividad = AM.Id_Actividad
-    LEFT JOIN Ministerio M
-        ON AM.Id_Ministerio = M.Id_Ministerio
-    WHERE
-        (
-            @Buscar IS NULL
-            OR @Buscar = ''
-            OR A.Nombre_Actividad LIKE '%' + @Buscar + '%'
-            OR A.Lugar LIKE '%' + @Buscar + '%'
-            OR M.Descripcion_Ministerio LIKE '%' + @Buscar + '%'
-            OR TA.Nombre_Tipo LIKE '%' + @Buscar + '%'
-        )
-        AND (
-            @Id_Ministerio IS NULL
-            OR AM.Id_Ministerio = @Id_Ministerio
-        )
-        AND (
-            @Id_Tipo_Actividad IS NULL
-            OR A.Id_Tipo_Actividad = @Id_Tipo_Actividad
-        )
-        AND (
-            @FechaInicio IS NULL
-            OR CAST(A.Fecha_Ini AS DATE) >= @FechaInicio
-        )
-        AND (
-            @FechaFin IS NULL
-            OR CAST(A.Fecha_Ini AS DATE) <= @FechaFin
-        )
-    ORDER BY A.Fecha_Ini, A.Hora_Ini;
-END;
+/****** Object:  StoredProcedure [dbo].[spValidarCorreo]    Script Date: 27/7/2026 04:17:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
 GO
 
------------------- ACTUALIZAR PERFIL---------------------------
-
-CREATE PROCEDURE [dbo].[spActualizarPerfil]
-    @Id_Usuario INT,
-    @Identificacion VARCHAR(20),
-    @Nombre VARCHAR(100),
-    @Correo VARCHAR(100)
-AS
-BEGIN
-    UPDATE Usuario
-    SET Nombre = @Nombre,
-        Identificacion = @Identificacion,
-        Correo = @Correo 
-    WHERE Id_Usuario = @Id_Usuario;
-END;
-GO
-
-
-  -------- INSERTS-----------------------------------
-
-  /* =========================
-   TIPOS DE ACTIVIDAD
-   ========================= */
-
-INSERT INTO Tipo_Actividad (Nombre_Tipo)
-VALUES ('Culto');
-
-INSERT INTO Tipo_Actividad (Nombre_Tipo)
-VALUES ('Reuni n');
-
-/* =========================
-   MINISTERIOS
-   ========================= */
-
-INSERT INTO Ministerio
-(
-    Descripcion_Ministerio,
-    Observaciones_Ministerio
-)
-VALUES
-(
-    'Ministerio de J venes',
-    'Ministerio encargado de actividades juveniles'
-);
-
-INSERT INTO Ministerio
-(
-    Descripcion_Ministerio,
-    Observaciones_Ministerio
-)
-VALUES
-(
-    'Ministerio de M sica',
-    'Ministerio encargado de la alabanza y m sica'
-);
-
-
-/* =========================
-   ACTIVIDADES
-   ========================= */
-
-INSERT INTO Actividad
-(
-    Nombre_Actividad,
-    Fecha_Ini,
-    Fecha_Fin,
-    Lugar,
-    Hora_Ini,
-    Hora_Fin,
-    Id_Tipo_Actividad
-)
-VALUES
-(
-    'Culto Juvenil',
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Sal n principal',
-    '18:00',
-    '20:00',
-    (SELECT Id_Tipo_Actividad
-     FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Culto')
-);
-
-INSERT INTO Actividad
-(
-    Nombre_Actividad,
-    Fecha_Ini,
-    Fecha_Fin,
-    Lugar,
-    Hora_Ini,
-    Hora_Fin,
-    Id_Tipo_Actividad
-)
-VALUES
-(
-    'Reuni n de J venes',
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Aula 1',
-    '16:00',
-    '18:00',
-    (SELECT Id_Tipo_Actividad
-     FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reuni n')
-);
-
-INSERT INTO Actividad
-(
-    Nombre_Actividad,
-    Fecha_Ini,
-    Fecha_Fin,
-    Lugar,
-    Hora_Ini,
-    Hora_Fin,
-    Id_Tipo_Actividad
-)
-VALUES
-(
-    'Culto de Alabanza',
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Templo principal',
-    '09:00',
-    '11:00',
-    (SELECT Id_Tipo_Actividad
-     FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Culto')
-);
-
-INSERT INTO Actividad
-(
-    Nombre_Actividad,
-    Fecha_Ini,
-    Fecha_Fin,
-    Lugar,
-    Hora_Ini,
-    Hora_Fin,
-    Id_Tipo_Actividad
-)
-VALUES
-(
-    'Ensayo Musical',
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Sal n de m sica',
-    '19:00',
-    '21:00',
-    (SELECT Id_Tipo_Actividad
-     FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reuni n')
-);
-
-
-/* =========================
-   ASIGNAR ACTIVIDADES
-   A LOS MINISTERIOS
-   ========================= */
-
-INSERT INTO Actividades_Ministerio
-(
-    Id_Actividad,
-    Id_Ministerio,
-    Fecha,
-    Observacion
-)
-VALUES
-(
-    (SELECT Id_Actividad
-     FROM Actividad
-     WHERE Nombre_Actividad = 'Culto Juvenil'),
-
-    (SELECT Id_Ministerio
-     FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de J venes'),
-
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de J venes'
-);
-
-INSERT INTO Actividades_Ministerio
-(
-    Id_Actividad,
-    Id_Ministerio,
-    Fecha,
-    Observacion
-)
-VALUES
-(
-    (SELECT Id_Actividad
-     FROM Actividad
-     WHERE Nombre_Actividad = 'Reuni n de J venes'),
-
-    (SELECT Id_Ministerio
-     FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de J venes'),
-
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Reuni n de planificaci n juvenil'
-);
-
-INSERT INTO Actividades_Ministerio
-(
-    Id_Actividad,
-    Id_Ministerio,
-    Fecha,
-    Observacion
-)
-VALUES
-(
-    (SELECT Id_Actividad
-     FROM Actividad
-     WHERE Nombre_Actividad = 'Culto de Alabanza'),
-
-    (SELECT Id_Ministerio
-     FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de M sica'),
-
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de M sica'
-);
-
-INSERT INTO Actividades_Ministerio
-(
-    Id_Actividad,
-    Id_Ministerio,
-    Fecha,
-    Observacion
-)
-VALUES
-(
-    (SELECT Id_Actividad
-     FROM Actividad
-     WHERE Nombre_Actividad = 'Ensayo Musical'),
-
-    (SELECT Id_Ministerio
-     FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de M sica'),
-
-    DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Ensayo general del equipo de m sica'
-);
-
-GO
-
-
-/*SP PARA LISTAR CITAS*/
-
-/* ---- Listar citas (incluye la hora, y ordena por fecha + hora) ---- */
-CREATE OR ALTER PROCEDURE [dbo].[spListarCitas]
-AS
-BEGIN
-    SET NOCOUNT ON;
- 
-    SELECT
-        C.Id_Cita,
-        C.Fecha_Cita,
-        C.Hora_Cita,
-        C.Id_Usuario_Cita,
-        UC.Nombre AS Nombre_Usuario_Cita,
-        C.Id_Usuario_Encargado,
-        UE.Nombre AS Nombre_Usuario_Encargado,
-        C.Observacion_Inicial,
-        C.Detalle_Cita,
-        C.Estado
-    FROM Citas C
-    INNER JOIN Usuario UC ON C.Id_Usuario_Cita = UC.Id_Usuario
-    INNER JOIN Usuario UE ON C.Id_Usuario_Encargado = UE.Id_Usuario
-    ORDER BY C.Fecha_Cita DESC, C.Hora_Cita ASC;
-END;
-GO
-
-/*APARTADO CHAT BOT*/
-
-CREATE TABLE Chat_Bot_Opciones
-(
-	Id_Opcion int IDENTITY(1,1) PRIMARY KEY,
-	Texto_Opcion nvarchar (200) NOT NULL,
-	Respuesta varchar (200),
-	Id_Opcion_Padre int,
-	Orden int NOT NULL DEFAULT 1,
-	Activo bit NOT NULL DEFAULT 1,
-	Constraint FK_Opcion_Padre Foreign Key (Id_Opcion_Padre) REFERENCES Chat_Bot_Opciones (Id_Opcion)
-);
-GO
-
-
-CREATE OR ALTER PROCEDURE SP_ConsultarChatbot
-    @Id_Opcion INT = NULL
+CREATE   PROCEDURE [dbo].[spValidarCorreo]
+    @Correo varchar(100)
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT
-        Id_Opcion,
-        Texto_Opcion,
-        Respuesta,
-        Id_Opcion_Padre,
-        Orden,
-        Activo
-    FROM Chat_Bot_Opciones
-    WHERE Id_Opcion = @Id_Opcion
-      AND Activo = 1;
-
-    SELECT
-        Id_Opcion,
-        Texto_Opcion,
-        Respuesta,
-        Id_Opcion_Padre,
-        Orden,
-        Activo
-    FROM Chat_Bot_Opciones
-    WHERE Activo = 1
-      AND
-      (
-          (@Id_Opcion IS NULL AND Id_Opcion_Padre IS NULL)
-          OR
-          (@Id_Opcion IS NOT NULL AND Id_Opcion_Padre = @Id_Opcion)
-      )
-    ORDER BY
-        Orden,
-        Texto_Opcion;
-
-    SELECT
-        Padre.Id_Opcion,
-        Padre.Texto_Opcion,
-        Padre.Respuesta,
-        Padre.Id_Opcion_Padre,
-        Padre.Orden,
-        Padre.Activo
-    FROM Chat_Bot_Opciones AS Hijo
-    INNER JOIN Chat_Bot_Opciones AS Padre
-        ON Padre.Id_Opcion = Hijo.Id_Opcion_Padre
-    WHERE Hijo.Id_Opcion = @Id_Opcion
-      AND Padre.Activo = 1;
-END;
+    SELECT Id_Usuario,Identificacion,Nombre,Correo,Estado
+    FROM dbo.Usuario
+    WHERE Correo = @Correo
+      AND Estado = 'A';
+END
+GO
+USE [master]
+GO
+ALTER DATABASE [ministerio_gosen] SET  READ_WRITE 
 GO
