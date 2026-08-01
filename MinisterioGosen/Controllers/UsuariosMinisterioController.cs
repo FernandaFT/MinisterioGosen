@@ -68,7 +68,10 @@ namespace MinisterioGosen.Controllers
             var response = client.PostAsJsonAsync(url, model).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
+            {
+                TempData["MensajeExito"] = "Persona registrada correctamente en el ministerio.";
                 return RedirectToAction("AsignarPersona", new { idMinisterio = model.Id_Ministerio });
+            }
 
             TempData["Mensaje"] = response.Content.ReadAsStringAsync().Result;
             return RedirectToAction("AsignarPersona", new { idMinisterio = model.Id_Ministerio });
@@ -130,7 +133,10 @@ namespace MinisterioGosen.Controllers
             var response = client.PostAsJsonAsync(url, model).Result;
 
             if (response.StatusCode == HttpStatusCode.OK)
+            {
+                TempData["MensajeExito"] = "Ministerio registrado correctamente para la persona.";
                 return RedirectToAction("RegistrarMinisterio", new { idUsuario = model.Id_Usuario });
+            }
 
             TempData["Mensaje"] = response.Content.ReadAsStringAsync().Result;
             return RedirectToAction("RegistrarMinisterio", new { idUsuario = model.Id_Usuario });
@@ -146,6 +152,33 @@ namespace MinisterioGosen.Controllers
 
             var url = _config["Valores:UrlApi"] + "UsuariosMinisterio/SalirUsuarioMinisterioAPI";
             var response = client.PutAsJsonAsync(url, model).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                TempData["MensajeExito"] = "Registro eliminado correctamente.";
+            else
+                TempData["Mensaje"] = response.Content.ReadAsStringAsync().Result;
+
+            if (origen == "ministerio")
+                return RedirectToAction("AsignarPersona", new { idMinisterio = model.Id_Ministerio });
+
+            return RedirectToAction("RegistrarMinisterio", new { idUsuario = model.Id_Usuario });
+        }
+
+        [HttpPost]
+        public IActionResult Editar(UsuariosMinisterioModel model, string origen)
+        {
+            if (!EsAdmin())
+                return RedirectToAction("Error", "Home", new { statusCode = 403 });
+
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "UsuariosMinisterio/ActualizarUsuarioMinisterioAPI";
+            var response = client.PutAsJsonAsync(url, model).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                TempData["MensajeExito"] = "Registro editado correctamente.";
+            else
+                TempData["Mensaje"] = response.Content.ReadAsStringAsync().Result;
 
             if (origen == "ministerio")
                 return RedirectToAction("AsignarPersona", new { idMinisterio = model.Id_Ministerio });

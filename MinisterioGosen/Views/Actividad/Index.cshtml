@@ -86,6 +86,7 @@
                             <th>Ministerio responsable</th>
                             <th>Fecha y horario</th>
                             <th>Lugar</th>
+                            <th>Estado</th>
                             <th class="text-end pe-4">Acciones</th>
                         </tr>
                     </thead>
@@ -178,6 +179,21 @@
                                         }
                                     </td>
 
+                                    <td>
+                                        @if (item.Estado == "Inactivo")
+                                        {
+                                            <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                                Inactivo
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-success px-3 py-2">
+                                                Activo
+                                            </span>
+                                        }
+                                    </td>
+
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
                                             <a asp-controller="Actividad"
@@ -187,6 +203,31 @@
                                                title="Editar">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
+
+                                            @if (item.Estado == "Inactivo")
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-success"
+                                                        title="Activar"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalActivar"
+                                                        data-id="@item.Id_Actividad"
+                                                        data-nombre="@item.Nombre_Actividad">
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-warning"
+                                                        title="Inactivar"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalInactivar"
+                                                        data-id="@item.Id_Actividad"
+                                                        data-nombre="@item.Nombre_Actividad">
+                                                    <i class="bi bi-slash-circle"></i>
+                                                </button>
+                                            }
 
                                             <a asp-controller="Actividad"
                                                asp-action="Eliminar"
@@ -203,7 +244,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <i class="bi bi-calendar-x text-muted display-4"></i>
 
                                     <h5 class="fw-bold text-muted mt-3 mb-1">
@@ -230,3 +271,101 @@
     </div>
 
 </div>
+
+<!-- Modal: Confirmar inactivación -->
+<div class="modal fade" id="modalInactivar" tabindex="-1" aria-labelledby="modalInactivarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="Actividad" asp-action="Inactivar" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalInactivarLabel">Confirmar inactivación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="inactivarId" />
+                    <input type="hidden" name="origen" value="index" />
+
+                    <p class="mb-0">
+                        ¿Desea inactivar la actividad <strong id="inactivarNombre"></strong>?
+                        Dejará de mostrarse a los usuarios, pero no se eliminará del sistema.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">Inactivar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar activación -->
+<div class="modal fade" id="modalActivar" tabindex="-1" aria-labelledby="modalActivarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="Actividad" asp-action="Activar" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalActivarLabel">Confirmar activación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="activarId" />
+                    <input type="hidden" name="origen" value="index" />
+
+                    <p class="mb-0">
+                        ¿Desea activar nuevamente la actividad <strong id="activarNombre"></strong>?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Activar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Guardado exitoso -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalExitoLabel">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Operación exitosa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">@TempData["MensajeExito"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("modalInactivar").addEventListener("show.bs.modal", function (event) {
+        let boton = event.relatedTarget;
+        document.getElementById("inactivarId").value = boton.getAttribute("data-id");
+        document.getElementById("inactivarNombre").textContent = boton.getAttribute("data-nombre");
+    });
+
+    document.getElementById("modalActivar").addEventListener("show.bs.modal", function (event) {
+        let boton = event.relatedTarget;
+        document.getElementById("activarId").value = boton.getAttribute("data-id");
+        document.getElementById("activarNombre").textContent = boton.getAttribute("data-nombre");
+    });
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <text>
+        document.addEventListener("DOMContentLoaded", function () {
+            let modalExito = new bootstrap.Modal(document.getElementById("modalExito"));
+            modalExito.show();
+        });
+        </text>
+    }
+</script>

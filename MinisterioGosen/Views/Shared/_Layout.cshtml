@@ -175,6 +175,15 @@
                             Ministerios
                         </a>
 
+                        <a asp-controller="Actividad"
+                           asp-action="Horarios"
+                           class="nav-link fw-semibold px-lg-3
+                            @(NavActivo("Actividad", "Horarios"))">
+
+                            <i class="bi bi-clock-fill me-1"></i>
+                            Horarios
+                        </a>
+
                         <a asp-controller="Citas"
                            asp-action="Crear"
                            class="nav-link fw-semibold px-lg-3
@@ -446,6 +455,28 @@
 
                                             <small class="text-muted">
                                                 Consultar reportes
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <!-- Horarios -->
+                                <li>
+                                    <a asp-controller="Actividad"
+                                       asp-action="Horarios"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo("Actividad", "Horarios"))">
+
+                                        <i class="bi bi-clock-fill text-warning fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Horarios
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Ver próximas actividades
                                             </small>
                                         </div>
                                     </a>

@@ -1,6 +1,11 @@
-﻿@{
+﻿@model List<MinisterioGosen.Models.ActividadModel>
+
+@{
     ViewData["Title"] = "Página Principal";
     Layout = "_Layout";
+
+    var ministeriosRecientes = Model ?? new List<MinisterioGosen.Models.ActividadModel>();
+    var imagenesMinisterios = new[] { "blog-1.jpg", "blog-2.jpg", "blog-3.jpg" };
 }
 
 <!-- Carousel Start -->
@@ -153,46 +158,44 @@
             <h1 class="display-3 text-capitalize mb-3">Espacions diseñados para que crezcas en tu fé</h1>
         </div>
         <div class="row g-4 justify-content-center">
-            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.2s">
-                <div class="blog-item">
-                    <div class="blog-img">
-                        <img src="~/img/blog-1.jpg" class="img-fluid rounded-top w-100" alt="">
-                        <div class="blog-date px-4 py-2"><i class="fa fa-calendar-alt me-1"></i> Julio 27 2026</div>
+            @if (ministeriosRecientes.Any())
+            {
+                for (int i = 0; i < ministeriosRecientes.Count; i++)
+                {
+                    var item = ministeriosRecientes[i];
+                    var imagen = imagenesMinisterios[i % imagenesMinisterios.Length];
+                    var subtitulo = !string.IsNullOrEmpty(item.Descripcion_Ministerio)
+                        ? item.Descripcion_Ministerio
+                        : item.Nombre_Tipo;
+
+                    <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="blog-item">
+                            <div class="blog-img">
+                                <img src="~/img/@imagen" class="img-fluid rounded-top w-100" alt="">
+                                <div class="blog-date px-4 py-2"><i class="fa fa-calendar-alt me-1"></i> @item.Fecha_Ini.ToString("dd/MM/yyyy")</div>
+                            </div>
+                            <div class="blog-content rounded-bottom p-4">
+                                <p class="h4 d-inline-block mb-3">@item.Nombre_Actividad</p>
+                                <p>@subtitulo</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="blog-content rounded-bottom p-4">
-                        <p class="h4 d-inline-block mb-3">Alabanza</p>
-                        <p>Adoración en Espiruto</p>
-                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center text-muted">
+                    Aún no hay actividades registradas.
                 </div>
-            </div>
-            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.4s">
-                <div class="blog-item">
-                    <div class="blog-img">
-                        <img src="~/img/blog-2.jpg" class="img-fluid rounded-top w-100" alt="">
-                        <div class="blog-date px-4 py-2"><i class="fa fa-calendar-alt me-1"></i> Oct 12 2026</div>
-                    </div>
-                    <div class="blog-content rounded-bottom p-4">
-                        <p class="h4 d-inline-block mb-3">Niños</p>
-                        <p>Sembrando el futuro</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.6s">
-                <div class="blog-item">
-                    <div class="blog-img">
-                        <img src="~/img/blog-3.jpg" class="img-fluid rounded-top w-100" alt="">
-                        <div class="blog-date px-4 py-2"><i class="fa fa-calendar-alt me-1"></i> Dic 03 2026</div>
-                    </div>
-                    <div class="blog-content rounded-bottom p-4">
-                        <a href="#" class="h4 d-inline-block mb-3">Jovenes</a>
-                        <p>Pasión y proposito</p>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
 
         <div class="py-5 carousel-caption-2-content-btn fadeInRight animated" data-animation="fadeInRight" data-delay="1.7s" style="animation-delay: 1.7s;">
-            <a class="btn btn-secondary rounded-pill flex-shrink-0 py-3 px-5 ms-2" href="#">Ver más</a>
+            <a asp-controller="Actividad"
+               asp-action="Horarios"
+               class="btn btn-secondary rounded-pill flex-shrink-0 py-3 px-5 ms-2">
+                Ver más
+            </a>
         </div>
     </div>
 </div>

@@ -35,5 +35,7 @@ namespace MinisterioGosenAPI.Models
         public string? Descripcion_Ministerio { get; set; }
 
         public string? Observacion_Ministerio_Actividad { get; set; }
+
+        public string? Estado { get; set; } = "Activo";
     }
 }

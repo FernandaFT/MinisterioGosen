@@ -73,7 +73,12 @@ namespace MinisterioGosen.Controllers
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var datos = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result;
+                var datos = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result
+                    ?? new List<ActividadModel>();
+
+                if (!EsAdmin())
+                    datos = datos.Where(x => x.Estado == "Activo").ToList();
+
                 return View(datos);
             }
 
@@ -100,6 +105,7 @@ namespace MinisterioGosen.Controllers
 
                 var proximasActividades = actividades
                     .Where(x => (x.Fecha_Fin ?? x.Fecha_Ini).Date >= hoy)
+                    .Where(x => EsAdmin() || x.Estado == "Activo")
                     .OrderBy(x => x.Fecha_Ini)
                     .ToList();
 
@@ -265,6 +271,50 @@ namespace MinisterioGosen.Controllers
 
             ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
             return View("Eliminar", model);
+        }
+
+        [HttpPost]
+        public IActionResult Inactivar(int id, string? origen)
+        {
+            if (!EsAdmin())
+                return RedirectToAction("Error", "Home", new { statusCode = 403 });
+
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + $"Actividad/InactivarActividadAPI?id={id}";
+            var response = client.PutAsync(url, null).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                TempData["MensajeExito"] = "Actividad inactivada correctamente.";
+            else
+                TempData["Mensaje"] = response.Content.ReadAsStringAsync().Result;
+
+            if (origen == "horarios")
+                return RedirectToAction("Horarios");
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Activar(int id, string? origen)
+        {
+            if (!EsAdmin())
+                return RedirectToAction("Error", "Home", new { statusCode = 403 });
+
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + $"Actividad/ActivarActividadAPI?id={id}";
+            var response = client.PutAsync(url, null).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                TempData["MensajeExito"] = "Actividad activada correctamente.";
+            else
+                TempData["Mensaje"] = response.Content.ReadAsStringAsync().Result;
+
+            if (origen == "horarios")
+                return RedirectToAction("Horarios");
+
+            return RedirectToAction("Index");
         }
     }
 }

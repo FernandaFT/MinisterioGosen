@@ -99,6 +99,7 @@
                        class="table table-hover align-middle mb-0 w-100">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Ministerio</th>
                             <th>Persona</th>
                             <th>Correo</th>
@@ -116,6 +117,11 @@
                             foreach (var item in Model)
                             {
                                 <tr>
+                                    <td>
+                                        <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                            #@item.Id_Usuario_Ministerio
+                                        </span>
+                                    </td>
                                     <td>@item.Descripcion_Ministerio</td>
                                     <td>@item.Nombre</td>
                                     <td>@item.Correo</td>

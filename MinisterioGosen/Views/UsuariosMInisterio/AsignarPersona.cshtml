@@ -49,18 +49,32 @@
                                 <td>@item.Fecha_Ingreso?.ToString("dd/MM/yyyy")</td>
                                 <td>@item.Observacion</td>
                                 <td>
-                                    <form asp-controller="UsuariosMinisterio"
-                                          asp-action="Salir"
-                                          method="post">
-                                        <input type="hidden" name="Id_Usuario_Ministerio" value="@item.Id_Usuario_Ministerio" />
-                                        <input type="hidden" name="Id_Ministerio" value="@item.Id_Ministerio" />
-                                        <input type="hidden" name="Id_Usuario" value="@item.Id_Usuario" />
-                                        <input type="hidden" name="origen" value="ministerio" />
-
-                                        <button type="submit" class="btn btn-warning btn-sm">
-                                            Sacar
+                                    <div class="btn-group" role="group">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm"
+                                                title="Editar"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditar"
+                                                data-id-usuario-ministerio="@item.Id_Usuario_Ministerio"
+                                                data-id-ministerio="@item.Id_Ministerio"
+                                                data-id-usuario="@item.Id_Usuario"
+                                                data-fecha-ingreso="@item.Fecha_Ingreso?.ToString("yyyy-MM-dd")"
+                                                data-observacion="@item.Observacion">
+                                            <i class="bi bi-pencil-square"></i>
                                         </button>
-                                    </form>
+
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Sacar"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEliminar"
+                                                data-id-usuario-ministerio="@item.Id_Usuario_Ministerio"
+                                                data-id-ministerio="@item.Id_Ministerio"
+                                                data-id-usuario="@item.Id_Usuario"
+                                                data-nombre="@item.Nombre">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -151,6 +165,89 @@
     </div>
 </div>
 
+<!-- Modal: Editar registro -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="UsuariosMinisterio" asp-action="Editar" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarLabel">Editar registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="Id_Usuario_Ministerio" id="editarIdUsuarioMinisterio" />
+                    <input type="hidden" name="Id_Ministerio" id="editarIdMinisterio" />
+                    <input type="hidden" name="Id_Usuario" id="editarIdUsuario" />
+                    <input type="hidden" name="origen" value="ministerio" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de ingreso</label>
+                        <input type="date" name="Fecha_Ingreso" id="editarFechaIngreso" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Observación</label>
+                        <input type="text" name="Observacion" id="editarObservacion" class="form-control" placeholder="Observación" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar eliminación -->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="UsuariosMinisterio" asp-action="Salir" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEliminarLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="Id_Usuario_Ministerio" id="eliminarIdUsuarioMinisterio" />
+                    <input type="hidden" name="Id_Ministerio" id="eliminarIdMinisterio" />
+                    <input type="hidden" name="Id_Usuario" id="eliminarIdUsuario" />
+                    <input type="hidden" name="origen" value="ministerio" />
+
+                    <p class="mb-0">
+                        ¿Desea sacar a <strong id="eliminarNombre"></strong> de este ministerio?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Sacar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Guardado exitoso -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalExitoLabel">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Operación exitosa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">@TempData["MensajeExito"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.getElementById("buscarUsuario").addEventListener("keyup", function () {
         let filtro = this.value.toLowerCase();
@@ -161,4 +258,35 @@
             fila.style.display = texto.includes(filtro) ? "" : "none";
         });
     });
+
+    // Llenar el modal de edición con los datos de la fila seleccionada
+    document.getElementById("modalEditar").addEventListener("show.bs.modal", function (event) {
+        let boton = event.relatedTarget;
+
+        document.getElementById("editarIdUsuarioMinisterio").value = boton.getAttribute("data-id-usuario-ministerio");
+        document.getElementById("editarIdMinisterio").value = boton.getAttribute("data-id-ministerio");
+        document.getElementById("editarIdUsuario").value = boton.getAttribute("data-id-usuario");
+        document.getElementById("editarFechaIngreso").value = boton.getAttribute("data-fecha-ingreso");
+        document.getElementById("editarObservacion").value = boton.getAttribute("data-observacion");
+    });
+
+    // Llenar el modal de eliminación con los datos de la fila seleccionada
+    document.getElementById("modalEliminar").addEventListener("show.bs.modal", function (event) {
+        let boton = event.relatedTarget;
+
+        document.getElementById("eliminarIdUsuarioMinisterio").value = boton.getAttribute("data-id-usuario-ministerio");
+        document.getElementById("eliminarIdMinisterio").value = boton.getAttribute("data-id-ministerio");
+        document.getElementById("eliminarIdUsuario").value = boton.getAttribute("data-id-usuario");
+        document.getElementById("eliminarNombre").textContent = boton.getAttribute("data-nombre");
+    });
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <text>
+        document.addEventListener("DOMContentLoaded", function () {
+            let modalExito = new bootstrap.Modal(document.getElementById("modalExito"));
+            modalExito.show();
+        });
+        </text>
+    }
 </script>
