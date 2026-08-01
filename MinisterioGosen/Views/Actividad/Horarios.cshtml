@@ -170,8 +170,7 @@
                                             {
                                                 <button type="button"
                                                         class="btn btn-sm btn-outline-success flex-fill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modalActivar"
+                                                        onclick="confirmarActivarActividad(this)"
                                                         data-id="@item.Id_Actividad"
                                                         data-nombre="@item.Nombre_Actividad">
                                                     <i class="bi bi-check-circle-fill me-1"></i>
@@ -182,8 +181,7 @@
                                             {
                                                 <button type="button"
                                                         class="btn btn-sm btn-outline-warning flex-fill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modalInactivar"
+                                                        onclick="confirmarInactivarActividad(this)"
                                                         data-id="@item.Id_Actividad"
                                                         data-nombre="@item.Nombre_Actividad">
                                                     <i class="bi bi-slash-circle me-1"></i>
@@ -221,101 +219,56 @@
 
 @if (esAdmin)
 {
-    <!-- Modal: Confirmar inactivación -->
-    <div class="modal fade" id="modalInactivar" tabindex="-1" aria-labelledby="modalInactivarLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form asp-controller="Actividad" asp-action="Inactivar" method="post">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalInactivarLabel">Confirmar inactivación</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="inactivarId" />
-                        <input type="hidden" name="origen" value="horarios" />
+    <!-- Formularios ocultos: se envían tras confirmar con SweetAlert -->
+    <form id="formInactivarActividad" asp-controller="Actividad" asp-action="Inactivar" method="post" class="d-none">
+        <input type="hidden" name="id" id="inactivarId" />
+        <input type="hidden" name="origen" value="horarios" />
+    </form>
 
-                        <p class="mb-0">
-                            ¿Desea inactivar la actividad <strong id="inactivarNombre"></strong>?
-                            Dejará de mostrarse a los usuarios, pero no se eliminará del sistema.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-warning">Inactivar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Confirmar activación -->
-    <div class="modal fade" id="modalActivar" tabindex="-1" aria-labelledby="modalActivarLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form asp-controller="Actividad" asp-action="Activar" method="post">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalActivarLabel">Confirmar activación</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="activarId" />
-                        <input type="hidden" name="origen" value="horarios" />
-
-                        <p class="mb-0">
-                            ¿Desea activar nuevamente la actividad <strong id="activarNombre"></strong>?
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Activar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Guardado exitoso -->
-    <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="modalExitoLabel">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        Operación exitosa
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-0">@TempData["MensajeExito"]</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <form id="formActivarActividad" asp-controller="Actividad" asp-action="Activar" method="post" class="d-none">
+        <input type="hidden" name="id" id="activarId" />
+        <input type="hidden" name="origen" value="horarios" />
+    </form>
 
     <script>
-        document.getElementById("modalInactivar").addEventListener("show.bs.modal", function (event) {
-            let boton = event.relatedTarget;
-            document.getElementById("inactivarId").value = boton.getAttribute("data-id");
-            document.getElementById("inactivarNombre").textContent = boton.getAttribute("data-nombre");
-        });
+        function confirmarInactivarActividad(boton) {
+            const nombre = boton.getAttribute("data-nombre");
 
-        document.getElementById("modalActivar").addEventListener("show.bs.modal", function (event) {
-            let boton = event.relatedTarget;
-            document.getElementById("activarId").value = boton.getAttribute("data-id");
-            document.getElementById("activarNombre").textContent = boton.getAttribute("data-nombre");
-        });
-
-        @if (TempData["MensajeExito"] != null)
-        {
-            <text>
-            document.addEventListener("DOMContentLoaded", function () {
-                let modalExito = new bootstrap.Modal(document.getElementById("modalExito"));
-                modalExito.show();
+            Swal.fire({
+                title: "Confirmar inactivación",
+                text: "¿Desea inactivar la actividad " + nombre + "? Dejará de mostrarse a los usuarios, pero no se eliminará del sistema.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Inactivar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#bf8350",
+                cancelButtonColor: "#6c757d"
+            }).then(function (resultado) {
+                if (resultado.isConfirmed) {
+                    document.getElementById("inactivarId").value = boton.getAttribute("data-id");
+                    document.getElementById("formInactivarActividad").submit();
+                }
             });
-            </text>
+        }
+
+        function confirmarActivarActividad(boton) {
+            const nombre = boton.getAttribute("data-nombre");
+
+            Swal.fire({
+                title: "Confirmar activación",
+                text: "¿Desea activar nuevamente la actividad " + nombre + "?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Activar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#064442",
+                cancelButtonColor: "#6c757d"
+            }).then(function (resultado) {
+                if (resultado.isConfirmed) {
+                    document.getElementById("activarId").value = boton.getAttribute("data-id");
+                    document.getElementById("formActivarActividad").submit();
+                }
+            });
         }
     </script>
 }

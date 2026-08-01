@@ -10,13 +10,6 @@
 
 <div class="container mt-4">
 
-    @if (TempData["Mensaje"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Mensaje"]
-        </div>
-    }
-
     <div class="card shadow mb-4">
         <div class="card-header bg-primary text-white">
             <h4>Asignar personas a: @ministerio?.Descripcion_Ministerio</h4>
@@ -66,8 +59,7 @@
                                         <button type="button"
                                                 class="btn btn-outline-danger btn-sm"
                                                 title="Sacar"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalEliminar"
+                                                onclick="confirmarSacarUsuarioMinisterio(this)"
                                                 data-id-usuario-ministerio="@item.Id_Usuario_Ministerio"
                                                 data-id-ministerio="@item.Id_Ministerio"
                                                 data-id-usuario="@item.Id_Usuario"
@@ -165,7 +157,7 @@
     </div>
 </div>
 
-<!-- Modal: Editar registro -->
+<!-- Modal: Editar registro (formulario, se mantiene como modal Bootstrap) -->
 <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -199,54 +191,13 @@
     </div>
 </div>
 
-<!-- Modal: Confirmar eliminación -->
-<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-controller="UsuariosMinisterio" asp-action="Salir" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalEliminarLabel">Confirmar eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="Id_Usuario_Ministerio" id="eliminarIdUsuarioMinisterio" />
-                    <input type="hidden" name="Id_Ministerio" id="eliminarIdMinisterio" />
-                    <input type="hidden" name="Id_Usuario" id="eliminarIdUsuario" />
-                    <input type="hidden" name="origen" value="ministerio" />
-
-                    <p class="mb-0">
-                        ¿Desea sacar a <strong id="eliminarNombre"></strong> de este ministerio?
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Sacar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal: Guardado exitoso -->
-<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="modalExitoLabel">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    Operación exitosa
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-0">@TempData["MensajeExito"]</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Formulario oculto: se envía tras confirmar con SweetAlert -->
+<form id="formSacarUsuarioMinisterio" asp-controller="UsuariosMinisterio" asp-action="Salir" method="post" class="d-none">
+    <input type="hidden" name="Id_Usuario_Ministerio" id="sacarIdUsuarioMinisterio" />
+    <input type="hidden" name="Id_Ministerio" id="sacarIdMinisterio" />
+    <input type="hidden" name="Id_Usuario" id="sacarIdUsuario" />
+    <input type="hidden" name="origen" value="ministerio" />
+</form>
 
 <script>
     document.getElementById("buscarUsuario").addEventListener("keyup", function () {
@@ -270,23 +221,26 @@
         document.getElementById("editarObservacion").value = boton.getAttribute("data-observacion");
     });
 
-    // Llenar el modal de eliminación con los datos de la fila seleccionada
-    document.getElementById("modalEliminar").addEventListener("show.bs.modal", function (event) {
-        let boton = event.relatedTarget;
+    // Confirmación de "Sacar" con SweetAlert
+    function confirmarSacarUsuarioMinisterio(boton) {
+        const nombre = boton.getAttribute("data-nombre");
 
-        document.getElementById("eliminarIdUsuarioMinisterio").value = boton.getAttribute("data-id-usuario-ministerio");
-        document.getElementById("eliminarIdMinisterio").value = boton.getAttribute("data-id-ministerio");
-        document.getElementById("eliminarIdUsuario").value = boton.getAttribute("data-id-usuario");
-        document.getElementById("eliminarNombre").textContent = boton.getAttribute("data-nombre");
-    });
-
-    @if (TempData["MensajeExito"] != null)
-    {
-        <text>
-        document.addEventListener("DOMContentLoaded", function () {
-            let modalExito = new bootstrap.Modal(document.getElementById("modalExito"));
-            modalExito.show();
+        Swal.fire({
+            title: "Confirmar eliminación",
+            text: "¿Desea sacar a " + nombre + " de este ministerio?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sacar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#dc3545",
+            cancelButtonColor: "#bf8350"
+        }).then(function (resultado) {
+            if (resultado.isConfirmed) {
+                document.getElementById("sacarIdUsuarioMinisterio").value = boton.getAttribute("data-id-usuario-ministerio");
+                document.getElementById("sacarIdMinisterio").value = boton.getAttribute("data-id-ministerio");
+                document.getElementById("sacarIdUsuario").value = boton.getAttribute("data-id-usuario");
+                document.getElementById("formSacarUsuarioMinisterio").submit();
+            }
         });
-        </text>
     }
 </script>
