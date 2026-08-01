@@ -175,15 +175,6 @@
                             Ministerios
                         </a>
 
-                        <a asp-controller="Actividad"
-                           asp-action="Horarios"
-                           class="nav-link fw-semibold px-lg-3
-                            @(NavActivo("Actividad", "Horarios"))">
-
-                            <i class="bi bi-clock-fill me-1"></i>
-                            Horarios
-                        </a>
-
                         <a asp-controller="Citas"
                            asp-action="Crear"
                            class="nav-link fw-semibold px-lg-3
@@ -780,6 +771,37 @@
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/js/datatablehelper.js"></script>
+    <script src="~/js/cardPagination.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: "success",
+                    title: "Operación exitosa",
+                    text: "@Html.Raw(TempData["MensajeExito"])",
+                    confirmButtonColor: "#064442"
+                });
+            });
+        </script>
+    }
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: "error",
+                    title: "Ocurrió un problema",
+                    text: "@Html.Raw(TempData["Mensaje"])",
+                    confirmButtonColor: "#064442"
+                });
+            });
+        </script>
+    }
+
     <script src="~/js/chatbot-floating.js"></script>
     <script src="~/js/chatbot.js"></script>
     <script src="~/js/dashboard.js" asp-append-version="true"></script>

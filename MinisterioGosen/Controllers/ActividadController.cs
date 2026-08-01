@@ -208,18 +208,28 @@ namespace MinisterioGosen.Controllers
         {
             if (!EsAdmin())
                 return RedirectToAction("Error", "Home", new { statusCode = 403 });
-            
-            if (model.Fecha_Ini.Date < DateTime.Today)
-            {
-                ViewBag.Mensaje = "La fecha de inicio no puede ser anterior a la fecha actual.";
-
-                CargarTiposActividad(model.Id_Tipo_Actividad);
-                CargarMinisterios(model.Id_Ministerio);
-
-                return View(model);
-            }
 
             using var client = _http.CreateClient();
+
+            var urlObtener = _config["Valores:UrlApi"] + $"Actividad/ObtenerActividadAPI?id={model.Id_Actividad}";
+            var responseObtener = client.GetAsync(urlObtener).Result;
+
+            if (responseObtener.StatusCode == HttpStatusCode.OK)
+            {
+                var actividadActual = responseObtener.Content.ReadFromJsonAsync<ActividadModel>().Result;
+
+                var fechaCambio = actividadActual != null && model.Fecha_Ini.Date != actividadActual.Fecha_Ini.Date;
+
+                if (fechaCambio && model.Fecha_Ini.Date < DateTime.Today)
+                {
+                    ViewBag.Mensaje = "La fecha de inicio no puede ser anterior a la fecha actual.";
+
+                    CargarTiposActividad(model.Id_Tipo_Actividad);
+                    CargarMinisterios(model.Id_Ministerio);
+
+                    return View(model);
+                }
+            }
 
             var url = _config["Valores:UrlApi"] + "Actividad/ActualizarActividadAPI";
             var response = client.PutAsJsonAsync(url, model).Result;
