@@ -2057,3 +2057,153 @@ USE [master]
 GO
 ALTER DATABASE [ministerio_gosen] SET  READ_WRITE 
 GO
+
+
+
+
+------------------------JAIME 1/8/2026-------------------------
+
+USE [ministerio_gosen]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Edita la fecha de ingreso y la observación de un registro en Usuarios_Ministerio
+
+CREATE OR ALTER PROCEDURE [dbo].[spEditarUsuarioMinisterio]
+    @Id_Usuario_Ministerio INT,
+    @Fecha_Ingreso DATE,
+    @Observacion VARCHAR(200)
+AS
+BEGIN
+    UPDATE Usuarios_Ministerio
+    SET Fecha_Ingreso = @Fecha_Ingreso,
+        Observacion = @Observacion
+    WHERE Id_Usuario_Ministerio = @Id_Usuario_Ministerio;
+END;
+GO
+
+/* =========================================================
+   1) Agregar columna Estado a Actividad (si no existe)
+   ========================================================= */
+
+IF COL_LENGTH('Actividad', 'Estado') IS NULL
+BEGIN
+    ALTER TABLE dbo.Actividad
+    ADD Estado VARCHAR(20) NOT NULL
+        CONSTRAINT DF_Actividad_Estado DEFAULT ('Activo');
+END;
+GO
+
+/* =========================================================
+   1.1) Constraint de valores permitidos para Estado
+   ========================================================= */
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.check_constraints WHERE name = 'chk_estado_actividad'
+)
+BEGIN
+    ALTER TABLE dbo.Actividad WITH CHECK ADD CONSTRAINT chk_estado_actividad
+        CHECK ([Estado]='Activo' OR [Estado]='Inactivo');
+
+    ALTER TABLE dbo.Actividad CHECK CONSTRAINT chk_estado_actividad;
+END;
+GO
+
+/* =========================================================
+   2) Listar actividades incluyendo Estado
+   ========================================================= */
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[spListarActividades]
+AS
+BEGIN
+    SELECT
+        A.Id_Actividad,
+        A.Nombre_Actividad,
+        A.Fecha_Ini,
+        A.Fecha_Fin,
+        A.Lugar,
+        CONVERT(VARCHAR(5), A.Hora_Ini, 108) AS Hora_Ini,
+        CONVERT(VARCHAR(5), A.Hora_Fin, 108) AS Hora_Fin,
+        A.Id_Tipo_Actividad,
+        T.Nombre_Tipo,
+        AM.Id_Ministerio,
+        M.Descripcion_Ministerio,
+        AM.Observacion AS Observacion_Ministerio_Actividad,
+        A.Estado
+    FROM Actividad A
+    INNER JOIN Tipo_Actividad T
+        ON A.Id_Tipo_Actividad = T.Id_Tipo_Actividad
+    LEFT JOIN Actividades_Ministerio AM
+        ON A.Id_Actividad = AM.Id_Actividad
+    LEFT JOIN Ministerio M
+        ON AM.Id_Ministerio = M.Id_Ministerio
+    ORDER BY A.Fecha_Ini DESC;
+END;
+GO
+
+/* =========================================================
+   3) Obtener una actividad incluyendo Estado
+   ========================================================= */
+
+CREATE OR ALTER PROCEDURE [dbo].[spObtenerActividad]
+    @Id_Actividad INT
+AS
+BEGIN
+    SELECT
+        A.Id_Actividad,
+        A.Nombre_Actividad,
+        A.Fecha_Ini,
+        A.Fecha_Fin,
+        A.Lugar,
+        CONVERT(VARCHAR(5), A.Hora_Ini, 108) AS Hora_Ini,
+        CONVERT(VARCHAR(5), A.Hora_Fin, 108) AS Hora_Fin,
+        A.Id_Tipo_Actividad,
+        AM.Id_Ministerio,
+        M.Descripcion_Ministerio,
+        AM.Observacion AS Observacion_Ministerio_Actividad,
+        A.Estado
+    FROM Actividad A
+    LEFT JOIN Actividades_Ministerio AM
+        ON A.Id_Actividad = AM.Id_Actividad
+    LEFT JOIN Ministerio M
+        ON AM.Id_Ministerio = M.Id_Ministerio
+    WHERE A.Id_Actividad = @Id_Actividad;
+END;
+GO
+
+/* =========================================================
+   4) Inactivar actividad
+   ========================================================= */
+
+CREATE OR ALTER PROCEDURE [dbo].[spInactivarActividad]
+    @Id_Actividad INT
+AS
+BEGIN
+    UPDATE Actividad
+    SET Estado = 'Inactivo'
+    WHERE Id_Actividad = @Id_Actividad;
+END;
+GO
+
+/* =========================================================
+   5) Reactivar actividad
+   ========================================================= */
+
+CREATE OR ALTER PROCEDURE [dbo].[spActivarActividad]
+    @Id_Actividad INT
+AS
+BEGIN
+    UPDATE Actividad
+    SET Estado = 'Activo'
+    WHERE Id_Actividad = @Id_Actividad;
+END;
+GO

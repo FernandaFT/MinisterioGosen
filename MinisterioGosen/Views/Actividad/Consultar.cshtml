@@ -29,7 +29,7 @@
 
     @if (actividades.Any())
     {
-        <div class="row g-4">
+        <div class="row g-4" data-card-pagination data-page-size="6">
             @foreach (var item in actividades)
             {
                 var fechaFinReal = item.Fecha_Fin ?? item.Fecha_Ini;

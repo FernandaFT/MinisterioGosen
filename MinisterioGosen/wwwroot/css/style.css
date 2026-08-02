@@ -128,6 +128,80 @@ h1, h2, h3, h4, h5, h6,
     }
 /*** Button End ***/
 
+/*** Brand color overrides (evita el azul por defecto de Bootstrap) ***/
+.bg-primary {
+    background-color: var(--gosen-primary) !important;
+}
+
+.border-primary {
+    border-color: var(--gosen-primary) !important;
+}
+
+.text-secondary {
+    color: var(--gosen-secondary) !important;
+}
+
+.bg-secondary {
+    background-color: var(--gosen-secondary) !important;
+}
+
+.border-secondary {
+    border-color: var(--gosen-secondary) !important;
+}
+
+.btn-outline-primary {
+    color: var(--gosen-primary);
+    border-color: var(--gosen-primary);
+}
+
+    .btn-outline-primary:hover {
+        color: var(--gosen-white);
+        background-color: var(--gosen-primary);
+        border-color: var(--gosen-primary);
+    }
+
+.btn-outline-secondary {
+    color: var(--gosen-secondary);
+    border-color: var(--gosen-secondary);
+}
+
+    .btn-outline-secondary:hover {
+        color: var(--gosen-white);
+        background-color: var(--gosen-secondary);
+        border-color: var(--gosen-secondary);
+    }
+
+.bg-primary.bg-opacity-10 {
+    background-color: rgba(6, 68, 66, 0.1) !important;
+}
+
+.bg-secondary.bg-opacity-10 {
+    background-color: rgba(191, 131, 80, 0.1) !important;
+}
+
+.card-header.bg-dark,
+.card-header.bg-dark h1,
+.card-header.bg-dark h2,
+.card-header.bg-dark h3,
+.card-header.bg-dark h4,
+.card-header.bg-dark h5,
+.card-header.bg-dark h6,
+.card-header.bg-dark p,
+.card-header.bg-dark i,
+.card-header.bg-dark span,
+.card-header.bg-primary,
+.card-header.bg-primary h1,
+.card-header.bg-primary h2,
+.card-header.bg-primary h3,
+.card-header.bg-primary h4,
+.card-header.bg-primary h5,
+.card-header.bg-primary h6,
+.card-header.bg-primary p,
+.card-header.bg-primary i,
+.card-header.bg-primary span {
+    color: #ffffff !important;
+}
+
 
 /*** Topbar Start ***/
 
@@ -877,7 +951,6 @@ h1, h2, h3, h4, h5, h6,
         width: 100%;
         padding: 12px 24px !important;
     }
-
 }
 
 
@@ -1360,7 +1433,6 @@ h1, h2, h3, h4, h5, h6,
         background-color: #0d2422;
         color: #ffffff;
         box-shadow: 0 7px 16px rgba(13, 36, 34, 0.18);
-
     }
 
 .contrasena-recomendacion {
@@ -1409,7 +1481,17 @@ h1, h2, h3, h4, h5, h6,
     .card-header.bg-dark h6,
     .card-header.bg-dark p,
     .card-header.bg-dark i,
-    .card-header.bg-dark span {
+    .card-header.bg-dark span,
+    .card-header.bg-primary,
+    .card-header.bg-primary h1,
+    .card-header.bg-primary h2,
+    .card-header.bg-primary h3,
+    .card-header.bg-primary h4,
+    .card-header.bg-primary h5,
+    .card-header.bg-primary h6,
+    .card-header.bg-primary p,
+    .card-header.bg-primary i,
+    .card-header.bg-primary span {
         color: #ffffff !important;
     }
 

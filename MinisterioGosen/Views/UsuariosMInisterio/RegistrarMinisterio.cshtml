@@ -10,15 +10,8 @@
 
 <div class="container mt-4">
 
-    @if (TempData["Mensaje"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Mensaje"]
-        </div>
-    }
-
     <div class="card shadow mb-4">
-        <div class="card-header bg-dark text-white">
+        <div class="card-header bg-primary text-white">
             <h4>Registrar ministerios a: @usuario?.Nombre</h4>
         </div>
 
@@ -45,18 +38,31 @@
                                 <td>@item.Fecha_Ingreso?.ToString("dd/MM/yyyy")</td>
                                 <td>@item.Observacion</td>
                                 <td>
-                                    <form asp-controller="UsuariosMinisterio"
-                                          asp-action="Salir"
-                                          method="post">
-                                        <input type="hidden" name="Id_Usuario_Ministerio" value="@item.Id_Usuario_Ministerio" />
-                                        <input type="hidden" name="Id_Ministerio" value="@item.Id_Ministerio" />
-                                        <input type="hidden" name="Id_Usuario" value="@item.Id_Usuario" />
-                                        <input type="hidden" name="origen" value="usuario" />
-
-                                        <button type="submit" class="btn btn-warning btn-sm">
-                                            Sacar
+                                    <div class="btn-group" role="group">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm"
+                                                title="Editar"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditar"
+                                                data-id-usuario-ministerio="@item.Id_Usuario_Ministerio"
+                                                data-id-ministerio="@item.Id_Ministerio"
+                                                data-id-usuario="@item.Id_Usuario"
+                                                data-fecha-ingreso="@item.Fecha_Ingreso?.ToString("yyyy-MM-dd")"
+                                                data-observacion="@item.Observacion">
+                                            <i class="bi bi-pencil-square"></i>
                                         </button>
-                                    </form>
+
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Sacar"
+                                                onclick="confirmarSacarUsuarioMinisterio(this)"
+                                                data-id-usuario-ministerio="@item.Id_Usuario_Ministerio"
+                                                data-id-ministerio="@item.Id_Ministerio"
+                                                data-id-usuario="@item.Id_Usuario"
+                                                data-nombre="@item.Descripcion_Ministerio">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -145,6 +151,48 @@
     </div>
 </div>
 
+<!-- Modal: Editar registro (formulario, se mantiene como modal Bootstrap) -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="UsuariosMinisterio" asp-action="Editar" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarLabel">Editar registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="Id_Usuario_Ministerio" id="editarIdUsuarioMinisterio" />
+                    <input type="hidden" name="Id_Ministerio" id="editarIdMinisterio" />
+                    <input type="hidden" name="Id_Usuario" id="editarIdUsuario" />
+                    <input type="hidden" name="origen" value="usuario" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de ingreso</label>
+                        <input type="date" name="Fecha_Ingreso" id="editarFechaIngreso" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Observación</label>
+                        <input type="text" name="Observacion" id="editarObservacion" class="form-control" placeholder="Observación" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario oculto: se envía tras confirmar con SweetAlert -->
+<form id="formSacarUsuarioMinisterio" asp-controller="UsuariosMinisterio" asp-action="Salir" method="post" class="d-none">
+    <input type="hidden" name="Id_Usuario_Ministerio" id="sacarIdUsuarioMinisterio" />
+    <input type="hidden" name="Id_Ministerio" id="sacarIdMinisterio" />
+    <input type="hidden" name="Id_Usuario" id="sacarIdUsuario" />
+    <input type="hidden" name="origen" value="usuario" />
+</form>
+
 <script>
     document.getElementById("buscarMinisterio").addEventListener("keyup", function () {
         let filtro = this.value.toLowerCase();
@@ -155,4 +203,38 @@
             fila.style.display = texto.includes(filtro) ? "" : "none";
         });
     });
+
+    // Llenar el modal de edición con los datos de la fila seleccionada
+    document.getElementById("modalEditar").addEventListener("show.bs.modal", function (event) {
+        let boton = event.relatedTarget;
+
+        document.getElementById("editarIdUsuarioMinisterio").value = boton.getAttribute("data-id-usuario-ministerio");
+        document.getElementById("editarIdMinisterio").value = boton.getAttribute("data-id-ministerio");
+        document.getElementById("editarIdUsuario").value = boton.getAttribute("data-id-usuario");
+        document.getElementById("editarFechaIngreso").value = boton.getAttribute("data-fecha-ingreso");
+        document.getElementById("editarObservacion").value = boton.getAttribute("data-observacion");
+    });
+
+    // Confirmación de "Sacar" con SweetAlert
+    function confirmarSacarUsuarioMinisterio(boton) {
+        const nombre = boton.getAttribute("data-nombre");
+
+        Swal.fire({
+            title: "Confirmar eliminación",
+            text: "¿Desea sacar a esta persona de " + nombre + "?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sacar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#dc3545",
+            cancelButtonColor: "#bf8350"
+        }).then(function (resultado) {
+            if (resultado.isConfirmed) {
+                document.getElementById("sacarIdUsuarioMinisterio").value = boton.getAttribute("data-id-usuario-ministerio");
+                document.getElementById("sacarIdMinisterio").value = boton.getAttribute("data-id-ministerio");
+                document.getElementById("sacarIdUsuario").value = boton.getAttribute("data-id-usuario");
+                document.getElementById("formSacarUsuarioMinisterio").submit();
+            }
+        });
+    }
 </script>

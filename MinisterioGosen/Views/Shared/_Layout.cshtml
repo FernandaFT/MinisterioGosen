@@ -451,6 +451,28 @@
                                     </a>
                                 </li>
 
+                                <!-- Horarios -->
+                                <li>
+                                    <a asp-controller="Actividad"
+                                       asp-action="Horarios"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo("Actividad", "Horarios"))">
+
+                                        <i class="bi bi-clock-fill text-warning fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Horarios
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Ver próximas actividades
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
                             </ul>
                         </div>
                     }
@@ -749,6 +771,37 @@
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/js/datatablehelper.js"></script>
+    <script src="~/js/cardPagination.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: "success",
+                    title: "Operación exitosa",
+                    text: "@Html.Raw(TempData["MensajeExito"])",
+                    confirmButtonColor: "#064442"
+                });
+            });
+        </script>
+    }
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: "error",
+                    title: "Ocurrió un problema",
+                    text: "@Html.Raw(TempData["Mensaje"])",
+                    confirmButtonColor: "#064442"
+                });
+            });
+        </script>
+    }
+
     <script src="~/js/chatbot-floating.js"></script>
     <script src="~/js/chatbot.js"></script>
     <script src="~/js/dashboard.js" asp-append-version="true"></script>

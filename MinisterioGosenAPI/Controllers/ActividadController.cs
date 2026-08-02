@@ -140,6 +140,38 @@ namespace MinisterioGosenAPI.Controllers
             }
         }
 
+        [HttpPut("InactivarActividadAPI")]
+        public IActionResult InactivarActividadAPI(int id)
+        {
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id_Actividad", id);
+
+            var response = context.Execute("spInactivarActividad", parameters);
+
+            if (response > 0)
+                return Ok(response);
+
+            return BadRequest("No se pudo inactivar la actividad.");
+        }
+
+        [HttpPut("ActivarActividadAPI")]
+        public IActionResult ActivarActividadAPI(int id)
+        {
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id_Actividad", id);
+
+            var response = context.Execute("spActivarActividad", parameters);
+
+            if (response > 0)
+                return Ok(response);
+
+            return BadRequest("No se pudo activar la actividad.");
+        }
+
         [HttpPost("ReporteActividadesAPI")]
         public IActionResult ReporteActividadesAPI(ReporteActividadesFiltroModel filtros)
         {
