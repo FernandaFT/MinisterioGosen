@@ -74,6 +74,21 @@
                         </div>
                     </div>
 
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-clock me-1 text-muted"></i>
+                            Hora de la cita
+                        </label>
+                        <input asp-for="Hora_Cita"
+                               type="time"
+                               class="form-control rounded-3"
+                               min="08:00"
+                               max="17:00" />
+                        <div class="invalid-feedback">
+                            Debe ingresar una hora válida entre las 08:00 y las 17:00.
+                        </div>
+                    </div>
+
                     <div class="col-md-12">
                         <label class="form-label fw-semibold">
                             <i class="bi bi-person-badge-fill me-1 text-muted"></i>
@@ -175,8 +190,16 @@
     {
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-            var modal = new bootstrap.Modal(document.getElementById("modalCitaExitosa"));
-            modal.show();
+                var modal = new bootstrap.Modal(document.getElementById("modalCitaExitosa"));
+                modal.show();
+
+                // Limpiar el formulario cuando se cierre el modal
+                document.getElementById("modalCitaExitosa").addEventListener("hidden.bs.modal", function () {
+                    const form = document.getElementById("formCita");
+                    if (form) {
+                        form.reset();
+                    }
+                });
             });
         </script>
     }

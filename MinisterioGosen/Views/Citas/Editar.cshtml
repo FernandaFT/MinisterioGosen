@@ -99,6 +99,21 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">
+                            <i class="bi bi-clock me-1 text-muted"></i>
+                            Hora de la cita
+                        </label>
+                        <input asp-for="Hora_Cita"
+                               type="time"
+                               class="form-control rounded-3"
+                               min="08:00"
+                               max="17:00" />
+                        <div class="invalid-feedback">
+                            Debe ingresar una hora válida entre las 08:00 y las 17:00.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">
                             <i class="bi bi-person-badge-fill me-1 text-muted"></i>
                             Encargado
                         </label>

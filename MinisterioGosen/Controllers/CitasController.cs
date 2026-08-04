@@ -106,6 +106,18 @@ namespace MinisterioGosen.Controllers
                 return View(model);
             }
 
+            // Validar que la hora esté entre 08:00 y 17:00
+            var horaMin = TimeSpan.FromHours(8);
+            var horaMax = TimeSpan.FromHours(17);
+
+            if (model.Hora_Cita < horaMin || model.Hora_Cita > horaMax)
+            {
+                ViewBag.Mensaje = "La hora de la cita debe estar entre las 08:00 y las 17:00.";
+
+                CargarEncargados(model.Id_Usuario_Encargado);
+                return View(model);
+            }
+
             using var client = _http.CreateClient();
 
             var url = _config["Valores:UrlApi"] + "Citas/CrearCitaAPI";
@@ -159,6 +171,18 @@ namespace MinisterioGosen.Controllers
             if (model.Fecha_Cita.Date < DateTime.Today)
             {
                 ViewBag.Mensaje = "La fecha de la cita no puede ser anterior a la fecha actual.";
+
+                CargarEncargados(model.Id_Usuario_Encargado);
+                return View(model);
+            }
+
+            // Validar que la hora esté entre 08:00 y 17:00
+            var horaMin = TimeSpan.FromHours(8);
+            var horaMax = TimeSpan.FromHours(17);
+
+            if (model.Hora_Cita < horaMin || model.Hora_Cita > horaMax)
+            {
+                ViewBag.Mensaje = "La hora de la cita debe estar entre las 08:00 y las 17:00.";
 
                 CargarEncargados(model.Id_Usuario_Encargado);
                 return View(model);

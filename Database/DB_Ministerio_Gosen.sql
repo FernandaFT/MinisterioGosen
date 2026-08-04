@@ -52,6 +52,7 @@ GO
 CREATE TABLE [dbo].[Citas](
 	[Id_Cita] [int] IDENTITY(1,1) NOT NULL,
 	[Fecha_Cita] [date] NOT NULL,
+	[Hora_Cita] [time](0) NOT NULL,
 	[Id_Usuario_Cita] [int] NOT NULL,
 	[Id_Usuario_Encargado] [int] NOT NULL,
 	[Observacion_Inicial] [varchar](200) NULL,
@@ -216,6 +217,10 @@ ALTER TABLE [dbo].[Citas] ADD  CONSTRAINT [DF_Citas_Estado]  DEFAULT ('Pendiente
 GO
 ALTER TABLE [dbo].[Citas]  WITH CHECK ADD  CONSTRAINT [chk_estado_cita] CHECK  (([Estado]='Pendiente' OR [Estado]='Atendida'))
 GO
+/*validacion para la hora cita*/
+ALTER TABLE [dbo].[Citas] WITH CHECK ADD CONSTRAINT [chk_horario_cita]
+    CHECK (([Hora_Cita]>='08:00:00' AND [Hora_Cita]<='17:00:00'))
+GO
 ALTER TABLE [dbo].[Citas] CHECK CONSTRAINT [chk_estado_cita]
 GO
 ALTER TABLE [dbo].[Usuario]  WITH CHECK ADD  CONSTRAINT [fk_usuario_rol] FOREIGN KEY([Id_Rol])
@@ -314,23 +319,48 @@ END;
 
 GO
 
-CREATE   PROCEDURE [dbo].[spActualizarCita]
+/* ---- Actualizar cita ---- */
+CREATE OR ALTER PROCEDURE [dbo].[spActualizarCita]
     @Id_Cita INT,
     @Fecha_Cita DATE,
+    @Hora_Cita TIME(0),
     @Id_Usuario_Cita INT,
     @Id_Usuario_Encargado INT,
     @Observacion_Inicial VARCHAR(200),
     @Detalle_Cita VARCHAR(500)
 AS
 BEGIN
+    SET NOCOUNT ON;
+ 
+    IF @Hora_Cita < '08:00:00' OR @Hora_Cita > '17:00:00'
+    BEGIN
+        RAISERROR('La hora de la cita debe estar entre las 08:00 y las 17:00.', 16, 1);
+        RETURN;
+    END
+ 
+    IF EXISTS (
+        SELECT 1
+        FROM Citas
+        WHERE Id_Usuario_Encargado = @Id_Usuario_Encargado
+          AND Fecha_Cita = @Fecha_Cita
+          AND Hora_Cita = @Hora_Cita
+          AND Id_Cita <> @Id_Cita
+    )
+    BEGIN
+        RAISERROR('El encargado ya tiene una cita agendada en esa fecha y hora.', 16, 1);
+        RETURN;
+    END
+ 
     UPDATE Citas
     SET Fecha_Cita = @Fecha_Cita,
+        Hora_Cita = @Hora_Cita,
         Id_Usuario_Cita = @Id_Usuario_Cita,
         Id_Usuario_Encargado = @Id_Usuario_Encargado,
         Observacion_Inicial = @Observacion_Inicial,
         Detalle_Cita = @Detalle_Cita
     WHERE Id_Cita = @Id_Cita;
 END;
+GO
 
 GO
 CREATE   PROCEDURE [dbo].[spActualizarContrasenna]
@@ -523,19 +553,57 @@ GO
 /* ===========================
    CRUD: Citas
    =========================== */
-CREATE   PROCEDURE [dbo].[spCrearCita]
+CREATE OR ALTER PROCEDURE [dbo].[spCrearCita]
     @Fecha_Cita DATE,
+    @Hora_Cita TIME(0),
     @Id_Usuario_Cita INT,
     @Id_Usuario_Encargado INT,
     @Observacion_Inicial VARCHAR(200),
     @Detalle_Cita VARCHAR(500)
 AS
 BEGIN
-    INSERT INTO Citas (Fecha_Cita, Id_Usuario_Cita, Id_Usuario_Encargado, Observacion_Inicial, Detalle_Cita)
-    VALUES (@Fecha_Cita, @Id_Usuario_Cita, @Id_Usuario_Encargado, @Observacion_Inicial, @Detalle_Cita);
+    SET NOCOUNT ON;
+ 
+    IF @Hora_Cita < '08:00:00' OR @Hora_Cita > '17:00:00'
+    BEGIN
+        RAISERROR('La hora de la cita debe estar entre las 08:00 y las 17:00.', 16, 1);
+        RETURN;
+    END
+ 
+    IF EXISTS (
+        SELECT 1
+        FROM Citas
+        WHERE Id_Usuario_Encargado = @Id_Usuario_Encargado
+          AND Fecha_Cita = @Fecha_Cita
+          AND Hora_Cita = @Hora_Cita
+    )
+    BEGIN
+        RAISERROR('El encargado ya tiene una cita agendada en esa fecha y hora.', 16, 1);
+        RETURN;
+    END
+ 
+    INSERT INTO Citas
+    (
+        Fecha_Cita,
+        Hora_Cita,
+        Id_Usuario_Cita,
+        Id_Usuario_Encargado,
+        Observacion_Inicial,
+        Detalle_Cita
+    )
+    VALUES
+    (
+        @Fecha_Cita,
+        @Hora_Cita,
+        @Id_Usuario_Cita,
+        @Id_Usuario_Encargado,
+        @Observacion_Inicial,
+        @Detalle_Cita
+    );
+ 
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id_Cita;
 END;
-
-GO
+GO 
 
 /* Marcar una cita como atendida */
 CREATE   PROCEDURE [dbo].[spAtenderCita]
@@ -913,13 +981,29 @@ END;
 
 GO
 
-CREATE   PROCEDURE [dbo].[spObtenerCita]
+/*sp que obtiene el nombre del usuario y lo muestra al atender una cita*/
+CREATE OR ALTER PROCEDURE [dbo].[spObtenerCita]
     @Id_Cita INT
 AS
 BEGIN
-    SELECT * FROM Citas WHERE Id_Cita = @Id_Cita;
-END;
+    SET NOCOUNT ON;
 
+    SELECT
+        C.Id_Cita,
+        C.Fecha_Cita,
+        C.Hora_Cita,
+        C.Id_Usuario_Cita,
+        UC.Nombre AS Nombre_Usuario_Cita,
+        C.Id_Usuario_Encargado,
+        UE.Nombre AS Nombre_Usuario_Encargado,
+        C.Observacion_Inicial,
+        C.Detalle_Cita,
+        C.Estado
+    FROM Citas C
+    INNER JOIN Usuario UC ON C.Id_Usuario_Cita = UC.Id_Usuario
+    INNER JOIN Usuario UE ON C.Id_Usuario_Encargado = UE.Id_Usuario
+    WHERE C.Id_Cita = @Id_Cita;
+END;
 GO
 
 CREATE   PROCEDURE [dbo].[spObtenerMinisterio]
@@ -1428,7 +1512,7 @@ INSERT INTO Tipo_Actividad (Nombre_Tipo)
 VALUES ('Culto');
 
 INSERT INTO Tipo_Actividad (Nombre_Tipo)
-VALUES ('Reuni�n');
+VALUES ('Reuni n');
 
 /* =========================
    MINISTERIOS
@@ -1441,7 +1525,7 @@ INSERT INTO Ministerio
 )
 VALUES
 (
-    'Ministerio de J�venes',
+    'Ministerio de J venes',
     'Ministerio encargado de actividades juveniles'
 );
 
@@ -1452,8 +1536,8 @@ INSERT INTO Ministerio
 )
 VALUES
 (
-    'Ministerio de M�sica',
-    'Ministerio encargado de la alabanza y m�sica'
+    'Ministerio de M sica',
+    'Ministerio encargado de la alabanza y m sica'
 );
 
 
@@ -1476,7 +1560,7 @@ VALUES
     'Culto Juvenil',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Sal�n principal',
+    'Sal n principal',
     '18:00',
     '20:00',
     (SELECT Id_Tipo_Actividad
@@ -1496,7 +1580,7 @@ INSERT INTO Actividad
 )
 VALUES
 (
-    'Reuni�n de J�venes',
+    'Reuni n de J venes',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
     'Aula 1',
@@ -1504,7 +1588,7 @@ VALUES
     '18:00',
     (SELECT Id_Tipo_Actividad
      FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reuni�n')
+     WHERE Nombre_Tipo = 'Reuni n')
 );
 
 INSERT INTO Actividad
@@ -1545,12 +1629,12 @@ VALUES
     'Ensayo Musical',
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
     DATEADD(DAY, 11, CAST(GETDATE() AS DATE)),
-    'Sal�n de m�sica',
+    'Sal n de m sica',
     '19:00',
     '21:00',
     (SELECT Id_Tipo_Actividad
      FROM Tipo_Actividad
-     WHERE Nombre_Tipo = 'Reuni�n')
+     WHERE Nombre_Tipo = 'Reuni n')
 );
 
 
@@ -1574,10 +1658,10 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de J�venes'),
+     WHERE Descripcion_Ministerio = 'Ministerio de J venes'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de J�venes'
+    'Actividad del Ministerio de J venes'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1591,14 +1675,14 @@ VALUES
 (
     (SELECT Id_Actividad
      FROM Actividad
-     WHERE Nombre_Actividad = 'Reuni�n de J�venes'),
+     WHERE Nombre_Actividad = 'Reuni n de J venes'),
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de J�venes'),
+     WHERE Descripcion_Ministerio = 'Ministerio de J venes'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Reuni�n de planificaci�n juvenil'
+    'Reuni n de planificaci n juvenil'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1616,10 +1700,10 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de M�sica'),
+     WHERE Descripcion_Ministerio = 'Ministerio de M sica'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Actividad del Ministerio de M�sica'
+    'Actividad del Ministerio de M sica'
 );
 
 INSERT INTO Actividades_Ministerio
@@ -1637,22 +1721,27 @@ VALUES
 
     (SELECT Id_Ministerio
      FROM Ministerio
-     WHERE Descripcion_Ministerio = 'Ministerio de M�sica'),
+     WHERE Descripcion_Ministerio = 'Ministerio de M sica'),
 
     DATEADD(DAY, 1, CAST(GETDATE() AS DATE)),
-    'Ensayo general del equipo de m�sica'
+    'Ensayo general del equipo de m sica'
 );
 
 GO
 
 
 /*SP PARA LISTAR CITAS*/
+
+/* ---- Listar citas (incluye la hora, y ordena por fecha + hora) ---- */
 CREATE OR ALTER PROCEDURE [dbo].[spListarCitas]
 AS
 BEGIN
-    SELECT 
+    SET NOCOUNT ON;
+ 
+    SELECT
         C.Id_Cita,
         C.Fecha_Cita,
+        C.Hora_Cita,
         C.Id_Usuario_Cita,
         UC.Nombre AS Nombre_Usuario_Cita,
         C.Id_Usuario_Encargado,
@@ -1663,6 +1752,72 @@ BEGIN
     FROM Citas C
     INNER JOIN Usuario UC ON C.Id_Usuario_Cita = UC.Id_Usuario
     INNER JOIN Usuario UE ON C.Id_Usuario_Encargado = UE.Id_Usuario
-    ORDER BY C.Fecha_Cita DESC;
+    ORDER BY C.Fecha_Cita DESC, C.Hora_Cita ASC;
+END;
+GO
+
+/*APARTADO CHAT BOT*/
+
+CREATE TABLE Chat_Bot_Opciones
+(
+	Id_Opcion int IDENTITY(1,1) PRIMARY KEY,
+	Texto_Opcion nvarchar (200) NOT NULL,
+	Respuesta varchar (200),
+	Id_Opcion_Padre int,
+	Orden int NOT NULL DEFAULT 1,
+	Activo bit NOT NULL DEFAULT 1,
+	Constraint FK_Opcion_Padre Foreign Key (Id_Opcion_Padre) REFERENCES Chat_Bot_Opciones (Id_Opcion)
+);
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_ConsultarChatbot
+    @Id_Opcion INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id_Opcion,
+        Texto_Opcion,
+        Respuesta,
+        Id_Opcion_Padre,
+        Orden,
+        Activo
+    FROM Chat_Bot_Opciones
+    WHERE Id_Opcion = @Id_Opcion
+      AND Activo = 1;
+
+    SELECT
+        Id_Opcion,
+        Texto_Opcion,
+        Respuesta,
+        Id_Opcion_Padre,
+        Orden,
+        Activo
+    FROM Chat_Bot_Opciones
+    WHERE Activo = 1
+      AND
+      (
+          (@Id_Opcion IS NULL AND Id_Opcion_Padre IS NULL)
+          OR
+          (@Id_Opcion IS NOT NULL AND Id_Opcion_Padre = @Id_Opcion)
+      )
+    ORDER BY
+        Orden,
+        Texto_Opcion;
+
+    SELECT
+        Padre.Id_Opcion,
+        Padre.Texto_Opcion,
+        Padre.Respuesta,
+        Padre.Id_Opcion_Padre,
+        Padre.Orden,
+        Padre.Activo
+    FROM Chat_Bot_Opciones AS Hijo
+    INNER JOIN Chat_Bot_Opciones AS Padre
+        ON Padre.Id_Opcion = Hijo.Id_Opcion_Padre
+    WHERE Hijo.Id_Opcion = @Id_Opcion
+      AND Padre.Activo = 1;
 END;
 GO

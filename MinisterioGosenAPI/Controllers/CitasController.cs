@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using MinisterioGosenAPI.Models;
@@ -39,79 +39,117 @@ namespace MinisterioGosenAPI.Controllers
         [HttpPost("CrearCitaAPI")]
         public IActionResult CrearCitaAPI(CitasModel model)
         {
-            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+            try
+            {
+                using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Fecha_Cita", model.Fecha_Cita);
-            parameters.Add("@Id_Usuario_Cita", model.Id_Usuario_Cita);
-            parameters.Add("@Id_Usuario_Encargado", model.Id_Usuario_Encargado);
-            parameters.Add("@Observacion_Inicial", model.Observacion_Inicial);
-            parameters.Add("@Detalle_Cita", model.Detalle_Cita);
+                var parameters = new DynamicParameters();
+                parameters.Add("@Fecha_Cita", model.Fecha_Cita);
+                parameters.Add("@Hora_Cita", model.Hora_Cita);
+                parameters.Add("@Id_Usuario_Cita", model.Id_Usuario_Cita);
+                parameters.Add("@Id_Usuario_Encargado", model.Id_Usuario_Encargado);
+                parameters.Add("@Observacion_Inicial", model.Observacion_Inicial);
+                parameters.Add("@Detalle_Cita", model.Detalle_Cita);
 
-            var response = context.Execute("spCrearCita", parameters);
+                // El SP devuelve SCOPE_IDENTITY(), usamos QueryFirstOrDefault para capturar el ID
+                var idCita = context.QueryFirstOrDefault<int>("spCrearCita", parameters, commandType: CommandType.StoredProcedure);
 
-            if (response > 0)
-                return Ok(response);
+                if (idCita > 0)
+                    return Ok(new { Id_Cita = idCita });
 
-            return BadRequest("No se ha registrado la cita");
+                return BadRequest("No se ha registrado la cita");
+            }
+            catch (SqlException ex)
+            {
+                // Capturar el mensaje de error del servidor SQL
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al registrar la cita: {ex.Message}");
+            }
         }
 
         [HttpPut("ActualizarCitaAPI")]
         public IActionResult ActualizarCitaAPI(CitasModel model)
         {
-            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+            try
+            {
+                using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Id_Cita", model.Id_Cita);
-            parameters.Add("@Fecha_Cita", model.Fecha_Cita);
-            parameters.Add("@Id_Usuario_Cita", model.Id_Usuario_Cita);
-            parameters.Add("@Id_Usuario_Encargado", model.Id_Usuario_Encargado);
-            parameters.Add("@Observacion_Inicial", model.Observacion_Inicial);
-            parameters.Add("@Detalle_Cita", model.Detalle_Cita);
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id_Cita", model.Id_Cita);
+                parameters.Add("@Fecha_Cita", model.Fecha_Cita);
+                parameters.Add("@Hora_Cita", model.Hora_Cita);
+                parameters.Add("@Id_Usuario_Cita", model.Id_Usuario_Cita);
+                parameters.Add("@Id_Usuario_Encargado", model.Id_Usuario_Encargado);
+                parameters.Add("@Observacion_Inicial", model.Observacion_Inicial);
+                parameters.Add("@Detalle_Cita", model.Detalle_Cita);
 
-            var response = context.Execute("spActualizarCita", parameters);
+                var response = context.Execute("spActualizarCita", parameters, commandType: CommandType.StoredProcedure);
 
-            if (response > 0)
-                return Ok(response);
+                if (response > 0)
+                    return Ok(response);
 
-            return BadRequest("No se ha actualizado la cita");
+                return BadRequest("No se ha actualizado la cita");
+            }
+            catch (SqlException ex)
+            {
+                // Capturar el mensaje de error del servidor SQL
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al actualizar la cita: {ex.Message}");
+            }
         }
 
         [HttpPut("AtenderCitaAPI")]
         public IActionResult AtenderCitaAPI(CitasModel model)
         {
-            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+            try
+            {
+                using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Id_Cita", model.Id_Cita);
-            parameters.Add("@Detalle_Cita", model.Detalle_Cita);
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id_Cita", model.Id_Cita);
+                parameters.Add("@Detalle_Cita", model.Detalle_Cita);
 
-            var response = context.Execute("spAtenderCita", parameters);
+                var response = context.Execute("spAtenderCita", parameters, commandType: CommandType.StoredProcedure);
 
-            if (response > 0)
-                return Ok(response);
+                if (response > 0)
+                    return Ok(response);
 
-            return BadRequest("No se ha podido marcar la cita como atendida");
+                return BadRequest("No se ha podido marcar la cita como atendida");
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al atender la cita: {ex.Message}");
+            }
         }
 
         [HttpDelete("EliminarCitaAPI")]
         public IActionResult EliminarCitaAPI(int id)
         {
-            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
-
             try
             {
+                using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
                 var parameters = new DynamicParameters();
                 parameters.Add("@Id_Cita", id);
 
-                var response = context.Execute("spEliminarCita", parameters);
+                var response = context.Execute("spEliminarCita", parameters, commandType: CommandType.StoredProcedure);
 
                 if (response > 0)
                     return Ok(response);
 
                 return BadRequest("No se ha eliminado la cita");
             }
-            catch
+            catch (Exception ex)
             {
                 return BadRequest("No se puede eliminar esta cita porque tiene información relacionada.");
             }

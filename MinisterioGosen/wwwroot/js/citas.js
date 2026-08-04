@@ -4,6 +4,7 @@
     if (!form) return;
 
     const fecha = document.getElementById("Fecha_Cita");
+    const hora = document.getElementById("Hora_Cita");
     const encargado = document.getElementById("Id_Usuario_Encargado");
     const observacion = document.getElementById("Observacion_Inicial");
     const detalle = document.getElementById("Detalle_Cita");
@@ -15,7 +16,7 @@
         mensajeValidacion.classList.add("d-none");
         textoValidacion.textContent = "";
 
-        [fecha, encargado, observacion, detalle].forEach(campo => {
+        [fecha, hora, encargado, observacion, detalle].forEach(campo => {
             if (campo) {
                 campo.classList.remove("is-invalid");
             }
@@ -42,6 +43,19 @@
         if (fecha.value < hoy) {
             event.preventDefault();
             mostrarError(fecha, "La fecha de la cita no puede ser anterior a la fecha actual.");
+            return;
+        }
+
+        if (hora.value === "") {
+            event.preventDefault();
+            mostrarError(hora, "Debe ingresar la hora de la cita.");
+            return;
+        }
+
+        // Validar que la hora esté entre 08:00 y 17:00
+        if (hora.value < "08:00" || hora.value > "17:00") {
+            event.preventDefault();
+            mostrarError(hora, "La hora de la cita debe estar entre las 08:00 y las 17:00.");
             return;
         }
 

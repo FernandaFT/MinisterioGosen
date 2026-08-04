@@ -1,0 +1,86 @@
+﻿@using System.Text.Json
+@model MinisterioGosen.Models.ChatbotResultadoModel
+
+@{
+    ViewData["Title"] = "Asistente virtual";
+
+    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+
+    var datosInicialesJson = JsonSerializer.Serialize(
+        Model ?? new MinisterioGosen.Models.ChatbotResultadoModel(),
+        jsonOptions
+    );
+
+    var mensajeInicialJson = JsonSerializer.Serialize(
+        ViewBag.Mensaje as string ?? string.Empty,
+        jsonOptions
+    );
+}
+
+<div id="chatbotRoot"
+     class="container py-4"
+     data-url="@Url.Action("ConsultarChatbot", "Chatbot")">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+                <div class="card-header text-white border-0 p-3"
+                     style="background-color: #0d2422;">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white bg-opacity-10"
+                             style="width: 45px; height: 45px;">
+                            <i class="bi bi-chat-dots-fill fs-5"></i>
+                        </div>
+
+                        <div>
+                            <h5 class="mb-0">Asistente virtual</h5>
+                            <small class="text-white-50">Ministerio Gosén</small>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="contenedorMensajes"
+                     class="card-body bg-light p-4 overflow-auto"
+                     style="height: 430px;">
+
+                    <div class="d-flex justify-content-start mb-3">
+                        <div class="bg-white border shadow-sm rounded-4 px-3 py-2 w-75">
+                            Hola. Seleccione una opción para continuar.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-footer bg-white border-0 p-3">
+
+                    <div id="mensajeError"
+                         class="alert alert-danger d-none"
+                         role="alert">
+                    </div>
+
+                    <div id="contenedorOpciones"
+                         class="d-grid gap-2">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script id="chatbotDatosIniciales"
+        type="application/json">
+    @Html.Raw(datosInicialesJson)
+</script>
+
+<script id="chatbotMensajeInicial"
+        type="application/json">
+    @Html.Raw(mensajeInicialJson)
+</script>
