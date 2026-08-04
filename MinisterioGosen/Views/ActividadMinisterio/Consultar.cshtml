@@ -1,12 +1,20 @@
 ﻿@model List<MinisterioGosen.Models.ActividadMinisterioModel>
 
 @{
-    ViewData["Title"] = "Actividades por ministerio";
-
-    var actividadesMinisterios = Model ?? new List<MinisterioGosen.Models.ActividadMinisterioModel>();
+    ViewData["Title"] = "Actividades ministeriales";
+    var registros = Model ?? new List<MinisterioGosen.Models.ActividadMinisterioModel>();
 }
 
 <div class="container py-4">
+
+    @if (!string.IsNullOrEmpty(ViewBag.Mensaje))
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @ViewBag.Mensaje
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <div class="card-body py-4">
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 text-center text-md-start">
@@ -16,20 +24,20 @@
 
             <div>
                 <h2 class="fw-bold mb-1">
-                    Actividades de ministerios
+                    Actividades ministeriales registradas
                 </h2>
 
                 <p class="text-muted mb-0">
-                    Consulte las actividades asignadas a cada ministerio del Ministerio Gosén.
+                    Consulte los ministerios asignados a las actividades del Ministerio Gosén.
                 </p>
             </div>
         </div>
     </div>
 
-    @if (actividadesMinisterios.Any())
+    @if (registros.Any())
     {
         <div class="row g-4">
-            @foreach (var item in actividadesMinisterios)
+            @foreach (var item in registros)
             {
                 <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -51,7 +59,7 @@
 
                             <div class="d-flex align-items-start gap-3 mb-4">
                                 <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3">
-                                    <i class="bi bi-people-fill fs-4"></i>
+                                    <i class="bi bi-bank2 fs-4"></i>
                                 </div>
 
                                 <div>
@@ -67,27 +75,30 @@
 
                             <div class="list-group list-group-flush">
 
-                                @if (item.Fecha.HasValue)
-                                {
-                                    <div class="list-group-item px-0 d-flex align-items-center gap-3">
-                                        <i class="bi bi-calendar-date text-primary fs-5"></i>
-                                        <div>
-                                            <div class="small text-muted">Fecha</div>
+                                <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                    <i class="bi bi-calendar-date text-primary fs-5"></i>
+                                    <div>
+                                        <div class="small text-muted">Fecha</div>
+                                        @if (item.Fecha.HasValue)
+                                        {
                                             <div class="fw-semibold">@item.Fecha.Value.ToString("dd/MM/yyyy")</div>
-                                        </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="fw-semibold text-muted">Sin fecha</div>
+                                        }
                                     </div>
-                                }
+                                </div>
 
-                                @if (!string.IsNullOrEmpty(item.Observacion))
-                                {
-                                    <div class="list-group-item px-0 d-flex align-items-center gap-3">
-                                        <i class="bi bi-chat-left-text text-primary fs-5"></i>
-                                        <div>
-                                            <div class="small text-muted">Observación</div>
-                                            <div class="fw-semibold">@item.Observacion</div>
+                                <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                    <i class="bi bi-card-text text-primary fs-5"></i>
+                                    <div>
+                                        <div class="small text-muted">Observación</div>
+                                        <div class="fw-semibold">
+                                            @(!string.IsNullOrEmpty(item.Observacion) ? item.Observacion : "Sin observación")
                                         </div>
                                     </div>
-                                }
+                                </div>
 
                             </div>
 
@@ -96,7 +107,7 @@
                         <div class="card-footer bg-light border-0 text-end py-3">
                             <span class="text-muted small">
                                 <i class="bi bi-info-circle me-1"></i>
-                                Información de actividad-ministerio
+                                Información de asignación
                             </span>
                         </div>
 
@@ -112,7 +123,7 @@
                 <i class="bi bi-x-circle text-muted display-3"></i>
 
                 <h4 class="fw-bold text-muted mt-3 mb-2">
-                    No hay actividades registradas
+                    No hay actividades ministeriales registradas
                 </h4>
 
                 <p class="text-muted mb-0">

@@ -28,11 +28,12 @@
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">
 
-            @if (ViewBag.Mensaje != null)
+            @if (!string.IsNullOrEmpty(ViewBag.Mensaje))
             {
-                <div class="alert alert-warning d-flex align-items-center gap-2 rounded-3">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span>@ViewBag.Mensaje</span>
+                <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    @ViewBag.Mensaje
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
 
@@ -54,6 +55,7 @@
                                 class="form-select rounded-3">
                             <option value="">Seleccione una actividad</option>
                         </select>
+                        <span asp-validation-for="Id_Actividad" class="text-danger"></span>
                         <div class="invalid-feedback">
                             Debe seleccionar una actividad.
                         </div>
@@ -69,6 +71,7 @@
                                 class="form-select rounded-3">
                             <option value="">Seleccione un usuario</option>
                         </select>
+                        <span asp-validation-for="Id_Usuario" class="text-danger"></span>
                         <div class="invalid-feedback">
                             Debe seleccionar un usuario.
                         </div>
@@ -83,6 +86,7 @@
                                type="date"
                                class="form-control rounded-3"
                                min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Fecha" class="text-danger"></span>
                         <div class="invalid-feedback">
                             Debe ingresar una fecha válida.
                         </div>
@@ -96,8 +100,12 @@
                         <input asp-for="Hora"
                                type="time"
                                class="form-control rounded-3" />
+                        <span asp-validation-for="Hora" class="text-danger"></span>
+                        <div class="invalid-feedback">
+                            Debe ingresar una hora válida.
+                        </div>
                     </div>
-
+                    
                 </div>
 
                 <hr class="my-4" />
@@ -123,5 +131,6 @@
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script src="~/js/actividadusuario.js" asp-append-version="true"></script>
 }

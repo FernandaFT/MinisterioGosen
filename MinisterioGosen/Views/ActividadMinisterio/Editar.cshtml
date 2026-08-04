@@ -28,11 +28,12 @@
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">
 
-            @if (!string.IsNullOrEmpty(ViewBag.Mensaje as string))
+            @if (!string.IsNullOrEmpty(ViewBag.Mensaje))
             {
-                <div class="alert alert-warning d-flex align-items-center gap-2 rounded-3">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span>@ViewBag.Mensaje</span>
+                <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    @ViewBag.Mensaje
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
 
@@ -56,6 +57,7 @@
                                 class="form-select rounded-3">
                             <option value="">Seleccione una actividad</option>
                         </select>
+                        <span asp-validation-for="Id_Actividad" class="text-danger"></span>
                         <div class="invalid-feedback">
                             Debe seleccionar una actividad.
                         </div>
@@ -63,7 +65,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
-                            <i class="bi bi-people-fill me-1 text-muted"></i>
+                            <i class="bi bi-bank2 me-1 text-muted"></i>
                             Ministerio
                         </label>
                         <select asp-for="Id_Ministerio"
@@ -71,6 +73,7 @@
                                 class="form-select rounded-3">
                             <option value="">Seleccione un ministerio</option>
                         </select>
+                        <span asp-validation-for="Id_Ministerio" class="text-danger"></span>
                         <div class="invalid-feedback">
                             Debe seleccionar un ministerio.
                         </div>
@@ -83,8 +86,8 @@
                         </label>
                         <input asp-for="Fecha"
                                type="date"
-                               class="form-control rounded-3"
-                               min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                               class="form-control rounded-3" />
+                        <span asp-validation-for="Fecha" class="text-danger"></span>
                         <div class="invalid-feedback">
                             Debe ingresar una fecha válida.
                         </div>
@@ -95,14 +98,15 @@
                             <i class="bi bi-card-text me-1 text-muted"></i>
                             Observación
                         </label>
-                        <textarea asp-for="Observacion"
-                                  class="form-control rounded-3"
-                                  maxlength="200"></textarea>
+                        <input asp-for="Observacion"
+                               type="text"
+                               class="form-control rounded-3"
+                               maxlength="200" />
+                        <span asp-validation-for="Observacion" class="text-danger"></span>
                         <div class="invalid-feedback">
-                            Puede ingresar hasta 200 caracteres.
+                            La observación no puede superar los 200 caracteres.
                         </div>
                     </div>
-
                 </div>
 
                 <hr class="my-4" />
@@ -128,5 +132,6 @@
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script src="~/js/actividadministerio.js" asp-append-version="true"></script>
 }

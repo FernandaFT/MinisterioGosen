@@ -9,11 +9,6 @@ namespace MinisterioGosen.Controllers
 		IHttpClientFactory _http,
 		IConfiguration _config) : Controller
 	{
-		private bool EstaLogueado()
-		{
-			return HttpContext.Session.GetString("Autenticado") == "1";
-		}
-
 		private bool EsAdmin()
 		{
 			return HttpContext.Session.GetInt32("Id_Rol") == 1;
@@ -28,8 +23,18 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				var actividades = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result;
-				ViewBag.Actividades = new SelectList(actividades, "Id_Actividad", "Nombre_Actividad", idActividadSeleccionada);
 
+				// Ordenar alfabéticamente por Nombre_Actividad
+				var actividadesOrdenadas = actividades?
+					.OrderBy(a => a.Nombre_Actividad)
+					.ToList() ?? new List<ActividadModel>();
+
+				ViewBag.Actividades = new SelectList(
+					actividadesOrdenadas,
+					"Id_Actividad",
+					"Nombre_Actividad",
+					idActividadSeleccionada
+				);
 			}
 			else
 			{
@@ -45,15 +50,8 @@ namespace MinisterioGosen.Controllers
 
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
-				var ministerios = response.Content.ReadFromJsonAsync<List<MinisterioModel>>().Result?
-					.Select(u => new {
-						u.Id_Ministerio,
-						Texto = u.Descripcion_Ministerio
-					}).ToList();
-
-				ViewBag.Ministerios =new SelectList(ministerios, "Id_Ministerio", "Texto", idMinisterioSeleccionado);
-
-
+				var ministerios = response.Content.ReadFromJsonAsync<List<MinisterioModel>>().Result;
+				ViewBag.Ministerios = new SelectList(ministerios ?? new List<MinisterioModel>(), "Id_Ministerio", "Descripcion_Ministerio", idMinisterioSeleccionado);
 			}
 			else
 			{
@@ -62,32 +60,42 @@ namespace MinisterioGosen.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult Index()
+		public IActionResult Index(int? idActividad = null, int? idMinisterio = null)
 		{
-			ViewBag.Mensaje = ViewBag.Mensaje ?? string.Empty;
-
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
 			using var client = _http.CreateClient();
 			var url = _config["Valores:UrlApi"] + "ActividadMinisterio/ListarActividadMinisterioAPI";
+
+			var queryParams = new List<string>();
+			if (idActividad.HasValue)
+				queryParams.Add($"idActividad={idActividad.Value}");
+			if (idMinisterio.HasValue)
+				queryParams.Add($"idMinisterio={idMinisterio.Value}");
+
+			if (queryParams.Any())
+				url += "?" + string.Join("&", queryParams);
+
 			var response = client.GetAsync(url).Result;
 
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
-				var datos = response.Content.ReadFromJsonAsync<List<ActividadMinisterioModel>>().Result;
-				return View(datos ?? new List<ActividadMinisterioModel>());
+				var datos = response.Content.ReadFromJsonAsync<List<ActividadMinisterioModel>>().Result ?? new List<ActividadMinisterioModel>();
+				CargarActividades(idActividad);
+				CargarMinisterios(idMinisterio);
+				return View(datos);
 			}
 
-			ViewBag.Mensaje = "Error al consultar las asignaciones.";
+			ViewBag.Mensaje = "Error al consultar las actividades ministeriales.";
+			CargarActividades(idActividad);
+			CargarMinisterios(idMinisterio);
 			return View(new List<ActividadMinisterioModel>());
 		}
 
 		[HttpGet]
 		public IActionResult Crear()
 		{
-			ViewBag.Mensaje = ViewBag.Mensaje ?? string.Empty;
-
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
@@ -100,10 +108,18 @@ namespace MinisterioGosen.Controllers
 		[HttpPost]
 		public IActionResult Crear(ActividadMinisterioModel model)
 		{
-			ViewBag.Mensaje = ViewBag.Mensaje ?? string.Empty;
-
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
+
+			if (!string.IsNullOrWhiteSpace(model.Observacion))
+				model.Observacion = model.Observacion.Trim();
+
+			if (!ModelState.IsValid)
+			{
+				CargarActividades(model.Id_Actividad);
+				CargarMinisterios(model.Id_Ministerio);
+				return View(model);
+			}
 
 			using var client = _http.CreateClient();
 			var url = _config["Valores:UrlApi"] + "ActividadMinisterio/CrearActividadMinisterioAPI";
@@ -121,8 +137,6 @@ namespace MinisterioGosen.Controllers
 		[HttpGet]
 		public IActionResult Editar(int id)
 		{
-			ViewBag.Mensaje = ViewBag.Mensaje ?? string.Empty;
-
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
@@ -133,25 +147,43 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				var datos = response.Content.ReadFromJsonAsync<ActividadMinisterioModel>().Result;
-				CargarActividades(datos.Id_Actividad);
-				CargarMinisterios(datos.Id_Ministerio);
-				return View(datos);
+				if (datos != null)
+				{
+					CargarActividades(datos.Id_Actividad);
+					CargarMinisterios(datos.Id_Ministerio);
+					return View(datos);
+				}
+				else
+				{
+					ViewBag.Mensaje = "No se encontró la actividad ministerial.";
+					return RedirectToAction("Index", "ActividadMinisterio");
+				}
 			}
 
+			ViewBag.Mensaje = "Error al consultar la actividad ministerial.";
 			return RedirectToAction("Index", "ActividadMinisterio");
 		}
 
 		[HttpPost]
 		public IActionResult Editar(ActividadMinisterioModel model)
 		{
-			ViewBag.Mensaje = ViewBag.Mensaje ?? string.Empty;
-
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
+
+			if (!string.IsNullOrWhiteSpace(model.Observacion))
+				model.Observacion = model.Observacion.Trim();
+
+			if (!ModelState.IsValid)
+			{
+				CargarActividades(model.Id_Actividad);
+				CargarMinisterios(model.Id_Ministerio);
+				return View(model);
+			}
 
 			using var client = _http.CreateClient();
 			var url = _config["Valores:UrlApi"] + "ActividadMinisterio/ActualizarActividadMinisterioAPI";
 			var response = client.PutAsJsonAsync(url, model).Result;
+
 			if (response.StatusCode == HttpStatusCode.OK)
 				return RedirectToAction("Index", "ActividadMinisterio");
 
@@ -164,8 +196,6 @@ namespace MinisterioGosen.Controllers
 		[HttpGet]
 		public IActionResult Eliminar(int id)
 		{
-			ViewBag.Mensaje = ViewBag.Mensaje ?? string.Empty;
-
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
@@ -179,15 +209,13 @@ namespace MinisterioGosen.Controllers
 				return View(datos ?? new ActividadMinisterioModel());
 			}
 
-			ViewBag.Mensaje = "Error al consultar la asignación.";
+			ViewBag.Mensaje = "Error al consultar la actividad ministerial.";
 			return RedirectToAction("Index", "ActividadMinisterio");
 		}
 
 		[HttpPost]
 		public IActionResult ConfirmarEliminar(ActividadMinisterioModel model)
 		{
-			ViewBag.Mensaje = ViewBag.Mensaje ?? string.Empty;
-
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
@@ -203,4 +231,3 @@ namespace MinisterioGosen.Controllers
 		}
 	}
 }
-

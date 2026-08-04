@@ -2,6 +2,7 @@
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using MinisterioGosen.Models;
 using MinisterioGosenAPI.Models;
 
 namespace MinisterioGosenAPI.Controllers
@@ -11,32 +12,50 @@ namespace MinisterioGosenAPI.Controllers
 	public class ActividadMinisterioController(IConfiguration _config) : ControllerBase
 	{
 		[HttpGet("ListarActividadMinisterioAPI")]
-		public async Task<IActionResult> ListarActividadMinisterioAPI()
+		public IActionResult ListarActividadMinisterioAPI(int? idActividad = null, int? idMinisterio = null)
 		{
 			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
-			var response = await context.QueryAsync<ActividadMinisterioModel>("spListarActividadMinisterio");
-			return Ok(response.ToList());
+			var parameters = new DynamicParameters();
+
+			if (idActividad.HasValue)
+				parameters.Add("@Id_Actividad", idActividad.Value);
+
+			if (idMinisterio.HasValue)
+				parameters.Add("@Id_Ministerio", idMinisterio.Value);
+
+			var response = context.Query<ActividadMinisterioModel>(
+				"spListarActividadMinisterio",
+				parameters,
+				commandType: CommandType.StoredProcedure
+			).ToList();
+
+			return Ok(response);
 		}
 
 		[HttpGet("ObtenerActividadMinisterioAPI")]
-		public async Task<IActionResult> ObtenerActividadMinisterioAPI(int id)
+		public IActionResult ObtenerActividadMinisterioAPI(int id)
 		{
 			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 			var parameters = new DynamicParameters();
 			parameters.Add("@Id_Minis_Actividad", id);
 
-			var response = await context.QueryFirstOrDefaultAsync<ActividadMinisterioModel>(
-				"spObtenerActividadMinisterio", parameters, commandType: CommandType.StoredProcedure);
+			var response = context.QueryFirstOrDefault<ActividadMinisterioModel>(
+				"spObtenerActividadMinisterio",
+				parameters
+			);
 
 			if (response != null)
 				return Ok(response);
 
-			return NotFound(new { Success = false, Message = "No se encontró la asignación de ministerio en la actividad" });
+			return NotFound(new { Success = false, Message = "No se encontró la actividad ministerial" });
 		}
 
 		[HttpPost("CrearActividadMinisterioAPI")]
-		public async Task<IActionResult> CrearActividadMinisterioAPI([FromBody] ActividadMinisterioModel model)
+		public IActionResult CrearActividadMinisterioAPI([FromBody] ActividadMinisterioModel model)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
 			if (model.Id_Actividad <= 0 || model.Id_Ministerio <= 0)
 				return BadRequest(new { Success = false, Message = "Actividad y Ministerio son obligatorios" });
 
@@ -47,8 +66,11 @@ namespace MinisterioGosenAPI.Controllers
 			parameters.Add("@Fecha", model.Fecha);
 			parameters.Add("@Observacion", model.Observacion);
 
-			var idActividadMinisterio = await context.QuerySingleAsync<int>(
-				"spCrearActividadesMinisterio", parameters, commandType: CommandType.StoredProcedure);
+			var idActividadMinisterio = context.QuerySingle<int>(
+				"spCrearActividadesMinisterio",
+				parameters,
+				commandType: CommandType.StoredProcedure
+			);
 
 			if (idActividadMinisterio > 0)
 			{
@@ -56,18 +78,21 @@ namespace MinisterioGosenAPI.Controllers
 				{
 					Success = true,
 					Id = idActividadMinisterio,
-					Message = "Asignación registrada correctamente"
+					Message = "Actividad ministerial registrada correctamente"
 				});
 			}
 
-			return StatusCode(500, new { Success = false, Message = "Error interno: no se pudo registrar la asignación" });
+			return StatusCode(500, new { Success = false, Message = "Error interno: no se pudo registrar la actividad ministerial" });
 		}
 
 		[HttpPut("ActualizarActividadMinisterioAPI")]
-		public async Task<IActionResult> ActualizarActividadMinisterioAPI([FromBody] ActividadMinisterioModel model)
+		public IActionResult ActualizarActividadMinisterioAPI([FromBody] ActividadMinisterioModel model)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
 			if (model.Id_Minis_Actividad <= 0)
-				return BadRequest(new { Success = false, Message = "El identificador de la asignación es obligatorio" });
+				return BadRequest(new { Success = false, Message = "El identificador de la actividad ministerial es obligatorio" });
 
 			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 			var parameters = new DynamicParameters();
@@ -77,27 +102,27 @@ namespace MinisterioGosenAPI.Controllers
 			parameters.Add("@Fecha", model.Fecha);
 			parameters.Add("@Observacion", model.Observacion);
 
-			var response = await context.ExecuteAsync("spActualizarActividadesMinisterio", parameters, commandType: CommandType.StoredProcedure);
+			var response = context.Execute("spActualizarActividadesMinisterio", parameters);
 
 			if (response > 0)
-				return Ok(new { Success = true, Message = "Asignación actualizada correctamente" });
+				return Ok(new { Success = true, Message = "Actividad ministerial actualizada correctamente" });
 
-			return BadRequest(new { Success = false, Message = "No se ha actualizado la asignación" });
+			return BadRequest(new { Success = false, Message = "No se ha actualizado la actividad ministerial" });
 		}
 
 		[HttpDelete("EliminarActividadMinisterioAPI")]
-		public async Task<IActionResult> EliminarActividadMinisterioAPI(int id)
+		public IActionResult EliminarActividadMinisterioAPI(int id)
 		{
 			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 			var parameters = new DynamicParameters();
 			parameters.Add("@Id_Minis_Actividad", id);
 
-			var response = await context.ExecuteAsync("spEliminarActividadMinisterio", parameters, commandType: CommandType.StoredProcedure);
+			var response = context.Execute("spEliminarActividadMinisterio", parameters);
 
 			if (response > 0)
-				return Ok(new { Success = true, Message = "Asignación eliminada correctamente" });
+				return Ok(new { Success = true, Message = "Actividad ministerial eliminada correctamente" });
 
-			return BadRequest(new { Success = false, Message = "No se ha eliminado la asignación" });
+			return BadRequest(new { Success = false, Message = "No se ha eliminado la actividad ministerial" });
 		}
 	}
 }

@@ -9,11 +9,6 @@ namespace MinisterioGosen.Controllers
 		IHttpClientFactory _http,
 		IConfiguration _config) : Controller
 	{
-		private bool EstaLogueado()
-		{
-			return HttpContext.Session.GetString("Autenticado") == "1";
-		}
-
 		private bool EsAdmin()
 		{
 			return HttpContext.Session.GetInt32("Id_Rol") == 1;
@@ -28,7 +23,18 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				var actividades = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result;
-				ViewBag.Actividades = new SelectList(actividades, "Id_Actividad", "Nombre_Actividad", idActividadSeleccionada);
+
+				// Ordenar alfabéticamente por Nombre_Actividad
+				var actividadesOrdenadas = actividades?
+					.OrderBy(a => a.Nombre_Actividad)
+					.ToList() ?? new List<ActividadModel>();
+
+				ViewBag.Actividades = new SelectList(
+					actividadesOrdenadas,
+					"Id_Actividad",
+					"Nombre_Actividad",
+					idActividadSeleccionada
+				);
 			}
 			else
 			{
@@ -47,34 +53,49 @@ namespace MinisterioGosen.Controllers
 				var usuarios = response.Content.ReadFromJsonAsync<List<UsuarioModel>>().Result?
 					.Select(u => new {
 						u.Id_Usuario,
-						Texto = u.Identificacion + " - " + u.Nombre
+						Texto = u.Nombre
 					}).ToList();
 
 				ViewBag.Usuarios = new SelectList(usuarios, "Id_Usuario", "Texto", idUsuarioSeleccionado);
 			}
 			else
 			{
-				ViewBag.Usuarios = new SelectList(new List<UsuarioModel>(), "Id_Usuario", "Nombre");
+				ViewBag.Usuarios = new SelectList(new List<UsuarioModel>(), "Id_Usuario", "Nombre_Usuario");
 			}
 		}
 
 		[HttpGet]
-		public IActionResult Index()
+		public IActionResult Index(int? idUsuario = null, int? idActividad = null)
 		{
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
 			using var client = _http.CreateClient();
 			var url = _config["Valores:UrlApi"] + "ActividadUsuario/ListarActividadUsuarioAPI";
+
+			var queryParams = new List<string>();
+			if (idUsuario.HasValue)
+				queryParams.Add($"idUsuario={idUsuario.Value}");
+			if (idActividad.HasValue)
+				queryParams.Add($"idActividad={idActividad.Value}");
+
+			if (queryParams.Any())
+				url += "?" + string.Join("&", queryParams);
+
 			var response = client.GetAsync(url).Result;
 
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				var datos = response.Content.ReadFromJsonAsync<List<ActividadUsuarioModel>>().Result;
-				return View(datos);
+				CargarUsuarios(idUsuario);
+				CargarActividades(idActividad);
+				return View(datos ?? new List<ActividadUsuarioModel>());
 			}
 
-			throw new Exception("Error al consultar las participaciones");
+			ViewBag.Mensaje = "Error al consultar las participaciones.";
+			CargarUsuarios(idUsuario);
+			CargarActividades(idActividad);
+			return View(new List<ActividadUsuarioModel>());
 		}
 
 		[HttpGet]
@@ -95,9 +116,11 @@ namespace MinisterioGosen.Controllers
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
-			if (model.Fecha.Date < DateTime.Today)
+			if (!string.IsNullOrWhiteSpace(model.Observacion))
+				model.Observacion = model.Observacion.Trim();
+
+			if (!ModelState.IsValid)
 			{
-				ViewBag.Mensaje = "La fecha no puede ser anterior a la fecha actual.";
 				CargarActividades(model.Id_Actividad);
 				CargarUsuarios(model.Id_Usuario);
 				return View(model);
@@ -110,7 +133,17 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 				return RedirectToAction("Index", "ActividadUsuario");
 
-			ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
+			var contenido = response.Content.ReadAsStringAsync().Result;
+			try
+			{
+				var json = System.Text.Json.JsonDocument.Parse(contenido);
+				ViewBag.Mensaje = json.RootElement.GetProperty("message").GetString();
+			}
+			catch
+			{
+				ViewBag.Mensaje = contenido;
+			}
+
 			CargarActividades(model.Id_Actividad);
 			CargarUsuarios(model.Id_Usuario);
 			return View(model);
@@ -129,11 +162,20 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				var datos = response.Content.ReadFromJsonAsync<ActividadUsuarioModel>().Result;
-				CargarActividades(datos!.Id_Actividad);
-				CargarUsuarios(datos.Id_Usuario);
-				return View(datos);
+				if (datos != null)
+				{
+					CargarActividades(datos.Id_Actividad);
+					CargarUsuarios(datos.Id_Usuario);
+					return View(datos);
+				}
+				else
+				{
+					ViewBag.Mensaje = "No se encontró la participación.";
+					return RedirectToAction("Index", "ActividadUsuario");
+				}
 			}
 
+			ViewBag.Mensaje = "Error al consultar la participación.";
 			return RedirectToAction("Index", "ActividadUsuario");
 		}
 
@@ -143,9 +185,11 @@ namespace MinisterioGosen.Controllers
 			if (!EsAdmin())
 				return RedirectToAction("Error", "Home", new { statusCode = 403 });
 
-			if (model.Fecha.Date < DateTime.Today)
+			if (!string.IsNullOrWhiteSpace(model.Observacion))
+				model.Observacion = model.Observacion.Trim();
+
+			if (!ModelState.IsValid)
 			{
-				ViewBag.Mensaje = "La fecha no puede ser anterior a la fecha actual.";
 				CargarActividades(model.Id_Actividad);
 				CargarUsuarios(model.Id_Usuario);
 				return View(model);
@@ -158,7 +202,17 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 				return RedirectToAction("Index", "ActividadUsuario");
 
-			ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
+			var contenido = response.Content.ReadAsStringAsync().Result;
+			try
+			{
+				var json = System.Text.Json.JsonDocument.Parse(contenido);
+				ViewBag.Mensaje = json.RootElement.GetProperty("message").GetString();
+			}
+			catch
+			{
+				ViewBag.Mensaje = contenido;
+			}
+
 			CargarActividades(model.Id_Actividad);
 			CargarUsuarios(model.Id_Usuario);
 			return View(model);
@@ -177,9 +231,10 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				var datos = response.Content.ReadFromJsonAsync<ActividadUsuarioModel>().Result;
-				return View(datos);
+				return View(datos ?? new ActividadUsuarioModel());
 			}
 
+			ViewBag.Mensaje = "Error al consultar la participación.";
 			return RedirectToAction("Index", "ActividadUsuario");
 		}
 
@@ -196,7 +251,17 @@ namespace MinisterioGosen.Controllers
 			if (response.StatusCode == HttpStatusCode.OK)
 				return RedirectToAction("Index", "ActividadUsuario");
 
-			ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
+			var contenido = response.Content.ReadAsStringAsync().Result;
+			try
+			{
+				var json = System.Text.Json.JsonDocument.Parse(contenido);
+				ViewBag.Mensaje = json.RootElement.GetProperty("message").GetString();
+			}
+			catch
+			{
+				ViewBag.Mensaje = contenido;
+			}
+
 			return View("Eliminar", model);
 		}
 	}

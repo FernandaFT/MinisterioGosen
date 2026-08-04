@@ -2,7 +2,6 @@
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using MinisterioGosen.Models;
 using MinisterioGosenAPI.Models;
 
 namespace MinisterioGosenAPI.Controllers
@@ -12,10 +11,23 @@ namespace MinisterioGosenAPI.Controllers
 	public class ActividadUsuarioController(IConfiguration _config) : ControllerBase
 	{
 		[HttpGet("ListarActividadUsuarioAPI")]
-		public IActionResult ListarActividadUsuarioAPI()
+		public IActionResult ListarActividadUsuarioAPI(int? idUsuario = null, int? idActividad = null)
 		{
 			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
-			var response = context.Query<ActividadUsuarioModel>("spListarActividadUsuario").ToList();
+			var parameters = new DynamicParameters();
+
+			if (idUsuario.HasValue)
+				parameters.Add("@Id_Usuario", idUsuario.Value);
+
+			if (idActividad.HasValue)
+				parameters.Add("@Id_Actividad", idActividad.Value);
+
+			var response = context.Query<ActividadUsuarioModel>(
+				"spListarActividadUsuario",
+				parameters,
+				commandType: CommandType.StoredProcedure
+			).ToList();
+
 			return Ok(response);
 		}
 
@@ -31,12 +43,21 @@ namespace MinisterioGosenAPI.Controllers
 			if (response != null)
 				return Ok(response);
 
-			return NotFound("No se encontró la participación");
+			return NotFound(new { Success = false, Message = "No se encontró la participación" });
 		}
 
 		[HttpPost("CrearActividadUsuarioAPI")]
-		public IActionResult CrearActividadUsuarioAPI(ActividadUsuarioModel model)
+		public IActionResult CrearActividadUsuarioAPI([FromBody] ActividadUsuarioModel model)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			if (model.Id_Actividad <= 0 || model.Id_Usuario <= 0)
+				return BadRequest(new { Success = false, Message = "Actividad y Usuario son obligatorios" });
+
+			if (model.Fecha.Date < DateTime.Today)
+				return BadRequest(new { Success = false, Message = "La fecha no puede ser anterior a la actual" });
+
 			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 			var parameters = new DynamicParameters();
 			parameters.Add("@Id_Actividad", model.Id_Actividad);
@@ -56,17 +77,18 @@ namespace MinisterioGosenAPI.Controllers
 				});
 			}
 
-			// Si llega 0 o negativo, algo falló en el SP o en la captura
-			return StatusCode(500, new
-			{
-				Success = false,
-				Message = "Error interno: no se pudo registrar la participación"
-			});
+			return StatusCode(500, new { Success = false, Message = "Error interno: no se pudo registrar la participación" });
 		}
 
 		[HttpPut("ActualizarActividadUsuarioAPI")]
-		public IActionResult ActualizarActividadUsuarioAPI(ActividadUsuarioModel model)
+		public IActionResult ActualizarActividadUsuarioAPI([FromBody] ActividadUsuarioModel model)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			if (model.Id_Actividad_Usuario <= 0)
+				return BadRequest(new { Success = false, Message = "El identificador de la participación es obligatorio" });
+
 			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 			var parameters = new DynamicParameters();
 			parameters.Add("@Id_Actividad_Usuario", model.Id_Actividad_Usuario);
@@ -78,9 +100,9 @@ namespace MinisterioGosenAPI.Controllers
 			var response = context.Execute("spActualizarActividadUsuario", parameters);
 
 			if (response > 0)
-				return Ok(response);
+				return Ok(new { Success = true, Message = "Participación actualizada correctamente" });
 
-			return BadRequest("No se ha actualizado la participación");
+			return BadRequest(new { Success = false, Message = "No se ha actualizado la participación" });
 		}
 
 		[HttpDelete("EliminarActividadUsuarioAPI")]
@@ -93,10 +115,9 @@ namespace MinisterioGosenAPI.Controllers
 			var response = context.Execute("spEliminarActividadUsuario", parameters);
 
 			if (response > 0)
-				return Ok(response);
+				return Ok(new { Success = true, Message = "Participación eliminada correctamente" });
 
-			return BadRequest("No se ha eliminado la participación");
+			return BadRequest(new { Success = false, Message = "No se ha eliminado la participación" });
 		}
 	}
 }
-

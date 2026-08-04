@@ -2,11 +2,19 @@
 
 @{
     ViewData["Title"] = "Participaciones en actividades";
-
     var participaciones = Model ?? new List<MinisterioGosen.Models.ActividadUsuarioModel>();
 }
 
 <div class="container py-4">
+
+    @if (!string.IsNullOrEmpty(ViewBag.Mensaje))
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @ViewBag.Mensaje
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <div class="card-body py-4">
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 text-center text-md-start">
@@ -120,3 +128,4 @@
     }
 
 </div>
+
