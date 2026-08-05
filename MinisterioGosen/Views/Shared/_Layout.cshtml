@@ -189,7 +189,46 @@
                     {
                         <!-- GESTIÓN -->
 
-                        <div class="nav-item dropdown">
+                        <i class="bi bi-calendar-plus me-1"></i>
+                        Agendar Cita
+                    </a>
+                }
+
+                @if (esAdmin)
+                {
+                    @* Usuarios *@
+                    <a asp-action="Index"
+                       asp-controller="Usuario"
+                       class="nav-link fw-semibold @(NavActivo(
+                                              "Usuario",
+                                              "Index",
+                                              "Crear",
+                                              "Editar",
+                                              "Detalle",
+                                              "Detalles",
+                                              "Eliminar"
+                                          ))">
+
+                        <i class="bi bi-person-lines-fill me-1"></i>
+                        Usuario
+                    </a>
+                    @* ActividadUsuario *@
+                    <a asp-action="Index"
+                       asp-controller="ActividadUsuario"
+                       class="nav-link fw-semibold @(NavActivo(
+                                                 "ActividadUsuario",
+                                                 "Index",
+                                                 "Crear",
+                                                 "Editar",
+                                                 "Detalle",
+                                                 "Detalles",
+                                                 "Eliminar"
+                                             ))">
+
+                        <i class="bi bi-clipboard-check me-1"></i>
+                        Actividades por Usuario
+                    </a>
+
 
                             <a href="#"
                                class="nav-link dropdown-toggle fw-semibold px-lg-3"
@@ -197,9 +236,25 @@
                                data-bs-toggle="dropdown"
                                aria-expanded="false">
 
-                                <i class="bi bi-folder-fill me-1"></i>
-                                Gestión
-                            </a>
+                        <i class="bi bi-people me-1"></i>
+                        Ministerios
+                    </a>
+                    @* ActividadMinisterio *@
+                    <a asp-action="Index"
+                       asp-controller="ActividadMinisterio"
+                       class="nav-link fw-semibold @(NavActivo(
+                                                                        "ActividadMinisterio",
+                                                                        "Index",
+                                                                        "Crear",
+                                                                        "Editar",
+                                                                        "Detalle",
+                                                                        "Detalles",
+                                                                        "Eliminar"
+                                                                    ))">
+
+                        <i class="bi bi-clipboard-check me-1"></i>
+                        Actividades por Ministerio
+                    </a>
 
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
 
