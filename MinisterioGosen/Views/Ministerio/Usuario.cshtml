@@ -1,0 +1,170 @@
+﻿@model List<MinisterioGosen.Models.MinisterioModel>
+
+@{
+    ViewData["Title"] = "Nuestros Ministerios";
+
+    var ministerios = Model
+        ?? new List<MinisterioGosen.Models.MinisterioModel>();
+}
+
+<section class="bg-light py-5">
+
+    <div class="container">
+
+        <div class="card border-0 shadow-sm rounded-4 mb-5">
+
+            <div class="card-body p-4 p-lg-5">
+
+                <div class="row align-items-center g-4">
+
+                    <div class="col-lg">
+
+
+
+                        <h1 class="display-6 fw-bold mb-3">
+                            Nuestros ministerios
+                        </h1>
+
+                        <p class="text-muted fs-5 mb-0">
+                            Descubre los diferentes espacios de servicio,
+                            crecimiento y compañerismo que forman parte de
+                            nuestra congregación.
+                        </p>
+
+                    </div>
+
+                    <div class="col-lg-auto">
+
+                        <div class="d-flex align-items-center gap-3 bg-light border rounded-4 px-4 py-3">
+
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-white border border-success"
+                                 style="width: 58px;
+                                height: 58px;
+                                min-width: 58px;">
+
+                                <i class="bi bi-diagram-3-fill text-success fs-3"></i>
+
+                            </div>
+
+                            <div>
+
+                                <p class="text-muted small mb-1">
+                                    Ministerios disponibles
+                                </p>
+
+                                <h2 class="fw-bold mb-0">
+                                    @ministerios.Count
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @if (ministerios.Any())
+        {
+           <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" data-card-pagination data-page-size="6">
+
+                @foreach (var item in ministerios)
+                {
+                    <div class="col">
+
+                        <div class="card h-100 border-0 shadow-sm rounded-4">
+
+                            <div class="card-body d-flex flex-column p-4">
+
+                                <div class="d-flex align-items-center justify-content-between mb-4">
+
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-light border border-success"
+                                         style="width: 58px;
+                                        height: 58px;
+                                        min-width: 58px;">
+
+                                        <i class="bi bi-people-fill text-success fs-3"></i>
+
+                                    </div>
+
+                                    <span class="badge bg-light text-success border border-success rounded-pill px-3 py-2">
+                                        Ministerio
+                                    </span>
+
+                                </div>
+
+                                <h4 class="fw-bold mb-3">
+                                    @item.Descripcion_Ministerio
+                                </h4>
+
+                                @if (!string.IsNullOrWhiteSpace(item.Observaciones_Ministerio))
+                                {
+                                    <p class="text-muted lh-lg flex-grow-1 mb-4">
+                                        @item.Observaciones_Ministerio
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="text-muted lh-lg flex-grow-1 mb-4">
+                                        Un espacio creado para servir, compartir
+                                        y crecer juntos como comunidad.
+                                    </p>
+                                }
+
+                                <div class="border-top pt-3">
+
+                                    <div class="d-flex align-items-center gap-2 text-success">
+
+                                        <i class="bi bi-heart-fill"></i>
+
+                                        <span class="small fw-semibold">
+                                            Crecimiento, servicio y comunidad
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body text-center p-5">
+
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light border border-success mb-4"
+                         style="width: 85px;
+                        height: 85px;">
+
+                        <i class="bi bi-people-fill text-success display-5"></i>
+
+                    </div>
+
+                    <h3 class="fw-bold mb-2">
+                        No hay ministerios disponibles
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Los ministerios registrados aparecerán en esta sección.
+                    </p>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</section>

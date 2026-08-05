@@ -86,6 +86,24 @@ namespace MinisterioGosenAPI.Controllers
             return BadRequest("No se pudo registrar el usuario al ministerio.");
         }
 
+        [HttpPut("ActualizarUsuarioMinisterioAPI")]
+        public IActionResult ActualizarUsuarioMinisterioAPI(UsuariosMinisterioModel model)
+        {
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id_Usuario_Ministerio", model.Id_Usuario_Ministerio);
+            parameters.Add("@Fecha_Ingreso", model.Fecha_Ingreso);
+            parameters.Add("@Observacion", model.Observacion);
+
+            var response = context.Execute("spEditarUsuarioMinisterio", parameters);
+
+            if (response > 0)
+                return Ok(response);
+
+            return BadRequest("No se pudo actualizar el registro.");
+        }
+
         [HttpPut("SalirUsuarioMinisterioAPI")]
         public IActionResult SalirUsuarioMinisterioAPI(UsuariosMinisterioModel model)
         {

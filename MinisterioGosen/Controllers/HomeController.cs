@@ -39,6 +39,7 @@ namespace MinisterioGosen.Controllers
         [HttpPost]
         public IActionResult Index(UsuarioModel model)
         {
+
             using var client = _http.CreateClient();
 
             var url = _config["Valores:UrlApi"] + "Home/IniciarSesionAPI";
@@ -80,6 +81,8 @@ namespace MinisterioGosen.Controllers
         [HttpPost]
         public IActionResult Registrar(UsuarioModel model)
         {
+            model.Contrasena = BCrypt.Net.BCrypt.HashPassword(model.Contrasena);
+
             using var client = _http.CreateClient();
 
             var url = _config["Valores:UrlApi"] + "Home/RegistrarAPI";
@@ -148,7 +151,26 @@ namespace MinisterioGosen.Controllers
         [HttpGet]
         public IActionResult Principal()
         {
-            return View();
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "Actividad/ListarActividadesAPI";
+            var response = client.GetAsync(url).Result;
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var actividades = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result
+                    ?? new List<ActividadModel>();
+
+                var ministeriosRecientes = actividades
+                    .Where(x => x.Estado == "Activo")
+                    .OrderByDescending(x => x.Id_Actividad)
+                    .Take(3)
+                    .ToList();
+
+                return View(ministeriosRecientes);
+            }
+
+            return View(new List<ActividadModel>());
         }
     }
 }

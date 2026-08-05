@@ -11,21 +11,32 @@ namespace MinisterioGosenAPI.Controllers
     public class HomeController(IConfiguration _config, IUtilesService _utiles) : ControllerBase
     {
         [HttpPost("RegistrarAPI")]
-        public IActionResult RegistrarAPI(RegistroUsuarioRequestModel model)
+        public async Task<IActionResult> RegistrarAPI(
+            RegistroUsuarioRequestModel model)
         {
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
             var parameters = new DynamicParameters();
-                parameters.Add("@Nombre", model.Nombre);
-                parameters.Add("@Identificacion", model.Identificacion);
-                parameters.Add("@Correo", model.Correo);
-                parameters.Add("@Contrasena", model.Contrasena);
-            var response = context.Execute("spRegistrarUsuario", parameters);
+            parameters.Add("@Nombre", model.Nombre);
+            parameters.Add("@Identificacion", model.Identificacion);
+            parameters.Add("@Correo", model.Correo);
+            parameters.Add("@Contrasena", model.Contrasena);
 
-            if(response > 0)
+            var response = context.Execute("spRegistrarUsuario",parameters);
+
+            if (response > 0)
+            {
+                // Enviar correo de confirmación de registro
+                string ruta = Path.Combine(AppContext.BaseDirectory,"Templates","RegistroUsuario.html");             
+                string plantilla = System.IO.File.ReadAllText(ruta);
+
+                plantilla = plantilla.Replace("{{NOMBRE}}",model.Nombre);
+
+                await _utiles.EnviarCorreoAsync( model.Correo,"Cuenta creada exitosamente",plantilla);
                 return Ok(response);
+            }
 
-            return BadRequest("No se ha registrado su información, valide que no tenga una cuenta ya creada");
+            return BadRequest("No se ha registrado su información, " + "valide que no tenga una cuenta ya creada");
         }
 
         [HttpPost("IniciarSesionAPI")]
@@ -36,10 +47,12 @@ namespace MinisterioGosenAPI.Controllers
             var parameters = new DynamicParameters();
             parameters.Add("@Correo", model.Correo);
             parameters.Add("@Contrasena", model.Contrasena);
-            var response = context.QueryFirstOrDefault<UsuarioResponseModel>("spIniciarSesionUsuario",parameters);
+            var response = context.QueryFirstOrDefault<UsuarioResponseModel>("spIniciarSesionUsuario", parameters);
 
-            if (response != null)
+            if (response != null && BCrypt.Net.BCrypt.Verify(model.Contrasena, response.Contrasena))
+            {
                 return Ok(response);
+            }
             else
                 return NotFound("No se ha validado su información correctamente");
         }
@@ -59,10 +72,11 @@ namespace MinisterioGosenAPI.Controllers
 
             //2 Generar una contraseña temporal
             var temporal = _utiles.GenerarContrasena();
+            var temporalCifrada = BCrypt.Net.BCrypt.HashPassword(temporal);
 
             parameters = new DynamicParameters();
             parameters.Add("@Id_Usuario", response.Id_Usuario);
-            parameters.Add("@Contrasena", temporal);
+            parameters.Add("@Contrasena", temporalCifrada);
             parameters.Add("@IndicadorTemp", true);
             var update = context.Execute("spActualizarContrasenna", parameters);
 

@@ -1,14 +1,65 @@
-USE [ministerio_gosen];
+﻿USE [ministerio_gosen];
 GO
 
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
+GO
+
+/* ============================================================================
+   SEEDING COMPLETO Y SEGURO - MINISTERIO GOSEN
+
+   COMPORTAMIENTO
+   - Conserva todos los registros existentes de dbo.Usuario.
+   - No reinicia el IDENTITY de dbo.Usuario ni de dbo.Rol.
+   - Inserta solamente los usuarios del seeding que todavía no existan.
+   - Si coincide la identificación o el correo, conserva el usuario actual.
+   - Las contraseñas de los usuarios nuevos se almacenan con BCrypt.
+   - Limpia y vuelve a poblar las tablas operativas y de demostración.
+
+   CREDENCIALES DE LOS USUARIOS NUEVOS
+   - Administrador: ministeriogosen@gmail.com / admin123
+   - Usuarios de prueba: usuario123
+   ============================================================================ */
 
 BEGIN TRY
     BEGIN TRANSACTION;
 
     /* ============================================================
-       1. ASEGURAR TABLA DEL CHATBOT SI NO EXISTE
+       1. VALIDAR TABLAS PRINCIPALES
+       ============================================================ */
+
+    IF OBJECT_ID('dbo.Rol', 'U') IS NULL
+        THROW 50001, 'La tabla dbo.Rol no existe.', 1;
+
+    IF OBJECT_ID('dbo.Usuario', 'U') IS NULL
+        THROW 50002, 'La tabla dbo.Usuario no existe.', 1;
+
+    IF OBJECT_ID('dbo.Error', 'U') IS NULL
+        THROW 50003, 'La tabla dbo.Error no existe.', 1;
+
+    IF OBJECT_ID('dbo.Actividad_Usuario', 'U') IS NULL
+        THROW 50004, 'La tabla dbo.Actividad_Usuario no existe.', 1;
+
+    IF OBJECT_ID('dbo.Actividades_Ministerio', 'U') IS NULL
+        THROW 50005, 'La tabla dbo.Actividades_Ministerio no existe.', 1;
+
+    IF OBJECT_ID('dbo.Usuarios_Ministerio', 'U') IS NULL
+        THROW 50006, 'La tabla dbo.Usuarios_Ministerio no existe.', 1;
+
+    IF OBJECT_ID('dbo.Citas', 'U') IS NULL
+        THROW 50007, 'La tabla dbo.Citas no existe.', 1;
+
+    IF OBJECT_ID('dbo.Actividad', 'U') IS NULL
+        THROW 50008, 'La tabla dbo.Actividad no existe.', 1;
+
+    IF OBJECT_ID('dbo.Tipo_Actividad', 'U') IS NULL
+        THROW 50009, 'La tabla dbo.Tipo_Actividad no existe.', 1;
+
+    IF OBJECT_ID('dbo.Ministerio', 'U') IS NULL
+        THROW 50010, 'La tabla dbo.Ministerio no existe.', 1;
+
+    /* ============================================================
+       2. ASEGURAR TABLA DEL CHATBOT
        ============================================================ */
 
     IF OBJECT_ID('dbo.Chat_Bot_Opciones', 'U') IS NULL
@@ -28,7 +79,9 @@ BEGIN TRY
     END;
 
     /* ============================================================
-       2. LIMPIEZA EN ORDEN DE DEPENDENCIAS
+       3. LIMPIAR DATOS OPERATIVOS
+
+       dbo.Usuario y dbo.Rol se conservan completamente.
        ============================================================ */
 
     DELETE FROM dbo.Chat_Bot_Opciones;
@@ -40,8 +93,6 @@ BEGIN TRY
     DELETE FROM dbo.Actividad;
     DELETE FROM dbo.Tipo_Actividad;
     DELETE FROM dbo.Ministerio;
-    DELETE FROM dbo.Usuario;
-    DELETE FROM dbo.Rol;
 
     DBCC CHECKIDENT ('dbo.Chat_Bot_Opciones', RESEED, 0) WITH NO_INFOMSGS;
     DBCC CHECKIDENT ('dbo.Error', RESEED, 0) WITH NO_INFOMSGS;
@@ -52,116 +103,289 @@ BEGIN TRY
     DBCC CHECKIDENT ('dbo.Actividad', RESEED, 0) WITH NO_INFOMSGS;
     DBCC CHECKIDENT ('dbo.Tipo_Actividad', RESEED, 0) WITH NO_INFOMSGS;
     DBCC CHECKIDENT ('dbo.Ministerio', RESEED, 0) WITH NO_INFOMSGS;
-    DBCC CHECKIDENT ('dbo.Usuario', RESEED, 0) WITH NO_INFOMSGS;
-    DBCC CHECKIDENT ('dbo.Rol', RESEED, 0) WITH NO_INFOMSGS;
 
     /* ============================================================
-       3. ROLES
+       4. ASEGURAR ROLES Y USUARIOS
+
+       Los roles existentes se conservan.
+       Solo se insertan los Id_Rol que no existan.
        ============================================================ */
 
-    SET IDENTITY_INSERT dbo.Rol ON;
-
-    INSERT INTO dbo.Rol
+    IF NOT EXISTS
     (
-        Id_Rol,
-        Descripcion
+        SELECT 1
+        FROM dbo.Rol
+        WHERE Id_Rol = 1
     )
-    VALUES
-    (1, 'Admin'),
-    (2, 'Usuario');
+    OR NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.Rol
+        WHERE Id_Rol = 2
+    )
+    BEGIN
+        SET IDENTITY_INSERT dbo.Rol ON;
 
-    SET IDENTITY_INSERT dbo.Rol OFF;
+        INSERT INTO dbo.Rol
+        (
+            Id_Rol,
+            Descripcion
+        )
+        SELECT
+            RolesSeed.Id_Rol,
+            RolesSeed.Descripcion
+        FROM
+        (
+            VALUES
+                (1, 'Admin'),
+                (2, 'Usuario')
+        ) AS RolesSeed
+        (
+            Id_Rol,
+            Descripcion
+        )
+        WHERE NOT EXISTS
+        (
+            SELECT 1
+            FROM dbo.Rol AS R
+            WHERE R.Id_Rol = RolesSeed.Id_Rol
+        );
+
+        SET IDENTITY_INSERT dbo.Rol OFF;
+    END;
 
     /* ============================================================
-       4. USUARIOS
-       Admin: ministeriogosen@gmail.com / admin123
-       Usuarios normales: usuario123
+       USUARIOS DEL SEEDING
        ============================================================ */
 
-    INSERT INTO dbo.Usuario
+    DECLARE @UsuariosSeed TABLE
     (
-        Identificacion,
-        Nombre,
-        Correo,
-        Contrasena,
-        Estado,
-        Id_Rol,
-        UsaContrasenaTemp
-    )
-    VALUES
-    ('000000000', 'ADMINISTRADOR MINISTERIO GOSEN', 'ministeriogosen@gmail.com', 'admin123', 'A', 1, 0);
-
-    INSERT INTO dbo.Usuario
-    (
-        Identificacion,
-        Nombre,
-        Correo,
-        Contrasena,
-        Estado,
-        Id_Rol,
-        UsaContrasenaTemp
-    )
-    VALUES
-    ('116700557', 'MARIA FERNANDA FAJARDO TORRES', 'maria.fajardo@gosen.local', 'usuario123', 'A', 2, 0),
-    ('114560987', 'JONATHAN STEVEN BARRANTES MORA', 'jonathan.barrantes@gosen.local', 'usuario123', 'A', 2, 0),
-    ('109870654', 'AARON AZOFEIFA SALAZAR', 'aaron.azofeifa@gosen.local', 'usuario123', 'A', 2, 0),
-    ('112340987', 'YESENIA SALAZAR PEREZ', 'yesenia.salazar@gosen.local', 'usuario123', 'A', 2, 0),
-    ('116780432', 'CARLOS ANDRES MORA ROJAS', 'carlos.mora@gosen.local', 'usuario123', 'A', 2, 0),
-    ('120980765', 'ANA LUCIA VARGAS SOLIS', 'ana.vargas@gosen.local', 'usuario123', 'A', 2, 0),
-    ('107650234', 'JOSE DANIEL CHACON RUIZ', 'jose.chacon@gosen.local', 'usuario123', 'A', 2, 0),
-    ('115670983', 'DANIELA CASTRO JIMENEZ', 'daniela.castro@gosen.local', 'usuario123', 'A', 2, 0),
-    ('110980456', 'LUIS FERNANDO BRENES SOTO', 'luis.brenes@gosen.local', 'usuario123', 'A', 2, 0),
-    ('119870345', 'SOFIA HERNANDEZ ARIAS', 'sofia.hernandez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('108760543', 'MIGUEL ANGEL ROJAS CAMPOS', 'miguel.rojas@gosen.local', 'usuario123', 'A', 2, 0),
-    ('117650987', 'VALERIA MONTERO FALLAS', 'valeria.montero@gosen.local', 'usuario123', 'A', 2, 0),
-    ('113450876', 'GABRIEL NUNEZ ALVARADO', 'gabriel.nunez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('121340765', 'KATHERINE MORALES VEGA', 'katherine.morales@gosen.local', 'usuario123', 'A', 2, 0),
-    ('106780912', 'ANDRES SALAS PORRAS', 'andres.salas@gosen.local', 'usuario123', 'A', 2, 0),
-    ('122450673', 'PAOLA RAMIREZ AGUILAR', 'paola.ramirez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('105670432', 'ESTEBAN CALDERON LOPEZ', 'esteban.calderon@gosen.local', 'usuario123', 'A', 2, 0),
-    ('124560981', 'NATALIA SEGURA MENDEZ', 'natalia.segura@gosen.local', 'usuario123', 'A', 2, 0),
-    ('103450876', 'RICARDO VARGAS ZAMORA', 'ricardo.vargas@gosen.local', 'usuario123', 'I', 2, 0),
-    ('126780453', 'ELENA JIMENEZ CORDERO', 'elena.jimenez@gosen.local', 'usuario123', 'A', 2, 1),
-    ('125001001', 'MARIANA SOLANO RIVERA', 'mariana.solano@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001002', 'DIEGO ALVARADO CAMPOS', 'diego.alvarado@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001003', 'LAURA PEREZ MONGE', 'laura.perez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001004', 'FABIAN SOTO VARGAS', 'fabian.soto@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001005', 'GABRIELA QUESADA ARIAS', 'gabriela.quesada@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001006', 'MAURICIO VARGAS HERRERA', 'mauricio.vargas@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001007', 'ADRIANA MORALES ROJAS', 'adriana.morales@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001008', 'JORGE CASTILLO FALLAS', 'jorge.castillo@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001009', 'MONICA ARIAS SANCHEZ', 'monica.arias@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001010', 'PABLO RODRIGUEZ SALAS', 'pablo.rodriguez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001011', 'SILVIA MENDEZ CAMPOS', 'silvia.mendez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001012', 'OSCAR CHAVES BRENES', 'oscar.chaves@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001013', 'KARLA VILLALOBOS SEGURA', 'karla.villalobos@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001014', 'EMMANUEL GOMEZ LOPEZ', 'emmanuel.gomez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001015', 'JULIANA NAVARRO SOLIS', 'juliana.navarro@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001016', 'HECTOR MORA CORDERO', 'hector.mora@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001017', 'TATIANA AGUILAR PEREIRA', 'tatiana.aguilar@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001018', 'ROBERTO CALDERON NUÑEZ', 'roberto.calderon@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001019', 'MELISSA JIMENEZ VARGAS', 'melissa.jimenez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001020', 'BRAYAN MURILLO FONSECA', 'brayan.murillo@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001021', 'CAMILA LEIVA ZAMORA', 'camila.leiva@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001022', 'SEBASTIAN COTO VEGA', 'sebastian.coto@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001023', 'MARCELA ARCE PANIAGUA', 'marcela.arce@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001024', 'GERARDO ACUÑA RIVAS', 'gerardo.acuna@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001025', 'PATRICIA BARRANTES ARAYA', 'patricia.barrantes@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001026', 'DAVID CAMPOS RETANA', 'david.campos@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001027', 'ELIANA LOPEZ CASTRO', 'eliana.lopez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001028', 'SAMUEL ROJAS ALPIZAR', 'samuel.rojas@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001029', 'MARTA SANCHEZ PORRAS', 'marta.sanchez@gosen.local', 'usuario123', 'A', 2, 0),
-    ('125001030', 'ISAAC MONGE VALVERDE', 'isaac.monge@gosen.local', 'usuario123', 'A', 2, 0);
-
-    DECLARE @IdAdmin INT =
-    (
-        SELECT Id_Usuario
-        FROM dbo.Usuario
-        WHERE Correo = 'ministeriogosen@gmail.com'
+        Identificacion    VARCHAR(30)   NOT NULL,
+        Nombre            NVARCHAR(150) NOT NULL,
+        Correo            VARCHAR(150)  NOT NULL,
+        Contrasena        VARCHAR(200)  NOT NULL,
+        Estado            CHAR(1)       NOT NULL,
+        Id_Rol            INT           NOT NULL,
+        UsaContrasenaTemp BIT           NOT NULL
     );
 
+    INSERT INTO @UsuariosSeed
+    (
+        Identificacion,
+        Nombre,
+        Correo,
+        Contrasena,
+        Estado,
+        Id_Rol,
+        UsaContrasenaTemp
+    )
+    VALUES
+    ('000000000', N'ADMINISTRADOR MINISTERIO GOSEN', 'ministeriogosen@gmail.com', '$2a$11$hn4PhTdHwTzvhz0WEuAk.e/YnmhJoWzrj8pi7W3tR//H728t0.cfe', 'A', 1, 0),
+    ('116700557', N'MARIA FERNANDA FAJARDO TORRES', 'maria.fajardo@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('114560987', N'JONATHAN STEVEN BARRANTES MORA', 'jonathan.barrantes@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('109870654', N'AARON AZOFEIFA SALAZAR', 'aaron.azofeifa@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('112340987', N'YESENIA SALAZAR PEREZ', 'yesenia.salazar@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('116780432', N'CARLOS ANDRES MORA ROJAS', 'carlos.mora@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('120980765', N'ANA LUCIA VARGAS SOLIS', 'ana.vargas@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('107650234', N'JOSE DANIEL CHACON RUIZ', 'jose.chacon@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('115670983', N'DANIELA CASTRO JIMENEZ', 'daniela.castro@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('110980456', N'LUIS FERNANDO BRENES SOTO', 'luis.brenes@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('119870345', N'SOFIA HERNANDEZ ARIAS', 'sofia.hernandez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('108760543', N'MIGUEL ANGEL ROJAS CAMPOS', 'miguel.rojas@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('117650987', N'VALERIA MONTERO FALLAS', 'valeria.montero@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('113450876', N'GABRIEL NUNEZ ALVARADO', 'gabriel.nunez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('121340765', N'KATHERINE MORALES VEGA', 'katherine.morales@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('106780912', N'ANDRES SALAS PORRAS', 'andres.salas@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('122450673', N'PAOLA RAMIREZ AGUILAR', 'paola.ramirez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('105670432', N'ESTEBAN CALDERON LOPEZ', 'esteban.calderon@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('124560981', N'NATALIA SEGURA MENDEZ', 'natalia.segura@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('103450876', N'RICARDO VARGAS ZAMORA', 'ricardo.vargas@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'I', 2, 0),
+    ('126780453', N'ELENA JIMENEZ CORDERO', 'elena.jimenez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 1),
+    ('125001001', N'MARIANA SOLANO RIVERA', 'mariana.solano@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001002', N'DIEGO ALVARADO CAMPOS', 'diego.alvarado@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001003', N'LAURA PEREZ MONGE', 'laura.perez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001004', N'FABIAN SOTO VARGAS', 'fabian.soto@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001005', N'GABRIELA QUESADA ARIAS', 'gabriela.quesada@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001006', N'MAURICIO VARGAS HERRERA', 'mauricio.vargas@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001007', N'ADRIANA MORALES ROJAS', 'adriana.morales@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001008', N'JORGE CASTILLO FALLAS', 'jorge.castillo@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001009', N'MONICA ARIAS SANCHEZ', 'monica.arias@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001010', N'PABLO RODRIGUEZ SALAS', 'pablo.rodriguez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001011', N'SILVIA MENDEZ CAMPOS', 'silvia.mendez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001012', N'OSCAR CHAVES BRENES', 'oscar.chaves@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001013', N'KARLA VILLALOBOS SEGURA', 'karla.villalobos@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001014', N'EMMANUEL GOMEZ LOPEZ', 'emmanuel.gomez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001015', N'JULIANA NAVARRO SOLIS', 'juliana.navarro@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001016', N'HECTOR MORA CORDERO', 'hector.mora@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001017', N'TATIANA AGUILAR PEREIRA', 'tatiana.aguilar@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001018', N'ROBERTO CALDERON NUÑEZ', 'roberto.calderon@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001019', N'MELISSA JIMENEZ VARGAS', 'melissa.jimenez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001020', N'BRAYAN MURILLO FONSECA', 'brayan.murillo@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001021', N'CAMILA LEIVA ZAMORA', 'camila.leiva@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001022', N'SEBASTIAN COTO VEGA', 'sebastian.coto@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001023', N'MARCELA ARCE PANIAGUA', 'marcela.arce@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001024', N'GERARDO ACUÑA RIVAS', 'gerardo.acuna@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001025', N'PATRICIA BARRANTES ARAYA', 'patricia.barrantes@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001026', N'DAVID CAMPOS RETANA', 'david.campos@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001027', N'ELIANA LOPEZ CASTRO', 'eliana.lopez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001028', N'SAMUEL ROJAS ALPIZAR', 'samuel.rojas@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001029', N'MARTA SANCHEZ PORRAS', 'marta.sanchez@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0),
+    ('125001030', N'ISAAC MONGE VALVERDE', 'isaac.monge@gosen.local', '$2a$11$z5yfPT1sPU9F5rQhy6BpHOoJFXiEwZ4ExsyMA7usJrMBqlWjPd1NS', 'A', 2, 0);
+
     /* ============================================================
-       5. TIPOS DE ACTIVIDAD
+       VALIDAR EL CONTENIDO DEL SEEDING
+       ============================================================ */
+
+    IF EXISTS
+    (
+        SELECT Identificacion
+        FROM @UsuariosSeed
+        GROUP BY Identificacion
+        HAVING COUNT(*) > 1
+    )
+    BEGIN
+        THROW 50003,
+              'Existen identificaciones duplicadas dentro del seeding.',
+              1;
+    END;
+
+    IF EXISTS
+    (
+        SELECT Correo
+        FROM @UsuariosSeed
+        GROUP BY Correo
+        HAVING COUNT(*) > 1
+    )
+    BEGIN
+        THROW 50004,
+              'Existen correos duplicados dentro del seeding.',
+              1;
+    END;
+
+    IF EXISTS
+    (
+        SELECT 1
+        FROM @UsuariosSeed AS S
+        LEFT JOIN dbo.Rol AS R
+            ON R.Id_Rol = S.Id_Rol
+        WHERE R.Id_Rol IS NULL
+    )
+    BEGIN
+        THROW 50005,
+              'Uno o más usuarios del seeding utilizan un rol inexistente.',
+              1;
+    END;
+
+    /* ============================================================
+       INSERTAR SOLAMENTE LOS USUARIOS FALTANTES
+
+       Un usuario se considera existente cuando coincide:
+       - La identificación, o
+       - El correo electrónico.
+
+       Por tanto, el usuario real con identificación 116700557 se
+       conservará aunque su correo actual sea distinto al del seeding.
+       ============================================================ */
+
+    DECLARE @TotalAntes INT;
+    DECLARE @CantidadInsertada INT;
+
+    DECLARE @UsuariosInsertados TABLE
+    (
+        Id_Usuario     INT,
+        Identificacion VARCHAR(30),
+        Nombre         NVARCHAR(150),
+        Correo         VARCHAR(150)
+    );
+
+    SELECT
+        @TotalAntes = COUNT(*)
+    FROM dbo.Usuario;
+
+    INSERT INTO dbo.Usuario
+    (
+        Identificacion,
+        Nombre,
+        Correo,
+        Contrasena,
+        Estado,
+        Id_Rol,
+        UsaContrasenaTemp
+    )
+    OUTPUT
+        INSERTED.Id_Usuario,
+        INSERTED.Identificacion,
+        INSERTED.Nombre,
+        INSERTED.Correo
+    INTO @UsuariosInsertados
+    (
+        Id_Usuario,
+        Identificacion,
+        Nombre,
+        Correo
+    )
+    SELECT
+        S.Identificacion,
+        S.Nombre,
+        S.Correo,
+        S.Contrasena,
+        S.Estado,
+        S.Id_Rol,
+        S.UsaContrasenaTemp
+    FROM @UsuariosSeed AS S
+    WHERE NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.Usuario AS U
+        WHERE U.Identificacion = S.Identificacion
+           OR U.Correo = S.Correo
+    );
+
+    SET @CantidadInsertada = @@ROWCOUNT;
+
+    /* ============================================================
+       5. IDENTIFICAR LOS USUARIOS QUE PARTICIPAN EN LOS DATOS DEMO
+
+       Solo se relacionan usuarios incluidos en @UsuariosSeed. Así,
+       otros usuarios reales que existan en el futuro no recibirán
+       ministerios, actividades o citas ficticias.
+       ============================================================ */
+
+    DECLARE @IdsUsuariosSeed TABLE
+    (
+        UsuarioSeedId INT PRIMARY KEY
+    );
+
+    INSERT INTO @IdsUsuariosSeed (UsuarioSeedId)
+    SELECT DISTINCT U.Id_Usuario
+    FROM dbo.Usuario AS U
+    WHERE EXISTS
+    (
+        SELECT 1
+        FROM @UsuariosSeed AS S
+        WHERE S.Identificacion = U.Identificacion
+           OR S.Correo = U.Correo
+    );
+
+    DECLARE @IdAdmin INT;
+
+    SELECT TOP (1)
+        @IdAdmin = U.Id_Usuario
+    FROM dbo.Usuario AS U
+    WHERE U.Identificacion = '000000000'
+       OR U.Correo = 'ministeriogosen@gmail.com'
+    ORDER BY
+        CASE
+            WHEN U.Identificacion = '000000000' THEN 0
+            ELSE 1
+        END,
+        U.Id_Usuario;
+
+    IF @IdAdmin IS NULL
+        THROW 50011, 'No fue posible localizar o crear el usuario administrador.', 1;
+
+    /* ============================================================
+       6. TIPOS DE ACTIVIDAD
        ============================================================ */
 
     INSERT INTO dbo.Tipo_Actividad
@@ -179,7 +403,7 @@ BEGIN TRY
     ('Servicio comunitario');
 
     /* ============================================================
-       6. MINISTERIOS
+       7. MINISTERIOS
        ============================================================ */
 
     INSERT INTO dbo.Ministerio
@@ -200,7 +424,7 @@ BEGIN TRY
     ('Ministerio de Bienvenida', 'Recibimiento, orientacion y apoyo a visitantes.');
 
     /* ============================================================
-       7. USUARIOS POR MINISTERIO
+       8. USUARIOS POR MINISTERIO
        ============================================================ */
 
     DECLARE @TotalMinisterios INT =
@@ -214,7 +438,9 @@ BEGIN TRY
         SELECT
             Id_Usuario,
             ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
-        FROM dbo.Usuario
+        FROM dbo.Usuario AS UBase
+        INNER JOIN @IdsUsuariosSeed AS IDS
+            ON IDS.UsuarioSeedId = UBase.Id_Usuario
         WHERE Id_Rol = 2
     ),
     Ministerios AS
@@ -249,7 +475,9 @@ BEGIN TRY
         SELECT
             Id_Usuario,
             ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
-        FROM dbo.Usuario
+        FROM dbo.Usuario AS UBase
+        INNER JOIN @IdsUsuariosSeed AS IDS
+            ON IDS.UsuarioSeedId = UBase.Id_Usuario
         WHERE Id_Rol = 2
           AND Estado = 'A'
     ),
@@ -290,7 +518,7 @@ BEGIN TRY
       );
 
     /* ============================================================
-       8. ACTIVIDADES Y RELACION CON MINISTERIOS
+       9. ACTIVIDADES Y RELACION CON MINISTERIOS
        ============================================================ */
 
     DECLARE @ActividadesSeed TABLE
@@ -397,13 +625,15 @@ BEGIN TRY
         ON M.Descripcion_Ministerio = S.Ministerio;
 
     /* ============================================================
-       9. PARTICIPACION DE USUARIOS EN ACTIVIDADES
+       10. PARTICIPACION DE USUARIOS EN ACTIVIDADES
        ============================================================ */
 
     DECLARE @TotalUsuarios INT =
     (
         SELECT COUNT(*)
-        FROM dbo.Usuario
+        FROM dbo.Usuario AS UBase
+        INNER JOIN @IdsUsuariosSeed AS IDS
+            ON IDS.UsuarioSeedId = UBase.Id_Usuario
         WHERE Id_Rol = 2
           AND Estado = 'A'
     );
@@ -422,7 +652,9 @@ BEGIN TRY
         SELECT
             Id_Usuario,
             ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
-        FROM dbo.Usuario
+        FROM dbo.Usuario AS UBase
+        INNER JOIN @IdsUsuariosSeed AS IDS
+            ON IDS.UsuarioSeedId = UBase.Id_Usuario
         WHERE Id_Rol = 2
           AND Estado = 'A'
     )
@@ -445,7 +677,7 @@ BEGIN TRY
         OR U.RN = ((A.RN * 2 + 15) % @TotalUsuarios) + 1;
 
 /* ============================================================
-   10. CITAS
+   11. CITAS
    Estado permitido: Pendiente / Atendida
    Horario permitido: 08:00 a 17:00
    ============================================================ */
@@ -455,7 +687,9 @@ BEGIN TRY
     SELECT
         Id_Usuario,
         ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
-    FROM dbo.Usuario
+    FROM dbo.Usuario AS UBase
+    INNER JOIN @IdsUsuariosSeed AS IDS
+        ON IDS.UsuarioSeedId = UBase.Id_Usuario
     WHERE Id_Rol = 2
       AND Estado = 'A'
 ),
@@ -464,7 +698,9 @@ Encargados AS
     SELECT
         Id_Usuario,
         ROW_NUMBER() OVER (ORDER BY Id_Usuario) AS RN
-    FROM dbo.Usuario
+    FROM dbo.Usuario AS UBase
+    INNER JOIN @IdsUsuariosSeed AS IDS
+        ON IDS.UsuarioSeedId = UBase.Id_Usuario
     WHERE Id_Rol = 2
       AND Estado = 'A'
 ),
@@ -547,7 +783,7 @@ SELECT
 FROM DatosCitas;
 
     /* ============================================================
-       11. ERRORES DE EJEMPLO
+       12. ERRORES DE EJEMPLO
        ============================================================ */
 
     INSERT INTO dbo.Error
@@ -565,7 +801,7 @@ FROM DatosCitas;
     ('Consulta sin resultados disponibles.', 'Reportes/Index', DATEADD(DAY, -1, GETDATE()), @IdAdmin);
 
     /* ============================================================
-       12. CHATBOT
+       13. CHATBOT
        Mantener respuestas cortas porque Respuesta es VARCHAR(200)
        ============================================================ */
 
@@ -680,24 +916,36 @@ FROM DatosCitas;
     (N'Actualizar mi perfil', 'Ingrese a Configuracion para actualizar su informacion personal.', @IdUsuarioAcceso, 2, 1),
     (N'No puedo ingresar', 'Solicite apoyo a la administracion para revisar su usuario.', @IdUsuarioAcceso, 3, 1);
 
+
     COMMIT TRANSACTION;
 
     PRINT 'Carga completa ejecutada correctamente.';
+    PRINT 'Los usuarios existentes fueron conservados.';
+    PRINT CONCAT('Usuarios nuevos insertados: ', @CantidadInsertada);
 
 END TRY
 BEGIN CATCH
+
     IF @@TRANCOUNT > 0
         ROLLBACK TRANSACTION;
 
-    PRINT 'Error ejecutando la carga de datos.';
+    BEGIN TRY
+        SET IDENTITY_INSERT dbo.Rol OFF;
+    END TRY
+    BEGIN CATCH
+        -- No se requiere ninguna acción adicional.
+    END CATCH;
+
+    PRINT 'Error ejecutando la carga completa de datos.';
     PRINT ERROR_MESSAGE();
 
     THROW;
+
 END CATCH;
 GO
 
 /* ============================================================
-   13. SP DEL CHATBOT CON ALIAS PARA MODELOS C#
+   14. SP DEL CHATBOT CON ALIAS PARA MODELOS C#
    ============================================================ */
 
 CREATE OR ALTER PROCEDURE dbo.SP_ConsultarChatbot
@@ -752,7 +1000,7 @@ END;
 GO
 
 /* ============================================================
-   14. VALIDACION RAPIDA
+   15. VALIDACION RAPIDA
    ============================================================ */
 
 SELECT 'Rol' AS Tabla, COUNT(*) AS Total FROM dbo.Rol

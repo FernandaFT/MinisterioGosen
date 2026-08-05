@@ -14,6 +14,8 @@ namespace MinisterioGosenAPI.Controllers
         [HttpPut("CambiarContrasenaAPI")]
         public IActionResult CambiarContrasenaAPI(CambiarContrasenaRequestModel model)
         {
+            model.Contrasena = BCrypt.Net.BCrypt.HashPassword(model.Contrasena);
+
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
             var parameters = new DynamicParameters();

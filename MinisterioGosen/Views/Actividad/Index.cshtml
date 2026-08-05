@@ -86,6 +86,7 @@
                             <th>Ministerio responsable</th>
                             <th>Fecha y horario</th>
                             <th>Lugar</th>
+                            <th>Estado</th>
                             <th class="text-end pe-4">Acciones</th>
                         </tr>
                     </thead>
@@ -178,6 +179,21 @@
                                         }
                                     </td>
 
+                                    <td>
+                                        @if (item.Estado == "Inactivo")
+                                        {
+                                            <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                                Inactivo
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-success px-3 py-2">
+                                                Activo
+                                            </span>
+                                        }
+                                    </td>
+
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
                                             <a asp-controller="Actividad"
@@ -187,6 +203,29 @@
                                                title="Editar">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
+
+                                            @if (item.Estado == "Inactivo")
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-success"
+                                                        title="Activar"
+                                                        onclick="confirmarActivarActividad(this)"
+                                                        data-id="@item.Id_Actividad"
+                                                        data-nombre="@item.Nombre_Actividad">
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-warning"
+                                                        title="Inactivar"
+                                                        onclick="confirmarInactivarActividad(this)"
+                                                        data-id="@item.Id_Actividad"
+                                                        data-nombre="@item.Nombre_Actividad">
+                                                    <i class="bi bi-slash-circle"></i>
+                                                </button>
+                                            }
 
                                             <a asp-controller="Actividad"
                                                asp-action="Eliminar"
@@ -203,7 +242,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <i class="bi bi-calendar-x text-muted display-4"></i>
 
                                     <h5 class="fw-bold text-muted mt-3 mb-1">
@@ -230,3 +269,56 @@
     </div>
 
 </div>
+
+<!-- Formularios ocultos: se envían tras confirmar con SweetAlert -->
+<form id="formInactivarActividad" asp-controller="Actividad" asp-action="Inactivar" method="post" class="d-none">
+    <input type="hidden" name="id" id="inactivarId" />
+    <input type="hidden" name="origen" value="index" />
+</form>
+
+<form id="formActivarActividad" asp-controller="Actividad" asp-action="Activar" method="post" class="d-none">
+    <input type="hidden" name="id" id="activarId" />
+    <input type="hidden" name="origen" value="index" />
+</form>
+
+<script>
+    function confirmarInactivarActividad(boton) {
+        const nombre = boton.getAttribute("data-nombre");
+
+        Swal.fire({
+            title: "Confirmar inactivación",
+            text: "¿Desea inactivar la actividad " + nombre + "? Dejará de mostrarse a los usuarios, pero no se eliminará del sistema.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Inactivar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#bf8350",
+            cancelButtonColor: "#6c757d"
+        }).then(function (resultado) {
+            if (resultado.isConfirmed) {
+                document.getElementById("inactivarId").value = boton.getAttribute("data-id");
+                document.getElementById("formInactivarActividad").submit();
+            }
+        });
+    }
+
+    function confirmarActivarActividad(boton) {
+        const nombre = boton.getAttribute("data-nombre");
+
+        Swal.fire({
+            title: "Confirmar activación",
+            text: "¿Desea activar nuevamente la actividad " + nombre + "?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Activar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#064442",
+            cancelButtonColor: "#6c757d"
+        }).then(function (resultado) {
+            if (resultado.isConfirmed) {
+                document.getElementById("activarId").value = boton.getAttribute("data-id");
+                document.getElementById("formActivarActividad").submit();
+            }
+        });
+    }
+</script>

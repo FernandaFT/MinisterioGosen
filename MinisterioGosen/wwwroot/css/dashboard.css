@@ -1,0 +1,173 @@
+﻿.dashboard-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+    border-radius: 999px;
+    background-color: #dcebe7;
+    color: #07574f;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.dashboard-section-title {
+    margin-bottom: 6px;
+    color: #092f2c;
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.dashboard-section-description {
+    margin-bottom: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.dashboard-chart-card {
+    height: 100%;
+    padding: 26px;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 1px solid #e9efed;
+    border-radius: 24px;
+    box-shadow: 0 14px 35px rgba(10, 55, 51, 0.08);
+    transition: none;
+}
+
+.chart-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.chart-card-category {
+    display: block;
+    margin-bottom: 6px;
+    color: #16866d;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.chart-card-title {
+    margin-bottom: 6px;
+    color: #102f2d;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.chart-card-description {
+    max-width: 420px;
+    margin-bottom: 0;
+    color: #7a8584;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.chart-card-icon {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    font-size: 1.3rem;
+}
+
+.chart-icon-citas {
+    background-color: #fff3cd;
+    color: #c58c00;
+}
+
+.chart-icon-actividades {
+    background-color: #ddf2e9;
+    color: #168c62;
+}
+
+.chart-icon-asistencia {
+    background-color: #dfeaff;
+    color: #1268e8;
+}
+
+.chart-icon-ministerios {
+    background-color: #dce9e7;
+    color: #07574f;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+}
+
+.chart-container-doughnut {
+    height: 330px;
+}
+
+.chart-container-horizontal {
+    height: 360px;
+}
+
+.dashboard-no-data {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    text-align: center;
+}
+
+    .dashboard-no-data i {
+        margin-bottom: 12px;
+        font-size: 2rem;
+    }
+
+    .dashboard-no-data h6 {
+        margin-bottom: 4px;
+        color: #102f2d;
+        font-weight: 700;
+    }
+
+    .dashboard-no-data p {
+        margin-bottom: 0;
+        font-size: 0.85rem;
+    }
+
+@media (max-width: 767.98px) {
+    .dashboard-chart-card {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .chart-card-header {
+        gap: 12px;
+    }
+
+    .chart-card-icon {
+        width: 46px;
+        min-width: 46px;
+        height: 46px;
+    }
+
+    .chart-container,
+    .chart-container-doughnut,
+    .chart-container-horizontal {
+        height: 300px;
+    }
+
+    .dashboard-section-title {
+        font-size: 1.45rem;
+    }
+}

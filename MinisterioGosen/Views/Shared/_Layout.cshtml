@@ -88,6 +88,7 @@
 
     <!-- Template Stylesheet -->
     <link href="~/css/style.css" rel="stylesheet" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js" asp-append-version="true"></script>
@@ -105,83 +106,88 @@
         </div>
     }
 
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm px-4 px-lg-5 py-2 sticky-top"
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top py-2"
          style="background-color: #0d2422;">
 
-        <a asp-action="Principal"
-           asp-controller="Home"
-           class="navbar-brand d-flex align-items-center">
+        <div class="container-fluid px-4 px-lg-5">
 
-            <img src="~/img/logo-gosen.png"
-                 alt="Logo Gosén"
-                 style="height: 65px;">
-        </a>
+            <!-- Logo -->
+            <a asp-controller="Home"
+               asp-action="Principal"
+               class="navbar-brand d-flex align-items-center py-0">
 
-        <button class="navbar-toggler border-0"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarCollapse"
-                aria-controls="navbarCollapse"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
+                <img src="~/img/logo-gosen.png"
+                     alt="Logo Ministerio Gosén"
+                     style="height: 65px;">
+            </a>
 
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <!-- Botón móvil -->
+            <button class="navbar-toggler border-0"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse"
+                    aria-expanded="false"
+                    aria-label="Mostrar menú">
 
-        <div class="collapse navbar-collapse" id="navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            <div class="collapse navbar-collapse"
+                 id="navbarCollapse">
 
-                @* Inicio *@
-                <a asp-action="Principal"
-                   asp-controller="Home"
-                   class="nav-link fw-semibold @(NavActivo("Home", "Principal"))">
+                <div class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
 
-                    <i class="bi bi-house-door me-1"></i>
-                    Inicio
-                </a>
+                    <!-- Inicio -->
+                    <a asp-controller="Home"
+                       asp-action="Principal"
+                       class="nav-link fw-semibold px-lg-3
+                        @(NavActivo("Home", "Principal"))">
 
-                @if (estaLogueado)
-                {
-                    @* Actividades *@
+                        <i class="bi bi-house-door-fill me-1"></i>
+                        Inicio
+                    </a>
+
+                    @if (estaLogueado && !esAdmin)
+                    {
+                        <!-- MENÚ DEL USUARIO -->
+
+                        <a asp-controller="Actividad"
+                           asp-action="Consultar"
+                           class="nav-link fw-semibold px-lg-3
+                            @(NavActivo(
+                               "Actividad",
+                               "Consultar",
+                               "Detalle",
+                               "Detalles"
+                           ))">
+
+                            <i class="bi bi-calendar-event-fill me-1"></i>
+                            Actividades
+                        </a>
+
+                        <a asp-controller="Ministerio"
+                           asp-action="Index"
+                           class="nav-link fw-semibold px-lg-3
+                            @(NavActivo("Ministerio"))">
+
+                            <i class="bi bi-people-fill me-1"></i>
+                            Ministerios
+                        </a>
+
+                        <a asp-controller="Citas"
+                           asp-action="Crear"
+                           class="nav-link fw-semibold px-lg-3
+                            @(NavActivo("Citas", "Crear"))">
+
+                            <i class="bi bi-calendar-plus-fill me-1"></i>
+                            Agendar cita
+                        </a>
+                    }
+
                     @if (esAdmin)
                     {
-                        <a asp-action="Index"
-                           asp-controller="Actividad"
-                           class="nav-link fw-semibold @(NavActivo(
-                                                      "Actividad",
-                                                      "Index",
-                                                      "Crear",
-                                                      "Editar",
-                                                      "Detalle",
-                                                      "Detalles",
-                                                      "Eliminar"
-                                                  ))">
-
-                            <i class="bi bi-calendar-event me-1"></i>
-                            Actividades
-                        </a>
-                    }
-                    else
-                    {
-                        <a asp-action="Consultar"
-                           asp-controller="Actividad"
-                           class="nav-link fw-semibold @(NavActivo(
-                                                      "Actividad",
-                                                      "Consultar",
-                                                      "Detalle",
-                                                      "Detalles"
-                                                  ))">
-
-                            <i class="bi bi-calendar-event me-1"></i>
-                            Actividades
-                        </a>
-                    }
-
-                    @* Agendar cita *@
-                    <a asp-action="Crear"
-                       asp-controller="Citas"
-                       class="nav-link fw-semibold @(NavActivo("Citas", "Crear"))">
+                        <!-- GESTIÓN -->
 
                         <i class="bi bi-calendar-plus me-1"></i>
                         Agendar Cita
@@ -224,10 +230,11 @@
                     </a>
 
 
-                    @* Ministerios *@
-                    <a asp-action="Index"
-                       asp-controller="Ministerio"
-                       class="nav-link fw-semibold @(NavActivo("Ministerio"))">
+                            <a href="#"
+                               class="nav-link dropdown-toggle fw-semibold px-lg-3"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
 
                         <i class="bi bi-people me-1"></i>
                         Ministerios
@@ -249,126 +256,397 @@
                         Actividades por Ministerio
                     </a>
 
-                    @* Administración de citas *@
-                    <a asp-action="Index"
-                       asp-controller="Citas"
-                       class="nav-link fw-semibold @(NavActivo(
-                                              "Citas",
-                                              "Index",
-                                              "Editar",
-                                              "Detalle",
-                                              "Detalles",
-                                              "Eliminar"
-                                          ))">
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
 
-                        <i class="bi bi-calendar2-check me-1"></i>
-                        Citas
-                    </a>
-
-                    @* Tipos de actividad *@
-                    <a asp-action="Index"
-                       asp-controller="TipoActividad"
-                       class="nav-link fw-semibold @(NavActivo("TipoActividad"))">
-
-                        <i class="bi bi-tags me-1"></i>
-                        Tipos de actividad
-                    </a>
-
-                    @* Reportes *@
-                    <a asp-action="Index"
-                       asp-controller="Reporte"
-                       class="nav-link fw-semibold @(NavActivo("Reporte"))">
-
-                        <i class="bi bi-bar-chart me-1"></i>
-                        Reportes
-                    </a>
-                }
-
-                @if (estaLogueado)
-                {
-                    <div class="dropdown ms-lg-3 mt-3 mt-lg-0">
-
-                        <a href="#"
-                           role="button"
-                           class="dropdown-toggle d-flex align-items-center gap-2 text-decoration-none text-white"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-
-                            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                 style="width: 36px;
-                                height: 36px;
-                                min-width: 36px;
-                                background-color: #064442;">
-
-                                <i class="bi bi-person-fill text-white"></i>
-                            </div>
-
-                            <span class="d-none d-md-block fw-semibold">
-                                @nombreMostrar
-                            </span>
-                        </a>
-
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-
-                            @if (esAdmin)
-                            {
                                 <li>
-                                    <a asp-controller="Dashboard"
-                                       asp-action="Index"
-                                       class="dropdown-item py-2 d-flex align-items-center gap-2 @(NavActivo("Dashboard"))">
+                                    <h6 class="dropdown-header">
+                                        Gestión general
+                                    </h6>
+                                </li>
 
-                                        <i class="bi bi-speedometer2 text-primary fs-5"></i>
-                                        <span>Dashboard</span>
+                                <!-- Actividades -->
+                                <li>
+                                    <a asp-controller="Actividad"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2 @(NavActivo("Actividad"))">
+
+                                        <i class="bi bi-calendar-event-fill text-primary fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Actividades
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Administrar actividades
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <!-- Ministerios -->
+                                <li>
+                                    <a asp-controller="Ministerio"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2 @(NavActivo("Ministerio"))">
+
+                                        <i class="bi bi-people-fill text-success fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Ministerios
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Administrar ministerios
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <!-- Citas -->
+                                <li>
+                                    <a asp-controller="Citas"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo(
+                                           "Citas",
+                                           "Index",
+                                           "Editar",
+                                           "Atender",
+                                           "ConfirmarAtender"
+                                       ))">
+
+                                        <i class="bi bi-calendar2-check-fill text-info fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Citas
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Consultar y atender citas
+                                            </small>
+                                        </div>
                                     </a>
                                 </li>
 
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                            }
 
-                            <li>
-                                <a asp-controller="Usuario"
-                                   asp-action="Configuracion"
-                                   class="dropdown-item py-2 d-flex align-items-center gap-2 @(NavActivo("Usuario", "Configuracion"))">
+                                <!-- Agendar cita -->
+                                <li>
+                                    <a asp-controller="Citas"
+                                       asp-action="Crear"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo("Citas", "Crear"))">
 
-                                    <i class="bi bi-shield-lock text-warning fs-5"></i>
-                                    <span>Configuración</span>
-                                </a>
-                            </li>
+                                        <i class="bi bi-calendar-plus-fill text-warning fs-5"></i>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Agendar cita
+                                            </div>
 
-                            <li>
-                                <a asp-controller="Home"
-                                   asp-action="Salir"
-                                   class="dropdown-item py-2 d-flex align-items-center gap-2 text-danger">
+                                            <small class="text-muted">
+                                                Registrar una cita
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
 
-                                    <i class="bi bi-box-arrow-right fs-5"></i>
-                                    <span>Salir</span>
-                                </a>
-                            </li>
+                            </ul>
+                        </div>
 
-                        </ul>
-                    </div>
-                }
-                else
-                {
-                    <a asp-action="Index"
-                       asp-controller="Home"
-                       class="btn rounded-pill px-4 ms-lg-3 mt-3 mt-lg-0 text-white"
-                       style="background-color: #064442;">
+                        <!-- ADMINISTRACIÓN -->
 
-                        <i class="bi bi-box-arrow-in-right me-1"></i>
-                        Iniciar Sesión
-                    </a>
-                }
+                        <div class="nav-item dropdown">
 
+                            <a href="#"
+                               class="nav-link dropdown-toggle fw-semibold px-lg-3"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+
+                                <i class="bi bi-gear-fill me-1"></i>
+                                Administración
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
+
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        Usuarios y catálogos
+                                    </h6>
+                                </li>
+
+                                <!-- Usuarios -->
+                                <li>
+                                    <a asp-controller="Usuario"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo(
+                                           "Usuario",
+                                           "Index",
+                                           "Crear",
+                                           "Editar",
+                                           "Detalle",
+                                           "Detalles",
+                                           "Eliminar"
+                                       ))">
+
+                                        <i class="bi bi-person-lines-fill text-primary fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Usuarios
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Administrar usuarios
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <!-- Tipos de actividad -->
+                                <li>
+                                    <a asp-controller="TipoActividad"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo("TipoActividad"))">
+
+                                        <i class="bi bi-tags-fill text-success fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Tipos de actividad
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Administrar categorías
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+
+                        <!-- INFORMACIÓN -->
+
+                        <div class="nav-item dropdown">
+
+                            <a href="#"
+                               class="nav-link dropdown-toggle fw-semibold px-lg-3"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+
+                                <i class="bi bi-bar-chart-fill me-1"></i>
+                                Información
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
+
+                                <li>
+                                    <h6 class="dropdown-header">
+                                        Consultas del sistema
+                                    </h6>
+                                </li>
+
+                                <!-- Dashboard -->
+                                <li>
+                                    <a asp-controller="Dashboard"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo("Dashboard"))">
+
+                                        <i class="bi bi-speedometer2 text-primary fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Dashboard
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Resumen general
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <!-- Reportes -->
+                                <li>
+                                    <a asp-controller="Reporte"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo("Reporte"))">
+
+                                        <i class="bi bi-file-earmark-bar-graph-fill text-success fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Reportes
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Consultar reportes
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <!-- Horarios -->
+                                <li>
+                                    <a asp-controller="Actividad"
+                                       asp-action="Horarios"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo("Actividad", "Horarios"))">
+
+                                        <i class="bi bi-clock-fill text-warning fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Horarios
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Ver próximas actividades
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    }
+
+                    @if (estaLogueado)
+                    {
+                        <!-- PERFIL -->
+
+                        <div class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
+
+                            <a href="#"
+                               class="nav-link dropdown-toggle d-flex
+                                align-items-center gap-2 text-white"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+
+                                <span class="d-flex align-items-center
+                                    justify-content-center rounded-circle bg-success"
+                                      style="width: 38px;
+                                    height: 38px;
+                                    min-width: 38px;">
+
+                                    <i class="bi bi-person-fill fs-5"></i>
+                                </span>
+
+                                <span>
+                                    <span class="d-block fw-semibold">
+                                        @nombreMostrar
+                                    </span>
+
+                                    <small class="text-white-50">
+                                        @(esAdmin ? "Administrador" : "Usuario")
+                                    </small>
+                                </span>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
+
+                                <li>
+                                    <div class="px-3 py-2">
+
+                                        <div class="fw-bold">
+                                            @nombreMostrar
+                                        </div>
+
+                                        <small class="text-muted">
+                                            @(esAdmin
+                                                ? "Cuenta de administrador"
+                                                : "Cuenta de usuario")
+                                        </small>
+
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <!-- Configuración -->
+                                <li>
+                                    <a asp-controller="Usuario"
+                                       asp-action="Configuracion"
+                                       class="dropdown-item d-flex align-items-center
+                                        gap-3 py-2 rounded-2
+                                        @(NavActivo(
+                                           "Usuario",
+                                           "Configuracion"
+                                       ))">
+
+                                        <i class="bi bi-shield-lock-fill text-warning fs-5"></i>
+
+                                        <span>
+                                            Configuración
+                                        </span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <!-- Salir -->
+                                <li>
+                                    <a asp-controller="Home"
+                                       asp-action="Salir"
+                                       class="dropdown-item d-flex align-items-center
+                                        gap-3 py-2 rounded-2 text-danger">
+
+                                        <i class="bi bi-box-arrow-right fs-5"></i>
+
+                                        <span class="fw-semibold">
+                                            Cerrar sesión
+                                        </span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Iniciar sesión -->
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="btn btn-success rounded-pill px-4
+                            ms-lg-3 mt-3 mt-lg-0">
+
+                            <i class="bi bi-box-arrow-in-right me-1"></i>
+                            Iniciar sesión
+                        </a>
+                    }
+
+                </div>
             </div>
+
         </div>
     </nav>
+
     @RenderBody()
 
     <!-- Footer Start -->
@@ -541,14 +819,47 @@
     <script src="~/js/owl.carousel.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 
     <!-- Template Javascript -->
     <script src="~/js/main.js"></script>
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/js/datatablehelper.js"></script>
+    <script src="~/js/cardPagination.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: "success",
+                    title: "Operación exitosa",
+                    text: "@Html.Raw(TempData["MensajeExito"])",
+                    confirmButtonColor: "#064442"
+                });
+            });
+        </script>
+    }
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: "error",
+                    title: "Ocurrió un problema",
+                    text: "@Html.Raw(TempData["Mensaje"])",
+                    confirmButtonColor: "#064442"
+                });
+            });
+        </script>
+    }
+
     <script src="~/js/chatbot-floating.js"></script>
     <script src="~/js/chatbot.js"></script>
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 

@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MinisterioGosen.Helpers;
 using MinisterioGosen.Models;
 using System.Net;
 
 namespace MinisterioGosen.Controllers
 {
+    [ValidarSesion]
     public class DashboardController(
         IHttpClientFactory _http,
         IConfiguration _config) : Controller
     {
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var idRol = HttpContext.Session.GetInt32("Id_Rol");
 

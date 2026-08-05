@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MinisterioGosen.Helpers;
 using MinisterioGosen.Models;
 using System.Net;
 
 namespace MinisterioGosen.Controllers
 {
+    [ValidarSesion]
     public class CitasController(
         IHttpClientFactory _http,
         IConfiguration _config) : Controller

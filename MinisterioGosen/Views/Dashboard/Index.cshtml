@@ -1,4 +1,5 @@
-﻿@model MinisterioGosen.Models.DashboardModel
+﻿@using System.Text.Json
+@model MinisterioGosen.Models.DashboardModel
 
 @{
     ViewData["Title"] = "Dashboard Administrativo";
@@ -7,6 +8,14 @@
                     + Model.TotalActividades
                     + Model.TotalMinisterios
                     + Model.TotalCitasPendientes;
+
+    var dashboardJson = JsonSerializer.Serialize(
+        Model,
+        new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        }
+    );
 }
 
 <div class="container-fluid dashboard-wrapper py-5">
@@ -171,5 +180,147 @@
             </div>
         </div>
 
+        <section class="dashboard-charts mt-5">
+
+            <div class="dashboard-section-header mb-4">
+                <div>
+                    <span class="dashboard-section-label">
+                        <i class="bi bi-bar-chart-line-fill"></i>
+                        Análisis visual
+                    </span>
+
+                    <h2 class="dashboard-section-title">
+                        Estadísticas del sistema
+                    </h2>
+
+                    <p class="dashboard-section-description">
+                        Consulta la distribución de citas, actividades,
+                        asistencias y personas registradas.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-6">
+                    <article class="dashboard-chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <span class="chart-card-category">
+                                    Gestión de citas
+                                </span>
+
+                                <h3 class="chart-card-title">
+                                    Citas por estado
+                                </h3>
+
+                                <p class="chart-card-description">
+                                    Distribución de las citas según su estado.
+                                </p>
+                            </div>
+
+                            <div class="chart-card-icon chart-icon-citas">
+                                <i class="bi bi-calendar2-check-fill"></i>
+                            </div>
+                        </div>
+
+                        <div class="chart-container chart-container-doughnut">
+                            <canvas id="graficoCitasEstado"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="dashboard-chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <span class="chart-card-category">
+                                    Tendencia mensual
+                                </span>
+
+                                <h3 class="chart-card-title">
+                                    Actividades por mes
+                                </h3>
+
+                                <p class="chart-card-description">
+                                    Cantidad de actividades registradas por mes.
+                                </p>
+                            </div>
+
+                            <div class="chart-card-icon chart-icon-actividades">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="graficoActividadesMes"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="dashboard-chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <span class="chart-card-category">
+                                    Participación
+                                </span>
+
+                                <h3 class="chart-card-title">
+                                    Asistencia por actividad
+                                </h3>
+
+                                <p class="chart-card-description">
+                                    Actividades con mayor cantidad de asistentes.
+                                </p>
+                            </div>
+
+                            <div class="chart-card-icon chart-icon-asistencia">
+                                <i class="bi bi-person-check-fill"></i>
+                            </div>
+                        </div>
+
+                        <div class="chart-container chart-container-horizontal">
+                            <canvas id="graficoAsistenciaActividad"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="dashboard-chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <span class="chart-card-category">
+                                    Organización
+                                </span>
+
+                                <h3 class="chart-card-title">
+                                    Personas por ministerio
+                                </h3>
+
+                                <p class="chart-card-description">
+                                    Distribución de personas activas por ministerio.
+                                </p>
+                            </div>
+
+                            <div class="chart-card-icon chart-icon-ministerios">
+                                <i class="bi bi-diagram-3-fill"></i>
+                            </div>
+                        </div>
+
+                        <div class="chart-container chart-container-horizontal">
+                            <canvas id="graficoPersonasMinisterio"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+        </section>
     </div>
 </div>
+
+
+<script id="dashboard-data"
+        type="application/json">
+    @Html.Raw(dashboardJson)
+</script>
