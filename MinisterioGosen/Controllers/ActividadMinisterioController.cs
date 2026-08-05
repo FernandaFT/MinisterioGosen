@@ -24,7 +24,7 @@ namespace MinisterioGosen.Controllers
 			{
 				var actividades = response.Content.ReadFromJsonAsync<List<ActividadModel>>().Result;
 
-				// Ordenar alfabéticamente por Nombre_Actividad
+				// Ordenar alfabéticamente por Nombre de la Actividad
 				var actividadesOrdenadas = actividades?
 					.OrderBy(a => a.Nombre_Actividad)
 					.ToList() ?? new List<ActividadModel>();

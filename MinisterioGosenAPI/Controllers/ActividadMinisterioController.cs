@@ -120,9 +120,9 @@ namespace MinisterioGosenAPI.Controllers
 			var response = context.Execute("spEliminarActividadMinisterio", parameters);
 
 			if (response > 0)
-				return Ok(new { Success = true, Message = "Actividad ministerial eliminada correctamente" });
+				return Ok(new { Success = true, Message = "Actividad por ministerio eliminada correctamente!" });
 
-			return BadRequest(new { Success = false, Message = "No se ha eliminado la actividad ministerial" });
+			return BadRequest(new { Success = false, Message = "No ha sido posible eliminar la actividad del ministerio indicado!" });
 		}
 	}
 }

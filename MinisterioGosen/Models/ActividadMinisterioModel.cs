@@ -20,7 +20,7 @@ namespace MinisterioGosen.Models
 		[StringLength(200, ErrorMessage = "La observación no puede superar los 200 caracteres")]
 		public string? Observacion { get; set; }
 
-		// Campos auxiliares para mostrar en las vistas
+		// Campos auxiliares utilizados para mostrar en las vistas
 		public string? NombreActividad { get; set; }
 		public string? NombreMinisterio { get; set; }
 	}
