@@ -61,7 +61,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
@@ -73,7 +73,6 @@
     <link rel="icon" type="image/x-icon" href="~/ico/logo-gosen.ico" asp-append-version="true" />
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Libraries Stylesheet -->
@@ -156,11 +155,11 @@
                            asp-action="Consultar"
                            class="nav-link fw-semibold px-lg-3
                             @(NavActivo(
-                               "Actividad",
-                               "Consultar",
-                               "Detalle",
-                               "Detalles"
-                           ))">
+                              "Actividad",
+                              "Consultar",
+                              "Detalle",
+                              "Detalles"
+                          ))">
 
                             <i class="bi bi-calendar-event-fill me-1"></i>
                             Actividades
@@ -188,76 +187,18 @@
                     @if (esAdmin)
                     {
                         <!-- GESTIÓN -->
-
-                        <i class="bi bi-calendar-plus me-1"></i>
-                        Agendar Cita
-                    </a>
-                }
-
-                @if (esAdmin)
-                {
-                    @* Usuarios *@
-                    <a asp-action="Index"
-                       asp-controller="Usuario"
-                       class="nav-link fw-semibold @(NavActivo(
-                                              "Usuario",
-                                              "Index",
-                                              "Crear",
-                                              "Editar",
-                                              "Detalle",
-                                              "Detalles",
-                                              "Eliminar"
-                                          ))">
-
-                        <i class="bi bi-person-lines-fill me-1"></i>
-                        Usuario
-                    </a>
-                    @* ActividadUsuario *@
-                    <a asp-action="Index"
-                       asp-controller="ActividadUsuario"
-                       class="nav-link fw-semibold @(NavActivo(
-                                                 "ActividadUsuario",
-                                                 "Index",
-                                                 "Crear",
-                                                 "Editar",
-                                                 "Detalle",
-                                                 "Detalles",
-                                                 "Eliminar"
-                                             ))">
-
-                        <i class="bi bi-clipboard-check me-1"></i>
-                        Actividades por Usuario
-                    </a>
-
-
+                        <div class="nav-item dropdown">
                             <a href="#"
                                class="nav-link dropdown-toggle fw-semibold px-lg-3"
                                role="button"
                                data-bs-toggle="dropdown"
                                aria-expanded="false">
 
-                        <i class="bi bi-people me-1"></i>
-                        Ministerios
-                    </a>
-                    @* ActividadMinisterio *@
-                    <a asp-action="Index"
-                       asp-controller="ActividadMinisterio"
-                       class="nav-link fw-semibold @(NavActivo(
-                                                                        "ActividadMinisterio",
-                                                                        "Index",
-                                                                        "Crear",
-                                                                        "Editar",
-                                                                        "Detalle",
-                                                                        "Detalles",
-                                                                        "Eliminar"
-                                                                    ))">
-
-                        <i class="bi bi-clipboard-check me-1"></i>
-                        Actividades por Ministerio
-                    </a>
+                                <i class="bi bi-folder-fill me-1"></i>
+                                Gestión
+                            </a>
 
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
-
                                 <li>
                                     <h6 class="dropdown-header">
                                         Gestión general
@@ -269,7 +210,16 @@
                                     <a asp-controller="Actividad"
                                        asp-action="Index"
                                        class="dropdown-item d-flex align-items-center gap-3
-                                        py-2 rounded-2 @(NavActivo("Actividad"))">
+                                        py-2 rounded-2
+                                        @(NavActivo(
+                                          "Actividad",
+                                          "Index",
+                                          "Crear",
+                                          "Editar",
+                                          "Detalle",
+                                          "Detalles",
+                                          "Eliminar"
+                                      ))">
 
                                         <i class="bi bi-calendar-event-fill text-primary fs-5"></i>
 
@@ -290,7 +240,16 @@
                                     <a asp-controller="Ministerio"
                                        asp-action="Index"
                                        class="dropdown-item d-flex align-items-center gap-3
-                                        py-2 rounded-2 @(NavActivo("Ministerio"))">
+                                        py-2 rounded-2
+                                        @(NavActivo(
+                                          "Ministerio",
+                                          "Index",
+                                          "Crear",
+                                          "Editar",
+                                          "Detalle",
+                                          "Detalles",
+                                          "Eliminar"
+                                      ))">
 
                                         <i class="bi bi-people-fill text-success fs-5"></i>
 
@@ -306,6 +265,37 @@
                                     </a>
                                 </li>
 
+                                <!-- Actividades por ministerio -->
+                                <li>
+                                    <a asp-controller="ActividadMinisterio"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo(
+                                          "ActividadMinisterio",
+                                          "Index",
+                                          "Crear",
+                                          "Editar",
+                                          "Consultar",
+                                          "Detalle",
+                                          "Detalles",
+                                          "Eliminar"
+                                      ))">
+
+                                        <i class="bi bi-diagram-3-fill text-secondary fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Actividades por ministerio
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Asignar actividades a ministerios
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
                                 <!-- Citas -->
                                 <li>
                                     <a asp-controller="Citas"
@@ -313,12 +303,12 @@
                                        class="dropdown-item d-flex align-items-center gap-3
                                         py-2 rounded-2
                                         @(NavActivo(
-                                           "Citas",
-                                           "Index",
-                                           "Editar",
-                                           "Atender",
-                                           "ConfirmarAtender"
-                                       ))">
+                                          "Citas",
+                                          "Index",
+                                          "Editar",
+                                          "Atender",
+                                          "ConfirmarAtender"
+                                      ))">
 
                                         <i class="bi bi-calendar2-check-fill text-info fs-5"></i>
 
@@ -359,14 +349,11 @@
                                         </div>
                                     </a>
                                 </li>
-
                             </ul>
                         </div>
 
                         <!-- ADMINISTRACIÓN -->
-
                         <div class="nav-item dropdown">
-
                             <a href="#"
                                class="nav-link dropdown-toggle fw-semibold px-lg-3"
                                role="button"
@@ -378,7 +365,6 @@
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
-
                                 <li>
                                     <h6 class="dropdown-header">
                                         Usuarios y catálogos
@@ -392,14 +378,14 @@
                                        class="dropdown-item d-flex align-items-center gap-3
                                         py-2 rounded-2
                                         @(NavActivo(
-                                           "Usuario",
-                                           "Index",
-                                           "Crear",
-                                           "Editar",
-                                           "Detalle",
-                                           "Detalles",
-                                           "Eliminar"
-                                       ))">
+                                          "Usuario",
+                                          "Index",
+                                          "Crear",
+                                          "Editar",
+                                          "Detalle",
+                                          "Detalles",
+                                          "Eliminar"
+                                      ))">
 
                                         <i class="bi bi-person-lines-fill text-primary fs-5"></i>
 
@@ -410,6 +396,37 @@
 
                                             <small class="text-muted">
                                                 Administrar usuarios
+                                            </small>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <!-- Actividades por usuario -->
+                                <li>
+                                    <a asp-controller="ActividadUsuario"
+                                       asp-action="Index"
+                                       class="dropdown-item d-flex align-items-center gap-3
+                                        py-2 rounded-2
+                                        @(NavActivo(
+                                          "ActividadUsuario",
+                                          "Index",
+                                          "Crear",
+                                          "Editar",
+                                          "Consultar",
+                                          "Detalle",
+                                          "Detalles",
+                                          "Eliminar"
+                                      ))">
+
+                                        <i class="bi bi-person-check-fill text-info fs-5"></i>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                Actividades por usuario
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Gestionar participaciones
                                             </small>
                                         </div>
                                     </a>
@@ -436,14 +453,11 @@
                                         </div>
                                     </a>
                                 </li>
-
                             </ul>
                         </div>
 
                         <!-- INFORMACIÓN -->
-
                         <div class="nav-item dropdown">
-
                             <a href="#"
                                class="nav-link dropdown-toggle fw-semibold px-lg-3"
                                role="button"
@@ -455,7 +469,6 @@
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
-
                                 <li>
                                     <h6 class="dropdown-header">
                                         Consultas del sistema
@@ -527,7 +540,6 @@
                                         </div>
                                     </a>
                                 </li>
-
                             </ul>
                         </div>
                     }
@@ -594,9 +606,9 @@
                                        class="dropdown-item d-flex align-items-center
                                         gap-3 py-2 rounded-2
                                         @(NavActivo(
-                                           "Usuario",
-                                           "Configuracion"
-                                       ))">
+                                          "Usuario",
+                                          "Configuracion"
+                                      ))">
 
                                         <i class="bi bi-shield-lock-fill text-warning fs-5"></i>
 
@@ -712,7 +724,6 @@
         </div>
     </div>
     <!-- Footer End -->
-
     <!-- Copyright Start -->
     <div class="container-fluid copyright py-4">
         <div class="container">
@@ -733,7 +744,6 @@
         </div>
     </div>
     <!-- Copyright End -->
-
     <!-- Floating Buttons -->
     @if (estaLogueado)
     {
@@ -833,12 +843,12 @@
     {
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                    icon: "success",
-                    title: "Operación exitosa",
-                    text: "@Html.Raw(TempData["MensajeExito"])",
-                    confirmButtonColor: "#064442"
-                });
+            Swal.fire({
+            icon: "success",
+            title: "Operación exitosa",
+            text: "@Html.Raw(TempData["MensajeExito"])",
+            confirmButtonColor: "#064442"
+            });
             });
         </script>
     }
@@ -847,12 +857,12 @@
     {
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                    icon: "error",
-                    title: "Ocurrió un problema",
-                    text: "@Html.Raw(TempData["Mensaje"])",
-                    confirmButtonColor: "#064442"
-                });
+            Swal.fire({
+            icon: "error",
+            title: "Ocurrió un problema",
+            text: "@Html.Raw(TempData["Mensaje"])",
+            confirmButtonColor: "#064442"
+            });
             });
         </script>
     }

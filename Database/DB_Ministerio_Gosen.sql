@@ -1,9 +1,9 @@
-USE [master]
+USE [master];
 GO
 
 CREATE DATABASE [ministerio_gosen]
 GO
-USE [ministerio_gosen]
+USE [ministerio_gosen];
 GO
 
 CREATE TABLE [dbo].[Actividad](
@@ -154,33 +154,33 @@ PRIMARY KEY CLUSTERED
 GO
 SET IDENTITY_INSERT [dbo].[Actividad] ON 
 GO
-INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (1, N'Culto Juvenil', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Sal n principal', CAST(N'18:00:00' AS Time), CAST(N'20:00:00' AS Time), 1)
+INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (1, N'Culto Juvenil', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Salón principal', CAST(N'18:00:00' AS Time), CAST(N'20:00:00' AS Time), 1)
 GO
-INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (2, N'Reuni n de J venes', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Aula 1', CAST(N'16:00:00' AS Time), CAST(N'18:00:00' AS Time), 2)
+INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (2, N'Reunión de Jóvenes', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Aula 1', CAST(N'16:00:00' AS Time), CAST(N'18:00:00' AS Time), 2)
 GO
 INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (3, N'Culto de Alabanza', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Templo principal', CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), 1)
 GO
-INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (4, N'Ensayo Musical', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Sal n de m sica', CAST(N'19:00:00' AS Time), CAST(N'21:00:00' AS Time), 2)
+INSERT [dbo].[Actividad] ([Id_Actividad], [Nombre_Actividad], [Fecha_Ini], [Fecha_Fin], [Lugar], [Hora_Ini], [Hora_Fin], [Id_Tipo_Actividad]) VALUES (4, N'Ensayo Musical', CAST(N'2026-07-28' AS Date), CAST(N'2026-08-07' AS Date), N'Salón de música', CAST(N'19:00:00' AS Time), CAST(N'21:00:00' AS Time), 2)
 GO
 SET IDENTITY_INSERT [dbo].[Actividad] OFF
 GO
 SET IDENTITY_INSERT [dbo].[Actividades_Ministerio] ON 
 GO
-INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (1, 1, 1, CAST(N'2026-07-28' AS Date), N'Actividad del Ministerio de J venes')
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (1, 1, 1, CAST(N'2026-07-28' AS Date), N'Actividad del Ministerio de Jóvenes')
 GO
-INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (2, 2, 1, CAST(N'2026-07-28' AS Date), N'Reuni n de planificaci n juvenil')
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (2, 2, 1, CAST(N'2026-07-28' AS Date), N'Reunión de planificación juvenil')
 GO
-INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (3, 3, 2, CAST(N'2026-07-28' AS Date), N'Actividad del Ministerio de M sica')
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (3, 3, 2, CAST(N'2026-07-28' AS Date), N'Actividad del Ministerio de Música')
 GO
-INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (4, 4, 2, CAST(N'2026-07-28' AS Date), N'Ensayo general del equipo de m sica')
+INSERT [dbo].[Actividades_Ministerio] ([Id_Minis_Actividad], [Id_Actividad], [Id_Ministerio], [Fecha], [Observacion]) VALUES (4, 4, 2, CAST(N'2026-07-28' AS Date), N'Ensayo general del equipo de música')
 GO
 SET IDENTITY_INSERT [dbo].[Actividades_Ministerio] OFF
 GO
 SET IDENTITY_INSERT [dbo].[Ministerio] ON 
 GO
-INSERT [dbo].[Ministerio] ([Id_Ministerio], [Descripcion_Ministerio], [Observaciones_Ministerio]) VALUES (1, N'Ministerio de J venes', N'Ministerio encargado de actividades juveniles')
+INSERT [dbo].[Ministerio] ([Id_Ministerio], [Descripcion_Ministerio], [Observaciones_Ministerio]) VALUES (1, N'Ministerio de Jóvenes', N'Ministerio encargado de actividades juveniles')
 GO
-INSERT [dbo].[Ministerio] ([Id_Ministerio], [Descripcion_Ministerio], [Observaciones_Ministerio]) VALUES (2, N'Ministerio de M sica', N'Ministerio encargado de la alabanza y m sica')
+INSERT [dbo].[Ministerio] ([Id_Ministerio], [Descripcion_Ministerio], [Observaciones_Ministerio]) VALUES (2, N'Ministerio de Música', N'Ministerio encargado de la alabanza y música')
 GO
 SET IDENTITY_INSERT [dbo].[Ministerio] OFF
 GO
@@ -196,7 +196,7 @@ SET IDENTITY_INSERT [dbo].[Tipo_Actividad] ON
 GO
 INSERT [dbo].[Tipo_Actividad] ([Id_Tipo_Actividad], [Nombre_Tipo]) VALUES (1, N'Culto')
 GO
-INSERT [dbo].[Tipo_Actividad] ([Id_Tipo_Actividad], [Nombre_Tipo]) VALUES (2, N'Reuni n')
+INSERT [dbo].[Tipo_Actividad] ([Id_Tipo_Actividad], [Nombre_Tipo]) VALUES (2, N'Reunión')
 GO
 SET IDENTITY_INSERT [dbo].[Tipo_Actividad] OFF
 GO
@@ -875,15 +875,33 @@ GO
 /* ===========================
    CRUD: Actividades_Ministerio
    =========================== */
-CREATE   PROCEDURE [dbo].[spCrearActividadesMinisterio]
+
+
+CREATE PROCEDURE [dbo].[spCrearActividadesMinisterio]
     @Id_Actividad INT,
     @Id_Ministerio INT,
     @Fecha DATE,
     @Observacion VARCHAR(200)
 AS
 BEGIN
-    INSERT INTO Actividades_Ministerio (Id_Actividad, Id_Ministerio, Fecha, Observacion)
-    VALUES (@Id_Actividad, @Id_Ministerio, @Fecha, @Observacion);
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.Actividades_Ministerio
+    (
+        Id_Actividad,
+        Id_Ministerio,
+        Fecha,
+        Observacion
+    )
+    VALUES
+    (
+        @Id_Actividad,
+        @Id_Ministerio,
+        @Fecha,
+        @Observacion
+    );
+
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id_Minis_Actividad;
 END;
 
 GO
@@ -896,15 +914,33 @@ GO
 /* ===========================
    CRUD: Actividad_Usuario
    =========================== */
-CREATE   PROCEDURE [dbo].[spCrearActividadUsuario]
+
+
+CREATE PROCEDURE [dbo].[spCrearActividadUsuario]
     @Id_Actividad INT,
     @Id_Usuario INT,
     @Fecha DATE,
     @Hora TIME(7)
 AS
 BEGIN
-    INSERT INTO Actividad_Usuario (Id_Actividad, Id_Usuario, Fecha, Hora)
-    VALUES (@Id_Actividad, @Id_Usuario, @Fecha, @Hora);
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.Actividad_Usuario
+    (
+        Id_Actividad,
+        Id_Usuario,
+        Fecha,
+        Hora
+    )
+    VALUES
+    (
+        @Id_Actividad,
+        @Id_Usuario,
+        @Fecha,
+        @Hora
+    );
+
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id_Actividad_Usuario;
 END;
 
 GO
@@ -1110,19 +1146,36 @@ BEGIN
 END;
 
 GO
-/****** Object:  StoredProcedure [dbo].[spEliminarActividadesMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
+/****** Object: StoredProcedure [dbo].[spEliminarActividadMinisterio] ******/
+SET ANSI_NULLS ON;
 GO
 
-CREATE   PROCEDURE [dbo].[spEliminarActividadesMinisterio]
+SET QUOTED_IDENTIFIER ON;
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[spEliminarActividadMinisterio]
     @Id_Minis_Actividad INT
 AS
 BEGIN
-    DELETE FROM Actividades_Ministerio WHERE Id_Minis_Actividad = @Id_Minis_Actividad;
-END;
+    SET NOCOUNT ON;
 
+    DELETE FROM dbo.Actividades_Ministerio
+    WHERE Id_Minis_Actividad = @Id_Minis_Actividad;
+
+    SELECT @@ROWCOUNT AS FilasAfectadas;
+END;
+GO
+
+/* Alias de compatibilidad con el nombre plural anterior */
+CREATE OR ALTER PROCEDURE [dbo].[spEliminarActividadesMinisterio]
+    @Id_Minis_Actividad INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    EXEC dbo.spEliminarActividadMinisterio
+        @Id_Minis_Actividad = @Id_Minis_Actividad;
+END;
 GO
 /****** Object:  StoredProcedure [dbo].[spEliminarActividadUsuario]    Script Date: 27/7/2026 04:17:38 ******/
 SET ANSI_NULLS ON
@@ -1342,6 +1395,82 @@ BEGIN
 END;
 
 GO
+
+/****** Procedimiento: spListarActividadUsuario ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[spListarActividadUsuario]
+    @Id_Usuario INT = NULL,
+    @Id_Actividad INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        AU.Id_Actividad_Usuario,
+        AU.Id_Actividad,
+        A.Nombre_Actividad AS NombreActividad,
+        AU.Id_Usuario,
+        U.Identificacion AS IdentificacionUsuario,
+        U.Nombre AS NombreUsuario,
+        AU.Fecha,
+        AU.Hora
+    FROM dbo.Actividad_Usuario AS AU
+    INNER JOIN dbo.Actividad AS A
+        ON A.Id_Actividad = AU.Id_Actividad
+    INNER JOIN dbo.Usuario AS U
+        ON U.Id_Usuario = AU.Id_Usuario
+    WHERE
+        (@Id_Usuario IS NULL OR AU.Id_Usuario = @Id_Usuario)
+        AND
+        (@Id_Actividad IS NULL OR AU.Id_Actividad = @Id_Actividad)
+    ORDER BY
+        AU.Fecha DESC,
+        AU.Hora ASC,
+        A.Nombre_Actividad,
+        U.Nombre;
+END;
+GO
+
+/****** Procedimiento: spListarActividadMinisterio ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[spListarActividadMinisterio]
+    @Id_Ministerio INT = NULL,
+    @Id_Actividad INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        AM.Id_Minis_Actividad,
+        AM.Id_Actividad,
+        A.Nombre_Actividad AS NombreActividad,
+        AM.Id_Ministerio,
+        M.Descripcion_Ministerio AS NombreMinisterio,
+        AM.Fecha,
+        AM.Observacion
+    FROM dbo.Actividades_Ministerio AS AM
+    INNER JOIN dbo.Actividad AS A
+        ON A.Id_Actividad = AM.Id_Actividad
+    INNER JOIN dbo.Ministerio AS M
+        ON M.Id_Ministerio = AM.Id_Ministerio
+    WHERE
+        (@Id_Ministerio IS NULL OR AM.Id_Ministerio = @Id_Ministerio)
+        AND
+        (@Id_Actividad IS NULL OR AM.Id_Actividad = @Id_Actividad)
+    ORDER BY
+        AM.Fecha DESC,
+        AM.Id_Minis_Actividad ASC;
+END;
+GO
+
 /****** Object:  StoredProcedure [dbo].[spListarCitas]    Script Date: 27/7/2026 04:17:38 ******/
 SET ANSI_NULLS ON
 GO
@@ -1600,11 +1729,39 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE   PROCEDURE [dbo].[spObtenerActividadesMinisterio]
+
+CREATE PROCEDURE [dbo].[spObtenerActividadMinisterio]
     @Id_Minis_Actividad INT
 AS
 BEGIN
-    SELECT * FROM Actividades_Ministerio WHERE Id_Minis_Actividad = @Id_Minis_Actividad;
+    SET NOCOUNT ON;
+
+    SELECT
+        AM.Id_Minis_Actividad,
+        AM.Id_Actividad,
+        A.Nombre_Actividad AS NombreActividad,
+        AM.Id_Ministerio,
+        M.Descripcion_Ministerio AS NombreMinisterio,
+        AM.Fecha,
+        AM.Observacion
+    FROM dbo.Actividades_Ministerio AS AM
+    INNER JOIN dbo.Actividad AS A
+        ON A.Id_Actividad = AM.Id_Actividad
+    INNER JOIN dbo.Ministerio AS M
+        ON M.Id_Ministerio = AM.Id_Ministerio
+    WHERE AM.Id_Minis_Actividad = @Id_Minis_Actividad;
+END;
+GO
+
+/* Alias de compatibilidad con el nombre plural anterior */
+CREATE PROCEDURE [dbo].[spObtenerActividadesMinisterio]
+    @Id_Minis_Actividad INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    EXEC dbo.spObtenerActividadMinisterio
+        @Id_Minis_Actividad = @Id_Minis_Actividad;
 END;
 
 GO
@@ -1614,11 +1771,28 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE   PROCEDURE [dbo].[spObtenerActividadUsuario]
+
+CREATE PROCEDURE [dbo].[spObtenerActividadUsuario]
     @Id_Actividad_Usuario INT
 AS
 BEGIN
-    SELECT * FROM Actividad_Usuario WHERE Id_Actividad_Usuario = @Id_Actividad_Usuario;
+    SET NOCOUNT ON;
+
+    SELECT
+        AU.Id_Actividad_Usuario,
+        AU.Id_Actividad,
+        A.Nombre_Actividad AS NombreActividad,
+        AU.Id_Usuario,
+        U.Identificacion AS IdentificacionUsuario,
+        U.Nombre AS NombreUsuario,
+        AU.Fecha,
+        AU.Hora
+    FROM dbo.Actividad_Usuario AS AU
+    INNER JOIN dbo.Actividad AS A
+        ON A.Id_Actividad = AU.Id_Actividad
+    INNER JOIN dbo.Usuario AS U
+        ON U.Id_Usuario = AU.Id_Usuario
+    WHERE AU.Id_Actividad_Usuario = @Id_Actividad_Usuario;
 END;
 
 GO
