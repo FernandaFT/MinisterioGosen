@@ -110,19 +110,37 @@ namespace MinisterioGosenAPI.Controllers
 			return BadRequest(new { Success = false, Message = "No se ha actualizado la actividad ministerial" });
 		}
 
-		[HttpDelete("EliminarActividadMinisterioAPI")]
-		public IActionResult EliminarActividadMinisterioAPI(int id)
-		{
-			using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
-			var parameters = new DynamicParameters();
-			parameters.Add("@Id_Minis_Actividad", id);
 
-			var response = context.Execute("spEliminarActividadMinisterio", parameters);
+        [HttpDelete("EliminarActividadMinisterioAPI")]
+        public IActionResult EliminarActividadMinisterioAPI(int id)
+        {
+            using var context = new SqlConnection(
+                _config["ConnectionStrings:DefaultConnection"]
+            );
 
-			if (response > 0)
-				return Ok(new { Success = true, Message = "Actividad por ministerio eliminada correctamente!" });
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id_Minis_Actividad", id);
 
-			return BadRequest(new { Success = false, Message = "No ha sido posible eliminar la actividad del ministerio indicado!" });
-		}
-	}
+            var filasAfectadas = context.QuerySingle<int>(
+                "spEliminarActividadMinisterio",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            if (filasAfectadas > 0)
+            {
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Actividad por ministerio eliminada correctamente."
+                });
+            }
+
+            return NotFound(new
+            {
+                Success = false,
+                Message = "La asignación indicada no existe o ya fue eliminada."
+            });
+        }
+    }
 }
