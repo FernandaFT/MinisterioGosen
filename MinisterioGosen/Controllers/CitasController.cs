@@ -87,43 +87,54 @@ namespace MinisterioGosen.Controllers
                 return RedirectToAction("Index", "Home");
 
             CargarEncargados();
-
             return View();
         }
 
         [HttpPost]
-        public IActionResult Crear(CitasModel model)
+        public async Task<IActionResult> Crear(CitasModel model)
         {
             if (!EstaLogueado())
                 return RedirectToAction("Index", "Home");
 
-            // La cita siempre se agenda a nombre del usuario logueado
-            model.Id_Usuario_Cita = HttpContext.Session.GetInt32("Id_Usuario")!.Value;
 
-            if (model.Fecha_Cita.Date < DateTime.Today)
+            var idUsuario = HttpContext.Session.GetInt32("Id_Usuario");
+            if (!idUsuario.HasValue)
+                return RedirectToAction("Index", "Home");
+
+            model.Id_Usuario_Cita = idUsuario.Value;
+
+            // Un usuario no puede agendarse una cita a sí mismo como encargado
+            if (model.Id_Usuario_Cita == model.Id_Usuario_Encargado)
             {
-                ViewBag.Mensaje = "La fecha de la cita no puede ser anterior a la fecha actual.";
-
+                ViewBag.Mensaje = "No puede agendar una cita consigo mismo como encargado.";
                 CargarEncargados(model.Id_Usuario_Encargado);
                 return View(model);
             }
 
-            // Validar que la hora esté entre 08:00 y 17:00
+            // Se valida que la fecha NO sea menor a la fecha actual (pasada)
+            if (model.Fecha_Cita.Date < DateTime.Today)
+            {
+                ViewBag.Mensaje = "La fecha de la cita no puede ser anterior a la fecha actual.";
+                CargarEncargados(model.Id_Usuario_Encargado);
+                return View(model);
+            }
+
+            // Validar rango de horario (08:00 a 17:00)
             var horaMin = TimeSpan.FromHours(8);
             var horaMax = TimeSpan.FromHours(17);
 
             if (model.Hora_Cita < horaMin || model.Hora_Cita > horaMax)
             {
                 ViewBag.Mensaje = "La hora de la cita debe estar entre las 08:00 y las 17:00.";
-
                 CargarEncargados(model.Id_Usuario_Encargado);
                 return View(model);
             }
 
             using var client = _http.CreateClient();
-
             var url = _config["Valores:UrlApi"] + "Citas/CrearCitaAPI";
-            var response = client.PostAsJsonAsync(url, model).Result;
+
+            // Consumo asíncrono
+            var response = await client.PostAsJsonAsync(url, model);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -131,7 +142,7 @@ namespace MinisterioGosen.Controllers
                 return RedirectToAction("Crear", "Citas");
             }
 
-            ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
+            ViewBag.Mensaje = await response.Content.ReadAsStringAsync();
 
             CargarEncargados(model.Id_Usuario_Encargado);
             return View(model);

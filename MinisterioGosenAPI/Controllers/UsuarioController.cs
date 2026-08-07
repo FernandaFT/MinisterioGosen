@@ -149,6 +149,8 @@ namespace MinisterioGosenAPI.Controllers
         [HttpPost("CrearUsuarioAPI")]
         public IActionResult CrearUsuarioAPI(CrearUsuarioRequestModel model)
         {
+            model.Contrasena = BCrypt.Net.BCrypt.HashPassword(model.Contrasena);
+
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
             var parameters = new DynamicParameters();

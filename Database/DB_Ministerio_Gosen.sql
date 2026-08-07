@@ -953,7 +953,7 @@ GO
 /* ===========================
    CRUD: Citas
    =========================== */
-CREATE   PROCEDURE [dbo].[spCrearCita]
+CREATE OR ALTER PROCEDURE [dbo].[spCrearCita]
     @Fecha_Cita DATE,
     @Hora_Cita TIME(0),
     @Id_Usuario_Cita INT,
@@ -963,13 +963,29 @@ CREATE   PROCEDURE [dbo].[spCrearCita]
 AS
 BEGIN
     SET NOCOUNT ON;
- 
+
+    -- Validar que el solicitante no sea el mismo encargado
+    IF @Id_Usuario_Cita = @Id_Usuario_Encargado
+    BEGIN
+        RAISERROR('No puede agendar una cita consigo mismo como encargado.', 16, 1);
+        RETURN;
+    END
+
+    -- Validar que la fecha no sea anterior a hoy
+    IF @Fecha_Cita < CAST(GETDATE() AS DATE)
+    BEGIN
+        RAISERROR('La fecha de la cita no puede ser anterior a la fecha actual.', 16, 1);
+        RETURN;
+    END
+
+    -- Validar rango de horario
     IF @Hora_Cita < '08:00:00' OR @Hora_Cita > '17:00:00'
     BEGIN
         RAISERROR('La hora de la cita debe estar entre las 08:00 y las 17:00.', 16, 1);
         RETURN;
     END
- 
+
+    -- Validar traslape de citas para el encargado
     IF EXISTS (
         SELECT 1
         FROM Citas
@@ -981,7 +997,8 @@ BEGIN
         RAISERROR('El encargado ya tiene una cita agendada en esa fecha y hora.', 16, 1);
         RETURN;
     END
- 
+
+    -- Inserción del registro
     INSERT INTO Citas
     (
         Fecha_Cita,
@@ -1000,10 +1017,11 @@ BEGIN
         @Observacion_Inicial,
         @Detalle_Cita
     );
- 
+
     SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id_Cita;
 END;
 GO
+
 /****** Object:  StoredProcedure [dbo].[spCrearMinisterio]    Script Date: 27/7/2026 04:17:38 ******/
 SET ANSI_NULLS ON
 GO

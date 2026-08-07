@@ -39,7 +39,7 @@
             return;
         }
 
-        const hoy = new Date().toISOString().split("T")[0];
+        const hoy = new Date().toLocaleDateString('sv-SE');
         if (fecha.value < hoy) {
             event.preventDefault();
             mostrarError(fecha, "La fecha de la cita no puede ser anterior a la fecha actual.");
