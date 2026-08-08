@@ -11,24 +11,31 @@ namespace MinisterioGosenAPI.Controllers
     public class CitasController(IConfiguration _config) : ControllerBase
     {
         [HttpGet("ListarCitasAPI")]
-        public IActionResult ListarCitasAPI()
+        public async Task<IActionResult> ListarCitasAPI()
         {
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
-            var response = context.Query<CitasModel>("spListarCitas").ToList();
+            var response = await context.QueryAsync<CitasModel>(
+                "spListarCitas",
+                commandType: CommandType.StoredProcedure
+            );
 
             return Ok(response);
         }
 
         [HttpGet("ObtenerCitaAPI")]
-        public IActionResult ObtenerCitaAPI(int id)
+        public async Task<IActionResult> ObtenerCitaAPI(int id)
         {
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
             var parameters = new DynamicParameters();
             parameters.Add("@Id_Cita", id);
 
-            var response = context.QueryFirstOrDefault<CitasModel>("spObtenerCita", parameters);
+            var response = await context.QueryFirstOrDefaultAsync<CitasModel>(
+                "spObtenerCita",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
 
             if (response != null)
                 return Ok(response);
@@ -37,7 +44,7 @@ namespace MinisterioGosenAPI.Controllers
         }
 
         [HttpPost("CrearCitaAPI")]
-        public IActionResult CrearCitaAPI(CitasModel model)
+        public async Task<IActionResult> CrearCitaAPI(CitasModel model)
         {
             try
             {
@@ -51,17 +58,20 @@ namespace MinisterioGosenAPI.Controllers
                 parameters.Add("@Observacion_Inicial", model.Observacion_Inicial);
                 parameters.Add("@Detalle_Cita", model.Detalle_Cita);
 
-                // El SP devuelve SCOPE_IDENTITY(), usamos QueryFirstOrDefault para capturar el ID
-                var idCita = context.QueryFirstOrDefault<int>("spCrearCita", parameters, commandType: CommandType.StoredProcedure);
+                var idCita = await context.QueryFirstOrDefaultAsync<int>(
+                    "spCrearCita",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
 
                 if (idCita > 0)
                     return Ok(new { Id_Cita = idCita });
 
-                return BadRequest("No se ha registrado la cita");
+                return BadRequest("No se ha registrado la cita.");
             }
             catch (SqlException ex)
             {
-                // Capturar el mensaje de error del servidor SQL
+                // Captura los RAISERROR lanzados desde el Stored Procedure
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
@@ -71,7 +81,7 @@ namespace MinisterioGosenAPI.Controllers
         }
 
         [HttpPut("ActualizarCitaAPI")]
-        public IActionResult ActualizarCitaAPI(CitasModel model)
+        public async Task<IActionResult> ActualizarCitaAPI(CitasModel model)
         {
             try
             {
@@ -86,16 +96,19 @@ namespace MinisterioGosenAPI.Controllers
                 parameters.Add("@Observacion_Inicial", model.Observacion_Inicial);
                 parameters.Add("@Detalle_Cita", model.Detalle_Cita);
 
-                var response = context.Execute("spActualizarCita", parameters, commandType: CommandType.StoredProcedure);
+                var rowsAffected = await context.ExecuteAsync(
+                    "spActualizarCita",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
 
-                if (response > 0)
-                    return Ok(response);
+                if (rowsAffected > 0)
+                    return Ok(rowsAffected);
 
-                return BadRequest("No se ha actualizado la cita");
+                return BadRequest("No se ha actualizado la cita.");
             }
             catch (SqlException ex)
             {
-                // Capturar el mensaje de error del servidor SQL
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
@@ -105,7 +118,7 @@ namespace MinisterioGosenAPI.Controllers
         }
 
         [HttpPut("AtenderCitaAPI")]
-        public IActionResult AtenderCitaAPI(CitasModel model)
+        public async Task<IActionResult> AtenderCitaAPI(CitasModel model)
         {
             try
             {
@@ -115,12 +128,16 @@ namespace MinisterioGosenAPI.Controllers
                 parameters.Add("@Id_Cita", model.Id_Cita);
                 parameters.Add("@Detalle_Cita", model.Detalle_Cita);
 
-                var response = context.Execute("spAtenderCita", parameters, commandType: CommandType.StoredProcedure);
+                var rowsAffected = await context.ExecuteAsync(
+                    "spAtenderCita",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
 
-                if (response > 0)
-                    return Ok(response);
+                if (rowsAffected > 0)
+                    return Ok(rowsAffected);
 
-                return BadRequest("No se ha podido marcar la cita como atendida");
+                return BadRequest("No se ha podido marcar la cita como atendida.");
             }
             catch (SqlException ex)
             {
@@ -133,7 +150,7 @@ namespace MinisterioGosenAPI.Controllers
         }
 
         [HttpDelete("EliminarCitaAPI")]
-        public IActionResult EliminarCitaAPI(int id)
+        public async Task<IActionResult> EliminarCitaAPI(int id)
         {
             try
             {
@@ -142,16 +159,24 @@ namespace MinisterioGosenAPI.Controllers
                 var parameters = new DynamicParameters();
                 parameters.Add("@Id_Cita", id);
 
-                var response = context.Execute("spEliminarCita", parameters, commandType: CommandType.StoredProcedure);
+                var rowsAffected = await context.ExecuteAsync(
+                    "spEliminarCita",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
 
-                if (response > 0)
-                    return Ok(response);
+                if (rowsAffected > 0)
+                    return Ok(rowsAffected);
 
-                return BadRequest("No se ha eliminado la cita");
+                return BadRequest("No se ha eliminado la cita.");
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                return BadRequest("No se puede eliminar esta cita porque tiene información relacionada.");
+                return BadRequest($"No se puede eliminar esta cita: {ex.Message}");
             }
         }
     }
